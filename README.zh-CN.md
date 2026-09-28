@@ -34,7 +34,7 @@
 
 ### 步骤
 
-1. **下载本项目。** 打开本项目的 GitHub 页面（<https://github.com/Marc506/corridor-showtimes>），点绿色的 **Code** 按钮，再点 **Download ZIP**。双击下载好的文件解压，会得到一个叫 `corridor-showtimes-main` 的文件夹。（Mac 用户如果以后想让它每天自动更新：把文件夹放到你的个人文件夹里，不要放在「下载」「文稿」「桌面」里。）
+1. **下载本项目。** 打开本项目的 GitHub 页面（<https://github.com/Marc506/corridor-showtimes>），点绿色的 **Code** 按钮，再点 **Download ZIP**。双击下载好的文件解压，会得到一个叫 `corridor-showtimes-main` 的文件夹。（Mac 用户：把文件夹移到你的个人文件夹里，不要放在「下载」「文稿」「桌面」或 iCloud 云盘里，否则每天自动更新会被 macOS 拦下。）
 2. **在 AI 助手里打开这个文件夹。** Claude Code 桌面版 / Cursor：选「打开文件夹」（Open folder）并选中它。命令行版的助手：先 `cd` 进这个文件夹，再启动助手。
 3. **把这句话发给它：**
 
@@ -43,6 +43,7 @@
    （`AGENTS.md` 是专门写给 AI 助手看的说明书，里面告诉它每一步该怎么做。）
 4. **按它的提问回答**（见下表）。第一次会安装一些东西，需要几分钟。
 5. **看结果。** 完成后它会在浏览器里打开网页（`site/index.html`），顶部会出现你的影院按钮。
+6. **开启自动更新。** 最后它会问要不要每天自动更新排片，回答「好」。之后电脑开着时，每天 1:00 和 13:00 会自动更新。
 
 ### AI 助手可能会说什么、你怎么回答
 
@@ -52,6 +53,7 @@
 | 「我可以运行这个命令吗？」/「允许……？」 | 点允许。这些命令只是往这个文件夹里安装 Python 组件、读取影院网站。 |
 | 「需要安装一个叫 uv（或 Python）的工具，可以吗？」 | 可以。 |
 | 「找到 N 场，最早一场是……」 | 不用做什么，这就是成功了。 |
+| 「要不要设成每天自动更新？」 | 好。（想换时间也可以告诉它，比如「每天早上 8 点」） |
 | 「这家影院的网站格式比较特殊，我来为它写一份读取规则」 | 等几分钟，它在写并且自己测试。 |
 | 「这个网站挡住了程序访问（Cloudflare 等）」 | 这家影院没法自动添加，本项目也不会去绕过这类防护。纽约和旧金山的影院有时可以用另一个数据源，助手会主动提出。 |
 | 「这个页面上没有找到场次」 | 换成真正列出场次的那个网页（在影院网站上找 Calendar、Showtimes 或 Now Playing）。 |
@@ -59,7 +61,7 @@
 ### 之后
 
 - 所有东西都在**你自己的电脑上**，不会改动在线版网站。
-- 场次**不会自己更新**。想更新时对助手说「更新一下排片」，或者让它帮你设成每天自动更新。
+- 开启自动更新后，电脑开着时每天 1:00 和 13:00 会自动更新**所有**影院，包括以后新加的；电脑当时在睡眠的话，醒来后补上。想马上更新，就对助手说「更新一下排片」；想查看或关闭，就说「自动更新开着吗」/「关掉自动更新」。网页顶部显示的「更新于 x 小时前」就是最后一次更新的时间。
 - 再加一家，就把同一句话再发一遍。不想看作者的那几家影院：点网页顶部它们的按钮关掉即可（会记住），或者让助手帮你关掉。
 
 ### 实在解决不了
@@ -84,12 +86,12 @@
 - 影院按钮上的小圆点：🟡 旧数据（这次抓取失败，显示上次的）· 🔴 从未成功 · 🔵 这次用的是 screenslate 兜底。悬停可看原因。
 - 网址里保存了当前状态（日期、视图、筛选），可以收藏或发给别人。
 
-**自动更新**：每天 01:00 和 13:00（纽约时间）后台运行，不会弹出任何东西——唯一的例外是 MoMA 大约每天一次会短暂打开一个 Chromium 窗口（约 30 秒，自动关闭）。Mac 睡眠时错过的那次，唤醒后会补跑；关机则跳过。
+**自动更新**：每天 01:00 和 13:00 后台运行，不会弹出任何东西——唯一的例外是 MoMA 大约每天一次会短暂打开一个 Chromium 窗口（约 30 秒，自动关闭）。Mac 睡眠时错过的那次，唤醒后会补跑；关机则跳过。
 
 **手动更新**：
 
 ```bash
-./scripts/refresh.sh
+.venv/bin/python -m scraper.update
 ```
 
 ---
@@ -107,24 +109,20 @@ python3.12 -m venv .venv
 open site/index.html
 ```
 
-安装定时任务（launchd）：
+开启 / 查看 / 关闭每天自动更新（macOS 用 launchd，Windows 用任务计划程序，Linux 用 systemd 或 cron；按项目所在位置自动生成，不需要改任何路径）：
 
 ```bash
-cp scripts/com.cinema.refresh.plist ~/Library/LaunchAgents/
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.cinema.refresh.plist
+.venv/bin/python -m scraper.schedule on                 # 每天 01:00、13:00（本机时间）
+.venv/bin/python -m scraper.schedule on --times 08:00   # 自定义时间
+.venv/bin/python -m scraper.schedule status
+.venv/bin/python -m scraper.schedule off
 ```
 
-立刻手动触发一次、查看状态、卸载：
+Windows 上把 `.venv/bin/python` 换成 `.venv\Scripts\python`。自动更新**不会发布**任何东西；只有作者的机器用 `schedule on --publish`，在每次更新后把网页推到 GitHub Pages。
 
-```bash
-launchctl kickstart gui/$(id -u)/com.cinema.refresh
-launchctl print gui/$(id -u)/com.cinema.refresh | grep -E "state|last exit"
-launchctl bootout gui/$(id -u)/com.cinema.refresh
-```
-
-> **项目必须放在 `~/Downloads`、`~/Documents`、`~/Desktop` 之外。** macOS 的隐私保护不允许后台任务读这几个文件夹，定时任务会报 `can't open input file`（退出码 127）。项目现在在 `~/cinema`，`~/Downloads/cinema` 只是一个指向它的快捷方式。
+> **macOS：项目必须放在「下载」「文稿」「桌面」和 iCloud 云盘之外。** macOS 的隐私保护不允许后台任务读这几个位置，`schedule on` 发现后会拒绝并提示把文件夹移走。项目现在在 `~/cinema`，`~/Downloads/cinema` 只是一个指向它的快捷方式。
 >
-> plist 里写的是绝对路径 `/Users/yanghaolei/cinema/...`，项目换位置要同步修改 plist 并重新 `bootstrap`。
+> 项目换位置后，重新运行一次 `schedule on` 即可。
 
 ### 语言数据：TMDB token（可选，但强烈建议）
 
@@ -234,8 +232,8 @@ screenslate 的 nid 查法：`curl -s 'https://www.screenslate.com/jsonapi/node/
 **Philadelphia Film Society**
 `filmadelphia.org` 整站被防火墙拦截（浏览器也会被判为机器人），所以改用它的售票系统 Agile Ticketing 公开的 JSON feed（官方提供，每 10 分钟更新）。如果哪天 feed 返回空或 404，可能是 GUID 换了：搜索 `prod5.agileticketing.net entrypoint.aspx "Philadelphia Film Society - EVENTS"` 找新的 GUID，填到 `venues.yaml` 的 `agile_guid`（或改用 `source: {adapter: agile, guid: …, host: prod5.agileticketing.net}`）。
 
-**定时任务没跑**
-`launchctl print gui/$(id -u)/com.cinema.refresh | grep -E "state|last exit"`；退出码 127 = 路径或权限问题（见上面的文件夹说明）。launchd 自己的输出在 `logs/launchd.err.log`。
+**定时任务没跑 / 网页显示很久没更新**
+运行 `.venv/bin/python -m scraper.schedule status`：它会说自动更新是否开启、指向哪个文件夹、数据最后更新时间和最近一次运行结果。每次运行的详细输出在 `logs/refresh.log`，调度程序本身的报错在 `logs/scheduler.log`。
 
 **Playwright 报要 `playwright install`**
 `pyproject.toml` 把 Playwright 锁在 1.62.0，对应本机已有的 Chromium。换机器时运行一次 `.venv/bin/python -m playwright install chromium`。
@@ -256,8 +254,9 @@ AGENTS.md CLAUDE.md       写给 AI 助手的说明（加影院的固定流程 +
 .github/                  可选的云端定时抓取工作流、加影院求助的 Issue 模板
 site/                     网页（index.html / app.js / styles.css；data.js 是生成物）
 data/                     showtimes.sqlite、showtimes.json、raw/ 原始快照、cache/ 详情页缓存、browser_profile/
-scripts/refresh.sh        定时任务调用的脚本
-scripts/com.cinema.refresh.plist   launchd 配置
+scraper/update.py         一次完整更新（抓取 → 导出 → 清理 →〔可选〕发布）
+scraper/schedule.py       开启 / 关闭每天自动更新（macOS / Windows / Linux）
+scripts/publish.sh        把网页推到 gh-pages（只在作者机器上用）
 logs/refresh.log          运行日志
 tests/                    离线解析测试 + fixtures
 ```

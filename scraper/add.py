@@ -54,6 +54,10 @@ i18n.register({
     "add.ok": {"zh": "成功：{name} 通过「{adapter}」读取。{summary}", "en": "Done: {name} is read through '{adapter}'. {summary}"},
     "add.written": {"zh": "已写入：{files}", "en": "Wrote: {files}"},
     "add.open_site": {"zh": "打开 site/index.html 就能看到。", "en": "Open site/index.html to see it."},
+    "add.auto_on": {"zh": "每天自动更新已开启，这家影院会一起更新。",
+                    "en": "Daily automatic updates are on; this cinema will be included."},
+    "add.auto_off": {"zh": "每天自动更新还没开启。开启：python -m scraper.schedule on",
+                     "en": "Daily automatic updates are not on yet. Turn them on: python -m scraper.schedule on"},
     "add.exists": {"zh": "venues.yaml 里已经有 id「{id}」；换个名字或用 --id", "en": "venues.yaml already has id '{id}'; use another name or --id"},
     "why.recipe": {"zh": "网页上有场次时间，但它不是任何已知售票平台，需要为它写一份配方",
                    "en": "The page shows showtimes but is not on a known ticketing platform; it needs a recipe"},
@@ -245,10 +249,14 @@ def add(name: str, url: str, *, region: str | None = None, tz: str | None = None
             say_lines.append(t("add.written", lang, files=", ".join(result["files"])))
         for line in say_lines:
             progress(line)
+        if not dry_run:
+            from .schedule import is_on
+            result["auto_update"] = is_on()
         if run_after and not dry_run and not json_mode:
             from .run import main as run_main
             run_main(["--venue", vid])
             progress(t("add.open_site", lang))
+            progress(t("add.auto_on" if result["auto_update"] else "add.auto_off", lang))
         return result
 
     if d.status == "needs_agent":

@@ -12,7 +12,7 @@
 | 语言 | Python 3.12（httpx、BeautifulSoup/lxml、Playwright） | 抓取生态最成熟 |
 | 前端 | 纯静态 HTML + 原生 JS，无框架、无构建步骤 | 易于修改；可直接部署为静态站点 |
 | 数据流 | 抓取 → SQLite → 导出 `site/data.js` | 用 `<script src="data.js">` 注入全局变量，网页从 `file://` 打开也能用（`fetch` 在 file:// 下不可用） |
-| 调度 | 作者本机用 macOS `launchd`（01:00 / 13:00 纽约时间）；用户的拷贝按需手动更新或由其 AI 助手设定时任务；可选的 GitHub Actions 工作流（默认关闭） | 01:00 避开影院自己的午夜发布，13:00 赶上白天更新的下周排片 |
+| 调度 | 每个拷贝都在自己的电脑上每天 01:00 / 13:00 自动更新：`python -m scraper.schedule on` 按系统生成 launchd / 任务计划程序 / systemd（或 cron）任务；加影院流程默认开启。另有可选的 GitHub Actions 工作流（默认关闭） | 01:00 避开影院自己的午夜发布，13:00 赶上白天更新的下周排片 |
 | 抓取位置 | 本机，而非云端 | Metrograph 对数据中心 IP 限速更严、需要浏览器的站在云端没有浏览器；也不需要任何人维护服务器或付费 |
 | 时区 | 存 ISO 8601 带偏移；每家影院有自己的 `timezone`（默认 `America/New_York`） | 美国其他城市的影院时间才不会错 |
 | 失败策略 | 每家影院独立；失败时保留上次成功的数据并标记 stale | 旧数据加提示，好过一片空白 |
@@ -52,9 +52,8 @@
 ├── CLAUDE.md, .claude/skills/add-venue/   Claude Code 读取 AGENTS.md；/add-venue 技能
 ├── .github/                    refresh.yml（可选的云端定时抓取 + Pages，默认关闭）、ISSUE_TEMPLATE（加影院求助）
 ├── scripts/
-│   ├── refresh.sh              本机定时任务入口：抓取 →（可选修复配方）→ 导出 → 清理 → 发布
+│   ├── refresh.sh              作者机器上旧定时任务的入口，等同 `python -m scraper.update --publish`
 │   ├── publish.sh              把 site/ 推到 gh-pages 分支
-│   ├── com.cinema.refresh.plist  launchd 配置
 │   ├── open_site.sh / make_app.py  本机双击打开的 macOS 小程序
 ├── tests/                      离线测试 + 真实页面 fixtures（tests/fixtures/platforms/ 是各平台样本）
 ├── data/                       （不入库）SQLite、原始快照、详情页缓存、浏览器 profile、TMDB 缓存
@@ -305,15 +304,23 @@ window.CINEMA_DATA = {
 
 ## 8. 调度与发布
 
-### 8.1 本机（作者实例）
+### 8.1 本机（每个拷贝，包括作者实例）
 
-* **`scripts/refresh.sh`**（launchd 每天 01:00 / 13:00 调用；Mac 睡眠时错过的运行在唤醒后补跑）依次做这几件事：
-  1. 抓取并导出；`AUTO_REPAIR=1` 时先用 `scraper.repair --failed` 修复失败的配方影院。
-  2. 清理 14 天前的原始快照。
-  3. 调用 `publish.sh`。
-  日志写入 `logs/refresh.log`，超过 5 MB 时截断。
+* **`python -m scraper.update`**：一次完整更新，所有系统通用。
+  1. 抓取（`scraper.run --no-export`，自带运行锁）；`--repair` 或 `AUTO_REPAIR=1` 时用 `scraper.repair --failed` 修复失败的配方影院。
+  2. 导出，清理 14 天前的原始快照。
+  3. **只有加 `--publish` 时**才调用 `publish.sh`，所以任何人的定时任务都不会发布到作者的网站。
+  日志写入 `logs/refresh.log`，超过 5 MB 时只保留最后 2 万行。
+* **`python -m scraper.schedule on | off | status`**：按当前文件夹的实际路径生成并安装系统自带的定时任务，默认 01:00 / 13:00（本机时间，`--times` 可改），命令都是 `.venv` 里的 Python 运行 `scraper.update`：
+  * macOS：LaunchAgent `com.corridor-showtimes.update`（`WorkingDirectory` 为项目文件夹；睡眠时错过的运行在唤醒后补跑；Aqua 会话，MoMA 的浏览器路径可以开窗口）。
+  * Windows：任务计划程序「Corridor Showtimes update」（`StartWhenAvailable` 补跑错过的运行；`pythonw.exe` 不弹控制台窗口；用电池时也运行）。
+  * Linux：systemd 用户定时器（`Persistent=true` 补跑）；没有 systemd 时写入 crontab（带标记行，`off` 只删自己的行）。
+  * `status` 报告是否开启、指向哪个文件夹、数据最后更新时间和最近一次运行结果；加影院向导结束时也报告（`--json` 输出里的 `auto_update`）。
+  * 配置生成都是纯函数（`launchd_plist`、`windows_task_xml`、`systemd_units`、`cron_block`），离线测试覆盖三个平台。
+* **网页提醒**：数据超过 36 小时没更新时，「更新于」变成警告色；在本地打开（`file://`）时还会提示「自动更新可能没开」和开启方法。线上网站只变色，不提示。
+* **作者实例**：`schedule on --publish`（或旧的 `com.cinema.refresh` 任务调用 `scripts/refresh.sh`，效果相同），每次更新后发布到 GitHub Pages。`schedule on` 发现旧任务时会拒绝重复安装，`--replace-legacy` 用新任务替换它。
 * **`scripts/publish.sh`**：把 `site/` 的网页文件和最新 `data.js` 组装成一个**孤立提交**（orphan commit），强制推送到 `gh-pages` 分支，由 GitHub Pages 提供服务。每次发布都替换上一次，仓库不会因每日更新而膨胀。凭证由仓库本地的 `gh auth git-credential` 提供。
-* **项目位置**：项目必须放在 `~/Downloads`、`~/Documents`、`~/Desktop` 之外，因为 macOS 的隐私保护（TCC）不允许 launchd 任务读取这些目录。
+* **项目位置**：macOS 上项目必须放在「下载」「文稿」「桌面」和 iCloud 云盘之外，因为隐私保护（TCC）不允许 launchd 任务读取这些位置；`schedule on` 按真实路径（解析快捷方式后）检查，发现就拒绝并提示移动文件夹。
 
 ### 8.2 GitHub Actions（可选，默认关闭）
 

@@ -37,3 +37,8 @@ description: Add a cinema to Corridor Showtimes from its name and schedule URL â
 5. **Finish.** Delete `handoff/<id>/`. Report to the user: the adapter or recipe used, how many screenings
    were parsed and the date range (the `--verify` summary line), and anything that looked uncertain
    (missing years, language, formats).
+
+6. **Daily updates.** Run `python -m scraper.schedule status`. If automatic updates aren't on, ask the
+   user in one sentence whether to turn them on (every day at 01:00 and 13:00 while the computer is on),
+   and on yes run `python -m scraper.schedule on` (see AGENTS.md Step 5 for the macOS folder note). Never
+   pass `--publish`.

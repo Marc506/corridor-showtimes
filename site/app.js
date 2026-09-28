@@ -22,6 +22,7 @@
     zh: {
       never: "从未", justNow: "刚刚", minAgo: (n) => `${n} 分钟前`, hrAgo: (n) => `${n} 小时前`, dayAgo: (n) => `${n} 天前`,
       updated: (r) => `更新于 ${r}`, noDataYet: "还没有数据 — 先运行 python -m scraper.run",
+      staleHint: " · 自动更新可能没开", staleHintT: "在项目文件夹里对 AI 助手说「开启每天自动更新」，或运行 python -m scraper.schedule on（查看状态：python -m scraper.schedule status）",
       viaTitle: (src) => `主源不可用，今天的数据来自兜底源 ${src}（可能不全）`, viaTag: (src) => `主源抓取失败，数据来自 ${src}`,
       dataFrom: (a) => `数据来自影院的 ${a} 系统`,
       customize: "＋ 自定义影院",
@@ -32,7 +33,7 @@
         ["下载本项目：", "打开 GitHub 页面，点绿色的「Code」按钮 →「Download ZIP」，下载后双击解压。"],
         ["在 AI 助手里打开解压出来的文件夹，发送这句话：", null],
         ["按它的提示回答：", "它会问你影院名和排片页的网址；要安装软件或运行命令时，点「允许」。"],
-        ["完成后，它会告诉你打开哪个文件查看。", "注意：你加的影院只在你自己的电脑上，不会出现在这个网站里。"],
+        ["完成后，它会告诉你打开哪个文件查看，并问要不要每天自动更新：回答「好」。", "之后电脑开着时，每天 1:00 和 13:00 自动更新。注意：你加的影院只在你自己的电脑上，不会出现在这个网站里。"],
       ],
       guidePrompt: "请阅读这个文件夹里的 AGENTS.md，帮我添加一家影院。",
       copy: "复制", copied: "已复制",
@@ -61,6 +62,7 @@
     en: {
       never: "never", justNow: "just now", minAgo: (n) => `${n} min ago`, hrAgo: (n) => `${n} h ago`, dayAgo: (n) => `${n} days ago`,
       updated: (r) => `Updated ${r}`, noDataYet: "No data yet — run python -m scraper.run",
+      staleHint: " · automatic updates may be off", staleHintT: "Ask your AI assistant in the project folder to \"turn on daily updates\", or run python -m scraper.schedule on (check: python -m scraper.schedule status)",
       viaTitle: (src) => `Primary source unavailable; today's data comes from the fallback, ${src} (may be incomplete)`,
       viaTag: (src) => `Primary source failed; data from ${src}`,
       dataFrom: (a) => `Data from the cinema's ${a} system`,
@@ -72,7 +74,7 @@
         ["Download this project:", "open the GitHub page, click the green “Code” button → “Download ZIP”, then double-click the file to unzip it."],
         ["Open the unzipped folder in your AI assistant and send:", null],
         ["Answer its questions:", "it asks for the cinema's name and the web page that lists showtimes; when it asks to install something or run a command, allow it."],
-        ["When it's done it tells you which file to open.", "Note: the cinemas you add live on your computer only — they don't appear on this website."],
+        ["When it's done it tells you which file to open, and asks whether to update every day: say yes.", "From then on it refreshes at 01:00 and 13:00 whenever your computer is on. Note: the cinemas you add live on your computer only — they don't appear on this website."],
       ],
       guidePrompt: "Please read AGENTS.md in this folder and help me add a cinema.",
       copy: "Copy", copied: "Copied",
@@ -400,9 +402,11 @@
   function renderHeader() {
     const gen = DATA.generated_at;
     const fresh = $("#freshness");
-    fresh.textContent = gen ? t("updated", relTime(gen)) : t("noDataYet");
-    fresh.title = gen ? new Date(gen).toLocaleString() : "";
-    fresh.classList.toggle("old", !gen || Date.now() - new Date(gen) > 36 * 3600e3);
+    const stale = !gen || Date.now() - new Date(gen) > 36 * 3600e3;
+    const local = location.protocol === "file:";          // someone's own copy, not the public site
+    fresh.textContent = gen ? t("updated", relTime(gen)) + (stale && local ? t("staleHint") : "") : t("noDataYet");
+    fresh.title = gen ? new Date(gen).toLocaleString() + (stale && local ? "\n" + t("staleHintT") : "") : "";
+    fresh.classList.toggle("old", stale);
 
     document.querySelectorAll("#views button").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));

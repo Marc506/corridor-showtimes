@@ -83,21 +83,40 @@ Answers to questions the wizard may print:
    cinema has its own button at the top, and that they can switch view (timeline / list / week).
 4. Tell them three things they should know:
    - Everything lives on **their computer**; it doesn't change the public website.
-   - Showtimes **don't update by themselves**. To refresh, they can tell you "update the showtimes"
-     (you run `.venv/bin/python -m scraper.run`), or ask you to schedule it daily.
+   - Showtimes update **by themselves twice a day** once Step 5 is done (only while the computer is on).
    - To hide the author's default cinemas, click a cinema's button at the top of the page (it remembers),
      or ask you to switch them off.
 
+### Step 5 — Turn on daily updates
+
+Do this the first time, right after Step 4, unless they already said no. Say it in one sentence and
+ask: *"I'll set it to update the showtimes automatically every day at 1:00 and 13:00 (while this computer
+is on) — OK?"* On yes:
+
+```
+.venv/bin/python -m scraper.schedule on            # macOS / Linux
+.venv\Scripts\python -m scraper.schedule on        # Windows
+```
+
+- It schedules this folder with the OS's own scheduler (macOS launchd, Windows Task Scheduler, Linux
+  systemd or cron) and never publishes anything. Missed runs (computer asleep) catch up afterwards.
+- **macOS, exit code 2 with "Downloads / Documents / Desktop / iCloud Drive"**: background jobs may not
+  read those folders. Offer to move the whole project folder into their home folder (e.g.
+  `~/corridor-showtimes`), reopen it there, reinstall with the setup command from Step 1 (the `.venv` has
+  absolute paths inside), and run `schedule on` again.
+- They want other times → `schedule on --times 08:00 20:00` (24-hour, this computer's clock).
+- Later cinemas need nothing extra: every enabled cinema in `config/venues.yaml` is included.
+- The wizard's last line (and `"auto_update"` in `--json` output) says whether it is on.
+
 ### Other requests you may get
 
-- **"Update the showtimes"** → `.venv/bin/python -m scraper.run`, then reopen the page.
+- **"Update the showtimes" (right now)** → `.venv/bin/python -m scraper.update`, then reopen the page.
 - **"Remove a cinema" / "hide the default cinemas"** → in `config/venues.yaml` set `enabled: false` on
   those entries, then `.venv/bin/python -m scraper.export`.
-- **"Update every day by itself"** → ask first. macOS: adapt `scripts/com.cinema.refresh.plist` (its
-  paths point to the author's machine — replace them with this folder's path, and replace
-  `scripts/refresh.sh` with a direct call to `.venv/bin/python -m scraper.run`, because `refresh.sh` also
-  publishes to the author's website). Windows: Task Scheduler. On macOS the folder must not be inside
-  Downloads, Documents or Desktop for scheduled jobs to be allowed to read it — offer to move it.
+- **"Update every day by itself" / "stop updating" / "is it updating?"** →
+  `.venv/bin/python -m scraper.schedule on` / `off` / `status` (see Step 5).
+- **"The page says it hasn't updated in days"** → `.venv/bin/python -m scraper.schedule status`; if it
+  isn't on, do Step 5; if it is, show them the last lines of `logs/refresh.log`.
 
 ### Blocked cinemas
 
@@ -148,5 +167,6 @@ Rules:
 - Never work around Cloudflare, Sucuri, Incapsula, CAPTCHAs or rate limits. A 403 / 429 / challenge page
   means stop and report; do not retry or change the user agent.
 - Respect `max_requests_per_run` and `rate_limit_s`; keep request counts per run small.
-- Do not run `scripts/refresh.sh` or `scripts/publish.sh` — they publish to the author's website.
+- Do not run `scripts/refresh.sh`, `scripts/publish.sh` or `scraper.update --publish`, and never pass
+  `--publish` to `scraper.schedule on` — those publish to the author's website.
 - Don't edit other venues' fixtures or tests when adding one.

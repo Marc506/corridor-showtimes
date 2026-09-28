@@ -41,8 +41,8 @@ a few questions.
 1. **Download the project.** On this project's GitHub page
    (<https://github.com/Marc506/corridor-showtimes>), click the green **Code** button, then
    **Download ZIP**. Double-click the downloaded file to unzip it; you get a folder called
-   `corridor-showtimes-main`. (Mac users who want automatic daily updates later: move the folder to your
-   home folder, not Downloads / Documents / Desktop.)
+   `corridor-showtimes-main`. (Mac users: move the folder to your home folder, not Downloads / Documents /
+   Desktop / iCloud Drive — macOS blocks daily automatic updates there.)
 2. **Open the folder in your AI assistant.** Claude Code desktop / Cursor: *Open folder* and choose it.
    Terminal-based assistants: `cd` into the folder and start the assistant there.
 3. **Send it this message:**
@@ -54,6 +54,8 @@ a few questions.
    minutes.
 5. **Look at the result.** When it finishes it opens the page (`site/index.html`) in your browser, with
    your cinema's button at the top.
+6. **Turn on automatic updates.** At the end it asks whether to update the showtimes every day; say yes.
+   From then on they refresh at 01:00 and 13:00 whenever your computer is on.
 
 ### What the assistant will say, and how to answer
 
@@ -63,6 +65,7 @@ a few questions.
 | "Can I run this command?" / "Allow …?" | Allow. The commands install Python packages into this folder and read the cinema's website. |
 | "I need to install a tool called uv (or Python) — OK?" | Yes. |
 | "Found N showtimes, the first is …" | Nothing to do — that's success. |
+| "Shall I set it to update automatically every day?" | Yes. (Or ask for other times, e.g. "every morning at 8".) |
 | "This cinema's website has its own layout, I'll write a reading rule for it" | Wait a few minutes; it's writing and testing it. |
 | "The website blocks automated access (Cloudflare …)" | That cinema can't be added automatically, and this project never works around such protection. New York and San Francisco cinemas can sometimes use another source — the assistant will offer it. |
 | "I found no showtimes on that page" | Give it the page that actually lists the showtimes (look for "Calendar", "Showtimes" or "Now playing" on the cinema's site). |
@@ -70,8 +73,10 @@ a few questions.
 ### Afterwards
 
 - Everything lives **on your computer**; the public website doesn't change.
-- Showtimes **don't update by themselves**. Tell the assistant *"update the showtimes"* whenever you
-  want, or ask it to set up a daily update.
+- Once automatic updates are on, **every** cinema (including ones you add later) updates every day at
+  01:00 and 13:00 while your computer is on; a run missed while it slept happens when it wakes. For an
+  update right now, tell the assistant *"update the showtimes"*; to check or stop, ask *"are automatic
+  updates on?"* / *"turn off automatic updates"*. The page header shows when data last changed.
 - To add another cinema, send the same message again. To hide the author's cinemas, click their buttons
   at the top of the page (it remembers), or ask the assistant to switch them off.
 
@@ -84,7 +89,7 @@ it said last. The assistant can write that text for you — ask it to.
 ## How it works
 
 ```
- launchd (01:00, 13:00 ET)
+ scraper.schedule (launchd / Task Scheduler / systemd, 01:00 & 13:00) → scraper.update
         │
         ▼
  scraper.run ── per venue: fetch → parse → validate ──┐   failure? keep last good data,
@@ -200,7 +205,8 @@ are stricter with data-center addresses than with home connections — Metrograp
 its screenslate fallback there, and browser-only sites (MoMA) always use their fallback; running on your
 own machine is more reliable for those.
 
-Scheduling on a Mac (`launchd`) and troubleshooting are covered in [README.zh-CN.md](README.zh-CN.md). Design
+Daily updates on any OS: `python -m scraper.schedule on | status | off` (never publishes; the author's
+machine adds `--publish`). Troubleshooting is covered in [README.zh-CN.md](README.zh-CN.md). Design
 notes are in [ARCHITECTURE.md](ARCHITECTURE.md), per-site notes in [SOURCES.md](SOURCES.md), per-platform
 notes in [PLATFORMS.md](PLATFORMS.md).
 
