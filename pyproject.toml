@@ -1,0 +1,22 @@
+[project]
+name = "corridor-showtimes"
+version = "0.1.0"
+description = "Showtimes from NYC and Philadelphia repertory cinemas, aggregated into one timeline"
+requires-python = ">=3.12"
+dependencies = [
+  "httpx",
+  "beautifulsoup4",
+  "lxml",
+  "pyyaml",
+  "playwright==1.62.0",   # matches the Chromium build already installed on this Mac (ms-playwright/chromium-1234)
+  "python-dateutil",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools]
+packages = ["scraper", "scraper.sources"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

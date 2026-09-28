@@ -1,0 +1,10 @@
+{
+ "date_20260924.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20260924&field_venue_target_id=81",
+ "date_20260925.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20260925&field_venue_target_id=81",
+ "date_20260926.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20260926&field_venue_target_id=81",
+ "date_20260927.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20260927&field_venue_target_id=81",
+ "date_20260928.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20260928&field_venue_target_id=81",
+ "date_20260929.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20260929&field_venue_target_id=81",
+ "date_extra.json": "https://www.screenslate.com/api/screenings/date?_format=json&date=20261003&field_venue_target_id=81",
+ "ids.json": "https://www.screenslate.com/api/screenings/id/batch?_format=json"
+}

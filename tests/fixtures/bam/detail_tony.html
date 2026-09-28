@@ -1,0 +1,1414 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- set class on html to show that javascript is available...this used to handle module flashing before sizing is set -->
+    <script>document.documentElement.className = 'js';</script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="BAM, Brooklyn Academy of Music, Brooklyn" />
+    <meta name="description" content="A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain." />
+    <meta property="og:url" content="http://www.bam.org/film/2026/tony" />
+    <meta property="og:title" content="Tony" />
+    <meta property="og:description" content="A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain." />
+    <meta property="og:site_name" content="BAM.org" />
+    <meta property="og:image" content="/Static/img/logo/bam_logo.gif" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@BAM_Brooklyn" />
+
+        <link rel="image_src" content="/globalassets/programs/cinema/2027fy/0826/tony-still.jpg" />
+        <meta property="og:image" content="/globalassets/programs/cinema/2027fy/0826/tony-still.jpg" />
+
+    <title>BAM | Tony </title>
+
+
+    <link href="/Content/main.min.css?n=639258845509314414" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/v4-shims.css">
+    <link rel="stylesheet" href="/Static/icons/icomoon/style.css" type="text/css" />
+    
+    <link rel="stylesheet" href="/Content/NextWave.css" />
+
+
+    <!--Film Widgit-->
+    <link href="/Content/bam-widget-film-style.css" rel="stylesheet" type="text/css" />
+    <script src="/Scripts/bam-widget-film.js"></script>
+
+    <!-- Google Tag Manager -->
+    <script>
+    (function (w, d, s, l, i) {
+        w[l] = w[l] || []; w[l].push({
+            'gtm.start':
+                new Date().getTime(), event: 'gtm.js'
+        }); var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-TLMN');</script>
+    <!-- End Google Tag Manager -->
+
+    <script src="/Scripts/jquery-3.6.0.min.js"></script>
+
+    
+</head>
+
+<body class="NextWave-template">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TLMN"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+            <script>
+            $(document).ready(function () {
+                //made login check
+                var loggedIn = false;
+
+                if (String(getCookie("_bo_logged_in")) === "1") {
+                    loggedIn = true;
+                }
+                if (loggedIn) {
+                    $(".loginLink").css("display", "none");
+                    $(".connectLink").css("display", "none");
+                    $(".logoutLink").css("display", "block");
+                    $(".accountLink").css("display", "block");
+                    //$(".btn-login-icon-mobile").css("display", "none");
+                    //$(".btn-loggedin-icon-mobile").css("display", "block");
+                }
+                else {
+                    $(".logoutLink").css("display", "none");
+                    $(".accountLink").css("display", "none");
+                    $(".loginLink").css("display", "block");
+                    $(".connectLink").css("display", "block");
+                    //$(".btn-login-icon-mobile").css("display", "block");
+                }
+            });
+            function getCookie(name) {
+                var dc = document.cookie;
+                var prefix = name + "=";
+                var begin = dc.indexOf("; " + prefix);
+                if (begin == -1) {
+                    begin = dc.indexOf(prefix);
+                    if (begin != 0) return null;
+                }
+                else {
+                    begin += 2;
+                    var end = document.cookie.indexOf(";", begin);
+                    if (end == -1) {
+                        end = dc.length;
+                    }
+                }
+                // because unescape has been deprecated, replaced with decodeURI
+                //return unescape(dc.substring(begin + prefix.length, end));
+                return decodeURI(dc.substring(begin + prefix.length, end));
+            }
+
+
+        </script>
+    
+    <header>
+        <a href="#mainBody" class="skip">Skip to main content</a>
+        <nav id="scrollSpyNav" class="navbar bam-nav" href="#multiContainerWrapper_Featured">
+            <button id="bam-navbar-toggler" class="navbar-toggler" type="button" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="mobile-toggler-open fas fa-bars" aria-hidden="true"></span>
+            </button>
+            <div class="bam-collapse collapse navbar-collapse mobile-slideout-menu-wrapper" id="navbarSupportedContent" role="dialog" aria-modal="true">
+                <div class="mobile-slideout-menu">
+                    <button class="mobile-toggler-close" aria-label="close navigation"><i class="fas fa-close" aria-hidden="true"></i></button>
+                    <ul class="mobile-category-menu">
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Featured-sidebar-link" href="/#Featured">Featured</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Calendar-sidebar-link" href="/#Calendar">Calendar</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Film-sidebar-link" href="/#Film">Film</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Music-sidebar-link" href="/#Music">Music</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Theater-sidebar-link" href="/#Theater">Theater</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Dance-sidebar-link" href="/#Dance">Dance</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Talks-sidebar-link" href="/#Talks">Talks</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Opera-sidebar-link" href="/#Opera">Opera</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Poetry-sidebar-link" href="/#Poetry">Poetry</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Kids-sidebar-link" href="/#Kids">Kids</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="VisualArt-sidebar-link" href="/#VisualArt">Visual Art</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="GalasEvents-sidebar-link" href="/#GalasEvents">Galas &amp; Events</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Community-sidebar-link" href="/#Community">Community</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Puppetry-sidebar-link" href="/#Puppetry">Puppetry</a>
+                                </li>
+                                <li class="nav-item bam-mobile-sidebar-item">
+                                    <a class="nav-link bam-mobile-sidebar-link scroll" id="Circus-sidebar-link" href="/#Circus">Circus</a>
+                                </li>
+                    </ul>
+                    <ul class="mobile-backstage-menu">
+                        
+                            <li class="nav-item bam-nav-item connectLink">
+                                <a class="nav-link bam-nav-link" href="https://commerce.bam.org/account/register">Sign Up</a>
+                            </li>
+                            <li class="nav-item bam-nav-item accountLink">
+                                <a class="nav-link bam-nav-link" href="https://commerce.bam.org/secure/account">My Account</a>
+                            </li>
+                            <li class="nav-item bam-nav-item loginLink">
+                                <a class="nav-link bam-nav-link" href="https://commerce.bam.org/account/login/?parentredirect=http%3a%2f%2fwww.bam.org%2ffilm%2f2026%2ftony">Login</a>
+                            </li>
+                            <li class="nav-item bam-nav-item logoutLink">
+                                <a class="nav-link bam-nav-link" href="https://commerce.bam.org/secure/logout">Logout</a>
+                            </li>
+                            <li class="nav-item bam-nav-item cartLink">
+                                <a class="nav-link bam-nav-link" href="https://commerce.bam.org/cart">Cart</a>
+                         
+                            <li class="nav-item bam-nav-item active">
+                                <a class="nav-link bam-nav-link" href="/visit">Visit</a>
+                            </li>
+                            <li class="nav-item bam-nav-item">
+                                <a class="nav-link bam-nav-link" href="/programs">Programs</a>
+                            </li>
+                            <li class="nav-item bam-nav-item">
+                                <a class="nav-link bam-nav-link" href="/education">Education</a>
+                            </li>
+                            <li class="nav-item bam-nav-item">
+                                <a class="nav-link bam-nav-link" href="/membership">Membership</a>
+                            </li>
+                            <li class="nav-item bam-nav-item">
+                                <a class="nav-link bam-nav-link" href="/support">Support BAM</a>
+                            </li>
+                            <li class="nav-item bam-nav-item">
+                                <a class="nav-link bam-nav-link" href="/about">About</a>
+                            </li>
+
+                        </ul>
+                </div>
+            </div>
+
+
+
+            <a href="/"><span class="bam-mobile-nav-logo"><img src='/contentassets/130be6f800fe4b9c8033f040386dd509/bam_mobile_header_icon.png?quality=80' loading='lazy' height='40' width='128' alt=''></span></a>
+
+            <button id="bam-navbar-toggler-tools" class="navbar-toggler" type="button" data-target="#navbarSupportedContentTools" aria-controls="navbarSupportedContentTools" aria-expanded="false" aria-label="Toggle tools menu">
+                <span class="mobile-toggler-open-tools fas fa-search" aria-hidden="true"></span>
+            </button>
+            <div class="bam-collapse-tools collapse navbar-collapse mobile-slideout-menu-wrapper-tools" id="navbarSupportedContentTools">
+                <div class="mobile-slideout-menu-tools">
+
+                    <button class="mobile-toggler-close-tools" aria-label="close search"><i class="fas fa-close" aria-hidden="true"></i></button>
+
+                    <ul class="mobile-tools-menu">
+                        <li>
+                            <form class="bam-nav-search" action="/search-results">
+                                <input id="searchbox-mobile" class="search-box bam-header-form form-control" type="text" value="Search" name="Search" aria-label="search box" placeholder="Search" />
+                                <button class="btn-search" type="submit" aria-label="search submit">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+
+
+            <div class="bam-collapse collapse navbar-collapse" id="navbarSupportedContentDT">
+                <div class="bam-sidebar-container" href="#multiContainerWrapper_Featured">
+                    <div class="bam-sidebar">
+                        <!-- a href="/"><img class="bam-sidebar-image" src="~/Static/img/logo/bam_logo.gif" alt="Brooklyn Academy of Music Logo" /></ -->
+                        <a href="/"><span class="bam-sidebar-image"><img src='/contentassets/130be6f800fe4b9c8033f040386dd509/bam_logo.gif?quality=80' loading='lazy' height='138' width='138' alt=''></span></a>
+
+                        <ul class="nav flex-column bam-sidebar-list">
+
+                                    <li class="nav-item bam-sidebar-item" id="Featured_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Featured">Featured</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Calendar_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Calendar">Calendar</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Film_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Film">Film</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Music_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Music">Music</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Theater_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Theater">Theater</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Dance_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Dance">Dance</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Talks_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Talks">Talks</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Opera_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Opera">Opera</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Poetry_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Poetry">Poetry</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Kids_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Kids">Kids</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="VisualArt_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#VisualArt">Visual Art</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="GalasEvents_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#GalasEvents">Galas &amp; Events</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Community_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Community">Community</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Puppetry_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Puppetry">Puppetry</a>
+                                    </li>
+                                    <li class="nav-item bam-sidebar-item" id="Circus_sidebar_link" aria-current="false">
+                                        <a class="nav-link bam-sidebar-link scroll" href="/#Circus">Circus</a>
+                                    </li>
+                        </ul>
+                    </div>
+                </div>
+                <ul class="navbar-nav bam-navbar-left">
+                    <li class="nav-item bam-nav-item">
+                        <a class="nav-link bam-nav-link" href="/visit">Visit</a>
+                    </li>
+                    <li class="nav-item bam-nav-item">
+                        <a class="nav-link bam-nav-link" href="/programs">Programs</a>
+                    </li>
+                    <li class="nav-item bam-nav-item">
+                        <a class="nav-link bam-nav-link" href="/education">Education</a>
+                    </li>
+                    <li class="nav-item bam-nav-item">
+                        <a class="nav-link bam-nav-link" href="/membership/">Membership</a>
+                    </li>
+                    <li class="nav-item bam-nav-item">
+                        <a class="nav-link bam-nav-link" href="/support/">Support BAM</a>
+                    </li>
+                    <li class="nav-item bam-nav-item">
+                        <a class="nav-link bam-nav-link" href="/about/">About</a>
+                    </li>
+
+                </ul>
+
+                <ul class="navbar-nav bam-navbar-right topNavLogIn" role="navigation">
+                    <li class="nav-item bam-nav-item connectLink">
+                        <a class="nav-link bam-nav-link" href="https://commerce.bam.org/account/register">Sign Up<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item bam-nav-item accountLink">
+                        <a class="nav-link bam-nav-link" href="https://commerce.bam.org/secure/account">My Account<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item bam-nav-item loginLink">
+                        <a class="nav-link bam-nav-link" href="https://commerce.bam.org/account/login/?parentredirect=http%3a%2f%2fwww.bam.org%2ffilm%2f2026%2ftony">Login<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item bam-nav-item logoutLink">
+                        <a class="nav-link bam-nav-link" href="https://commerce.bam.org/secure/logout">Logout<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item bam-nav-item cartLink">
+                        <a class="nav-link bam-nav-link" href="https://commerce.bam.org/cart">Cart<span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <div class="bam-nav-spacer">
+                    <form class="bam-nav-search" action="/search-results">
+                        <input id="searchbox" class="search-box bam-header-form form-control" type="text" value="Search" name="Search" aria-label="search box" placeholder="Search" />
+                        <button class="btn-search" type="submit" aria-label="search submit">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <div class="search-box-mobile">
+            <form class="bam-nav-search-mobile" action="/search-results">
+                <input id="searchbox-mobile" class="search-box bam-header-form form-control" type="text" value="Search" name="Search" aria-label="search box" placeholder="Search" />
+                <button class="btn-search" type="submit" aria-label="search submit">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+    </header>
+    <main>
+        <div class="bam-body">
+            <div id="mainBody" class="container bam-content-container">
+                
+
+
+<style>
+    #pullQuote, #pullQuoteMobile{
+        background-color: ;
+        font-family: Adobe Caslon Pro;
+        color: ;
+    }
+    h2.contentArea {
+        background-color: ;
+        color: ;
+
+    }
+    .production-related-content-bottom{
+        background-color:;
+    }
+
+    .bam-block-2x2-triangle{
+        border-color: #d8d400 #383838 !important;
+    }
+    .bam-block-2x2-hover-btm .bam-block-2x2-triangle {
+        border-color: #fff #383838 !important;
+    }
+    #performance-list-addon {
+        display:none;
+    }
+    .togglePerformances {
+        margin:5px 0px 20px;
+        display:none;
+    }
+    #performance-list, #performance-list-addon{
+        xxxmargin-bottom:0px;
+    }
+    #performance-list{
+        background-image: url("/Content/visit_assets/images/ui/loading.gif");
+        background-repeat: no-repeat;
+        background-position: top 20% left 20%;
+        min-height:80px;
+    }
+
+    #performance-groups {
+        background-image: url("/Content/visit_assets/images/ui/loading.gif");
+        background-repeat: no-repeat;
+        background-position: top 20% left 20%;
+        min-height: 80px;
+    }
+
+    .performance-group {
+        margin-bottom: 20px;
+    }
+
+    .performance-group-header {
+        margin-bottom: 10px;
+        color:black;
+    }
+
+    .performance-list-addon {
+        display: none;
+    }
+
+    .togglePerformances {
+        margin: 5px 0px 20px;
+        display: none;
+        cursor: pointer;
+    }
+
+    /* mtt - 5/13/26 adding css for AboveTitleText dropdown */
+    #sortButtonsDD {
+        display: block;
+        background-color: #d8d400;
+        text-align: center;
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+    }
+
+    .buttonMessage {
+        font-weight: 600;
+    }
+
+    .programInfoWrapper {
+        max-width: 600px;
+        text-align: left;
+        padding: 10px;
+    }
+
+    #ticketInfoDisplayButton {
+        border-top: none;
+        padding-top:20px;
+    }
+
+</style>
+    <script type="application/ld+json">
+        {
+  "@context": "https://schema.org",
+  "graph": [
+    {
+      "@type": "Event",
+      "name": "Tony - Fri, Sep 25 at 4PM",
+      "description": "A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain.",
+      "startDate": "2026-09-25T16:00:00-04:00",
+      "endDate": "2026-09-25T17:46:00-04:00",
+      "location": {
+        "@type": "Place",
+        "name": "BAM Rose Cinemas at BAM KBH",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "10 Lafayette Ave.",
+          "addressLocality": "Brooklyn",
+          "addressRegion": "NY",
+          "postalCode": "11217"
+        },
+        "longitude": "-73.9783055937635",
+        "latitude": "40.686250802573"
+      },
+      "image": "https://www.bam.org/globalassets/programs/cinema/2027fy/0826/tony-still.jpg?width=640&mode=crop&heightratio=0.5625&quality=80",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://commerce.bam.org/booking/production/58463",
+        "price": 17.00,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-08-06"
+      },
+      "eventStatus": "https://schema.org/EventScheduled"
+    },
+    {
+      "@type": "Event",
+      "name": "Tony - Sat, Sep 26 at 4PM",
+      "description": "A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain.",
+      "startDate": "2026-09-26T16:00:00-04:00",
+      "endDate": "2026-09-26T17:46:00-04:00",
+      "location": {
+        "@type": "Place",
+        "name": "BAM Rose Cinemas at BAM KBH",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "10 Lafayette Ave.",
+          "addressLocality": "Brooklyn",
+          "addressRegion": "NY",
+          "postalCode": "11217"
+        },
+        "longitude": "-73.9783055937635",
+        "latitude": "40.686250802573"
+      },
+      "image": "https://www.bam.org/globalassets/programs/cinema/2027fy/0826/tony-still.jpg?width=640&mode=crop&heightratio=0.5625&quality=80",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://commerce.bam.org/booking/production/58464",
+        "price": 17.00,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-08-06"
+      },
+      "eventStatus": "https://schema.org/EventScheduled"
+    },
+    {
+      "@type": "Event",
+      "name": "Tony - Sun, Sep 27 at 4PM",
+      "description": "A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain.",
+      "startDate": "2026-09-27T16:00:00-04:00",
+      "endDate": "2026-09-27T17:46:00-04:00",
+      "location": {
+        "@type": "Place",
+        "name": "BAM Rose Cinemas at BAM KBH",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "10 Lafayette Ave.",
+          "addressLocality": "Brooklyn",
+          "addressRegion": "NY",
+          "postalCode": "11217"
+        },
+        "longitude": "-73.9783055937635",
+        "latitude": "40.686250802573"
+      },
+      "image": "https://www.bam.org/globalassets/programs/cinema/2027fy/0826/tony-still.jpg?width=640&mode=crop&heightratio=0.5625&quality=80",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://commerce.bam.org/booking/production/58465",
+        "price": 17.00,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-08-06"
+      },
+      "eventStatus": "https://schema.org/EventScheduled"
+    },
+    {
+      "@type": "Event",
+      "name": "Tony - Mon, Sep 28 at 9PM",
+      "description": "A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain.",
+      "startDate": "2026-09-28T21:00:00-04:00",
+      "endDate": "2026-09-28T22:46:00-04:00",
+      "location": {
+        "@type": "Place",
+        "name": "BAM Rose Cinemas at BAM KBH",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "10 Lafayette Ave.",
+          "addressLocality": "Brooklyn",
+          "addressRegion": "NY",
+          "postalCode": "11217"
+        },
+        "longitude": "-73.9783055937635",
+        "latitude": "40.686250802573"
+      },
+      "image": "https://www.bam.org/globalassets/programs/cinema/2027fy/0826/tony-still.jpg?width=640&mode=crop&heightratio=0.5625&quality=80",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://commerce.bam.org/booking/production/58466",
+        "price": 17.00,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-08-06"
+      },
+      "eventStatus": "https://schema.org/EventScheduled"
+    },
+    {
+      "@type": "Event",
+      "name": "Tony - Tue, Sep 29 at 9PM",
+      "description": "A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain.",
+      "startDate": "2026-09-29T21:00:00-04:00",
+      "endDate": "2026-09-29T22:46:00-04:00",
+      "location": {
+        "@type": "Place",
+        "name": "BAM Rose Cinemas at BAM KBH",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "10 Lafayette Ave.",
+          "addressLocality": "Brooklyn",
+          "addressRegion": "NY",
+          "postalCode": "11217"
+        },
+        "longitude": "-73.9783055937635",
+        "latitude": "40.686250802573"
+      },
+      "image": "https://www.bam.org/globalassets/programs/cinema/2027fy/0826/tony-still.jpg?width=640&mode=crop&heightratio=0.5625&quality=80",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://commerce.bam.org/booking/production/58467",
+        "price": 17.00,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-08-06"
+      },
+      "eventStatus": "https://schema.org/EventScheduled"
+    },
+    {
+      "@type": "Event",
+      "name": "Tony - Wed, Sep 30 at 9PM",
+      "description": "A summer kitchen gig ignites a love of cooking for 19-year-old writer Anthony Bourdain.",
+      "startDate": "2026-09-30T21:00:00-04:00",
+      "endDate": "2026-09-30T22:46:00-04:00",
+      "location": {
+        "@type": "Place",
+        "name": "BAM Rose Cinemas at BAM KBH",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "10 Lafayette Ave.",
+          "addressLocality": "Brooklyn",
+          "addressRegion": "NY",
+          "postalCode": "11217"
+        },
+        "longitude": "-73.9783055937635",
+        "latitude": "40.686250802573"
+      },
+      "image": "https://www.bam.org/globalassets/programs/cinema/2027fy/0826/tony-still.jpg?width=640&mode=crop&heightratio=0.5625&quality=80",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://commerce.bam.org/booking/production/58468",
+        "price": 17.00,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2026-08-06"
+      },
+      "eventStatus": "https://schema.org/EventScheduled"
+    }
+  ]
+}
+    </script>
+            <script>
+
+                $(document).ready(function () {
+                    //next get the performance data
+                    var perfCount = 0;
+                    var day = "";
+                    var dayAddon = "";
+
+                    $.ajax({
+                        url: "/api/BAMApi/GetPerformancesByProduction?ProductionPageId=30713",
+                        type: 'GET',
+                        success: function (data) {
+                            $("#performance-list").css({ 'background-image': 'none', 'min-height': '0px' });
+                            $.each(data, function (m, j) {
+                                if (perfCount < 10) {
+                                    $("#performance-list").append("<li>" + j + "</li>");
+                                    day = $("#performance-list li .perfData").last().html().substring(0, 11);
+                                }
+                                else {
+                                    $("#performance-list-addon").append("<li>" + j + "</li>");
+                                    //this logic to not break on the same day if it crosses 10...keeping adding back to the first set
+                                    dayAddon = $("#performance-list-addon li .perfData").last().html().substring(0, 11);
+                                    $(".togglePerformances").css("display", "block");
+
+                                    if (day == dayAddon) {
+                                        $("#performance-list").append("<li>" + j + "</li>");
+                                        $("#performance-list-addon li").last().remove();
+                                        day = dayAddon;
+                                        $(".togglePerformances").css("display", "none");
+                                    }
+                                }
+                                perfCount++;
+                            });
+                            //remove header if there were no performances found
+
+                            if (perfCount == 0) {
+
+                                $("#performanceHeader").css("display", "none");
+                                $("#performance-list").css("display", "none");
+                                $("#performance-list").parent(".bam-block-hero-details").css("display", "none");
+                            }
+
+
+
+                        }
+
+                    });
+                    //set transitions to 0 so the end of arrangement event gets called after reposition
+                    //var is = $('.productionblock').isotope({ transitionDuration: 0, layoutMode: 'fitRows', sortBy: "date", sortAscending: true });
+
+
+
+
+                    $(".togglePerformances").click(function () {
+
+                        $("#performance-list-addon").toggle('fast', function () {
+                            //update text on button & jump back up page
+                            if ($("#performance-list-addon").is(':visible')) {
+                                $(".togglePerformances").html("Fewer Screenings");
+                            }
+                            else {
+                                $('html,body').animate({ scrollTop: $("#performanceHeader").offset().top }, 'slow');
+                                $(".togglePerformances").html("More Screenings");
+                            }
+                        });
+                    });
+                });
+
+
+            </script>
+        <script>
+            $(document).ready(function () {
+                dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+                dataLayer.push({
+                    event: "view_item",
+                    ecommerce: {
+	                    items: [
+		                    {
+			                    item_id: "58217",
+			                    item_name: "Tony",
+			                    affiliation: "BAM Cinema Tickets",
+			                    item_category: "Film"
+		                    }
+	                    ]
+                    }
+                });
+            });
+        </script>
+
+
+
+
+
+<div class="bam-block-hero-box bam-block-hero-box-nw ">
+    
+        <div class="slideShowWrapperPop">
+            <div class="carousel slide carousel-fade bam-slider" id="carousel-hero" data-interval="false" data-ride="carousel">
+                <div class="carousel-inner">
+                    
+
+                        <div class="carousel-item active">
+
+
+
+                            <div class="mediaSlideEmbed">
+
+
+    <iframe class="videoPlayer"  src="https://www.youtube.com/embed/k1MVnzd2aVc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+                            </div>
+                        </div>
+                </div>
+
+            </div>
+        </div>
+</div>
+    <div id="sortButtons">
+    </div>
+
+    <div class="production-related-content-top">
+        <div>
+            
+
+    <a class="btn buy-button" href="https://commerce.bam.org/production/58217"><div class="buttonText">Buy Tickets<i class="fa fa-chevron-right" aria-hidden="true"></i></div></a>
+
+
+        </div>
+                    <div class="genre-listing">
+                <ul>
+
+                            <li><a href="/#Film">Film</a></li>
+                </ul>
+            </div>
+
+        <h1>Tony</h1>
+        <div class="bam-block-hero-date">
+            Now Playing
+        </div>
+
+        <div class="bam-block-hero-stickers">
+                            <div class="bam-btn-2">NEW RELEASE</div>
+                                </div>
+
+                    <div class="program-listing"><ul>Part of <li><a href='/film'>BAM Film 2026</a></li></ul></div>
+
+            <div class="directedByText">
+<span>Directed by Matt Johnson</span> <span>(2026)</span>            </div>
+
+            <div class="starring">With 
+
+
+
+Dominic Sessa, Emilia Jones, Dagmara Dominczyk, Rich Sommers, Stavros Halkias, Leo Woodall, Antonio Banderas
+
+</div>
+
+
+    </div>
+    <div class="production-related-content">
+        <div class="heroInfoLeft">
+
+                <div class="description">
+
+
+
+When 19-year-old Anthony Bourdain (Sessa) travels to Provincetown, happenstance propels him into a restaurant kitchen, kickstarting one of the most watched (and read about) careers in contemporary cooking. From Canadian indie darling Matt Johnson (<em>BlackBerry</em>, <em>Nirvanna the Band the Show the Movie)</em> comes a portrait of one of food media and literature&rsquo;s most provocative minds. Pulled from excerpts of <em>Kitchen Confidential</em>, <em>Tony</em> eschews traditional sprawling biographical encomium, instead offering a candid glimpse into an especially formative season of Bourdain&rsquo;s life.
+
+</div>
+                                            </div>
+        <div class="heroInfoRight">
+            <div class="heroInfoRightDetails">
+                                        <h2 id="performanceHeader">UPCOMING Screenings</h2>
+                        <div class="bam-block-hero-details">
+                            <ul id="performance-list"></ul>
+                            <ul id="performance-list-addon"></ul>
+                            <button class="togglePerformances">More Screenings</button>
+                        </div>
+                
+
+                    <h2>RUNNING TIME</h2>
+                    <div class="bam-block-hero-details">
+                        106min
+                    </div>
+
+                <h2>VENUE</h2>
+                <div class="bam-block-hero-details">
+                            <a href="/visit#/BAM-KBH/BAM-Rose-Cinemas-at-BAM-KBH/Tony">BAM KBH</a><br>
+                            <a href="/visit#/BAM-KBH/BAM-Rose-Cinemas-at-BAM-KBH/Tony">BAM Rose Cinemas at BAM KBH</a><br>
+                </div>
+
+                    <h2>FORMAT</h2>
+                    <div class="bam-block-hero-details">DCP</div>
+
+
+
+
+                    <h2>TICKET INFORMATION</h2>
+                                    <div class="bam-block-hero-details"> General Admission: $17</div>
+                                    <div class="bam-block-hero-details"> Members: $12</div>
+                
+
+                    <div class="bam-block-hero-details">
+                        
+
+
+
+Please note: A $2 handling fee per ticket will be added to your order.
+
+
+                    </div>
+
+
+
+
+
+                
+            </div>
+            <div class="heroInfoRightSponsors">
+<div>        <div class="block-layout-item productionblock">
+            <div class="bam-block-generic">
+                <div class="description">
+
+
+
+<!--Jerome Greene-->
+<p>Leadership support for<br />BAM's strategic initiatives provided by the<br />Jerome L. Greene Foundation <br /><br /><img src="/globalassets/sponsors/mainstage/0_new_from_kim_use/jlgreene-web-292x52-purple.png?width=292&amp;height=52" alt="JL Greene" width="292" height="52" loading="lazy" /></p>
+<!--Howard Gilman-->
+<p>Leadership support for<br />BAM programming provided by<br /><br /><img src="/globalassets/sponsors/mainstage/0_new_from_kim_use/howard-gilman-web-292x86-color.png?width=292&amp;height=86" alt="Howard Gilman" width="292" height="86" loading="lazy" /></p>
+<!--Altman-->
+<p>Leadership support for<br />BAM's strategic initiatives provided by <br /><br /><img src="/globalassets/sponsors/mainstage/next-wave/nw24/altman-foundation-web-292x88-black.png?width=292&amp;height=88" alt="Altman" width="292" height="88" loading="lazy" /></p>
+<!--Thompson-->
+<p>Leadership support for<br />BAM Film provided by<br />The Thompson Family Foundation</p>
+
+</div>
+            </div>
+        </div>
+</div>            </div>
+        </div>
+
+
+    </div>
+    <div class="production-related-content-middle">
+                <h2 class="contentArea" id="RELATEDCONTENT">RELATED CONTENT</h2>
+            <div class="contentBlock multiContainerWrapperBackstage"><div id="multiContainer_Media" class="multiContainerBackstage"><ul><li>
+
+<div class="productionblock bannerBlock" data-sort-title="mem banner ws26" data-sort-date="0001-01-01-00:00:00" data-sort-genre=''>
+    <div class="block-layout-item">
+        <div>
+            <a href='/membership'>
+               
+                <picture><source sizes='1080px' srcset='/globalassets/programs/winterspring/winter-spring-2026/_memmod/26-1125050-ws-dev-banners-21.jpg?format=webp&width=1080&mode=crop&heightratio=0.1389&quality=80 1080w' type='image/webp'><source sizes='1080px' srcset='/globalassets/programs/winterspring/winter-spring-2026/_memmod/26-1125050-ws-dev-banners-21.jpg?width=1080&mode=crop&heightratio=0.1389&quality=80 1080w'><img src=/globalassets/programs/winterspring/winter-spring-2026/_memmod/26-1125050-ws-dev-banners-21.jpg?width=1080&mode=crop&heightratio=0.1389&quality=80 loading='lazy' height='150.012' width='1080' alt=''></picture>
+
+            </a>
+            <div class="bannerCenter">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+</li></ul></div></div>
+    </div>
+    <div class="production-related-content-bottom">
+
+                <h2 class="contentArea" id="YOUMIGHTALSOENJOY">YOU MIGHT ALSO ENJOY</h2>
+            <div class="contentBlock multiContainerWrapperBackstage"><div id="multiContainer_Media" class="multiContainerBackstage"><ul><li>
+
+
+
+
+<div class="productionblock" role="group" aria-label="production" tabindex="-1" aria-hidden="true" data-sort-title="Resident Evil" data-sort-date="2026-09-18-00:00:00" data-sort-genre="Film">
+    <div class="block-layout-item">
+        <div class="bam-block-2x2-box">
+            <div class="bam-block-2x2-top">
+                <picture><source sizes='305px' srcset='/globalassets/programs/cinema/2027fy/0926/resident-evil.jpg?format=webp&width=305&mode=crop&heightratio=0.5625&quality=80 305w' type='image/webp'><source sizes='305px' srcset='/globalassets/programs/cinema/2027fy/0926/resident-evil.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 305w'><img src=/globalassets/programs/cinema/2027fy/0926/resident-evil.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 loading='lazy' height='171.5625' width='305' alt=''></picture>
+
+            </div>
+            <div class="bam-block-2x2-btm">
+                <div>
+                    <div class="bam-block-2x2-label">Film</div>
+                    <div class="bam-block-2x2-info">
+                        <h3 class="bam-block-2x2-title">Resident Evil</h3>
+
+                        <p class="bam-block-2x2-date">Now Playing</p>
+
+                    </div>
+                </div>
+                <div class="bam-block-2x2-triangle"></div>
+            </div>
+            <div class="bam-block-2x2-hover-top">
+                <div class="bam-block-2x2-hover-info">
+                    <h3 class="bam-block-2x2-hover-title">Resident Evil</h3>
+
+                    <div class="bam-block-2x2-hover-date">Now Playing</div>
+
+                </div>
+                    <div class="bam-btn-3">NEW RELEASE</div>
+
+            </div>
+            <div class="bam-block-2x2-hover-btm">
+
+                <div class="bam-block-2x2-hover-content">
+                    <div role="dialog" class="bam-block-2x2-hover-content-body">From visionary filmmaker Zach Cregger (<em>Weapons</em>, <em>Barbarian</em>) comes a thrilling reinvention of the <em>Resident Evil</em> franchise: an action-packed, non-stop race for survival as one fateful, horrifying night collapses into chaos.</div>
+                    <div class="bam-block-2x2-hover-content-tag"></div>
+                </div>
+                <div class="bam-block-2x2-btm-btns">
+                        <a class="btn" href="/film/2026/resident-evil">More<i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                    
+
+    <a class="btn buy-button" href="https://commerce.bam.org/production/58416"><div class="buttonText">Buy Tickets<i class="fa fa-chevron-right" aria-hidden="true"></i></div></a>
+
+
+                    <div class="bam-block-2x2-triangle"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- mobile version-->
+        
+        <div class="bam-block-2x2-mobile-box">
+
+                <a href="/film/2026/resident-evil">
+
+                    <div class="imageContainer">
+                        <picture><source sizes='255px' srcset='/globalassets/programs/cinema/2027fy/0926/resident-evil.jpg?format=webp&width=255&mode=crop&heightratio=1&quality=80 255w' type='image/webp'><source sizes='255px' srcset='/globalassets/programs/cinema/2027fy/0926/resident-evil.jpg?width=255&mode=crop&heightratio=1&quality=80 255w'><img src=/globalassets/programs/cinema/2027fy/0926/resident-evil.jpg?width=255&mode=crop&heightratio=1&quality=80 loading='lazy' height='255' width='255' alt=''></picture>
+                    </div>
+                </a>
+                <a href="/film/2026/resident-evil">
+                    <div class="eventInfo">
+                        <div class="genre">
+                            Film
+                        </div>
+                        <h3 class="title">
+                            Resident Evil
+                        </h3>
+                        <div class="mobileModuleDate">
+                            Now Playing
+                        </div>
+                        <div class="description">
+                            Zach Cregger (<em>Weapons</em>, <em>Barbarian</em>) delivers an action-packed, non-stop race for survival.
+                        </div>
+                    </div>
+                </a>
+
+        </div>
+       
+        <!-- end mobile version -->
+    </div>
+</div>
+
+</li><li>
+
+
+
+
+<div class="productionblock" role="group" aria-label="production" tabindex="-1" aria-hidden="true" data-sort-title="Digger" data-sort-date="2026-10-01-00:00:00" data-sort-genre="Film">
+    <div class="block-layout-item">
+        <div class="bam-block-2x2-box">
+            <div class="bam-block-2x2-top">
+                <picture><source sizes='305px' srcset='/globalassets/programs/cinema/2027fy/1026/digger.jpeg?format=webp&width=305&mode=crop&heightratio=0.5625&quality=80 305w' type='image/webp'><source sizes='305px' srcset='/globalassets/programs/cinema/2027fy/1026/digger.jpeg?width=305&mode=crop&heightratio=0.5625&quality=80 305w'><img src=/globalassets/programs/cinema/2027fy/1026/digger.jpeg?width=305&mode=crop&heightratio=0.5625&quality=80 loading='lazy' height='171.5625' width='305' alt=''></picture>
+
+            </div>
+            <div class="bam-block-2x2-btm">
+                <div>
+                    <div class="bam-block-2x2-label">Film</div>
+                    <div class="bam-block-2x2-info">
+                        <h3 class="bam-block-2x2-title">Digger</h3>
+
+                        <p class="bam-block-2x2-date">Opens Oct 1</p>
+
+                    </div>
+                </div>
+                <div class="bam-block-2x2-triangle"></div>
+            </div>
+            <div class="bam-block-2x2-hover-top">
+                <div class="bam-block-2x2-hover-info">
+                    <h3 class="bam-block-2x2-hover-title">Digger</h3>
+
+                    <div class="bam-block-2x2-hover-date">Opens Oct 1</div>
+
+                </div>
+                    <div class="bam-btn-3">NEW RELEASE</div>
+
+            </div>
+            <div class="bam-block-2x2-hover-btm">
+
+                <div class="bam-block-2x2-hover-content">
+                    <div role="dialog" class="bam-block-2x2-hover-content-body">The most powerful man in the world (Cruise) races to prove he is humanity's savior before the disaster he unleashed destroys everything.</div>
+                    <div class="bam-block-2x2-hover-content-tag"></div>
+                </div>
+                <div class="bam-block-2x2-btm-btns">
+                        <a class="btn" href="/film/2026/digger">More<i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                    
+
+    <a class="btn buy-button" href="https://commerce.bam.org/production/58533"><div class="buttonText">Buy Tickets<i class="fa fa-chevron-right" aria-hidden="true"></i></div></a>
+
+
+                    <div class="bam-block-2x2-triangle"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- mobile version-->
+        
+        <div class="bam-block-2x2-mobile-box">
+
+                <a href="/film/2026/digger">
+
+                    <div class="imageContainer">
+                        <picture><source sizes='255px' srcset='/globalassets/programs/cinema/2027fy/1026/digger.jpeg?format=webp&width=255&mode=crop&heightratio=1&quality=80 255w' type='image/webp'><source sizes='255px' srcset='/globalassets/programs/cinema/2027fy/1026/digger.jpeg?width=255&mode=crop&heightratio=1&quality=80 255w'><img src=/globalassets/programs/cinema/2027fy/1026/digger.jpeg?width=255&mode=crop&heightratio=1&quality=80 loading='lazy' height='255' width='255' alt=''></picture>
+                    </div>
+                </a>
+                <a href="/film/2026/digger">
+                    <div class="eventInfo">
+                        <div class="genre">
+                            Film
+                        </div>
+                        <h3 class="title">
+                            Digger
+                        </h3>
+                        <div class="mobileModuleDate">
+                            Opens Oct 1
+                        </div>
+                        <div class="description">
+                            The most powerful man in the world (Cruise) must prove he is humanity's savior.
+                        </div>
+                    </div>
+                </a>
+
+        </div>
+       
+        <!-- end mobile version -->
+    </div>
+</div>
+
+</li><li>
+
+
+
+
+<div class="productionblock" role="group" aria-label="production" tabindex="-1" aria-hidden="true" data-sort-title="Primetime" data-sort-date="2026-09-24-00:00:00" data-sort-genre="Film">
+    <div class="block-layout-item">
+        <div class="bam-block-2x2-box">
+            <div class="bam-block-2x2-top">
+                <picture><source sizes='305px' srcset='/globalassets/programs/cinema/2027fy/0926/primetime.jpg?format=webp&width=305&mode=crop&heightratio=0.5625&quality=80 305w' type='image/webp'><source sizes='305px' srcset='/globalassets/programs/cinema/2027fy/0926/primetime.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 305w'><img src=/globalassets/programs/cinema/2027fy/0926/primetime.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 loading='lazy' height='171.5625' width='305' alt=''></picture>
+
+            </div>
+            <div class="bam-block-2x2-btm">
+                <div>
+                    <div class="bam-block-2x2-label">Film</div>
+                    <div class="bam-block-2x2-info">
+                        <h3 class="bam-block-2x2-title">Primetime</h3>
+
+                        <p class="bam-block-2x2-date">Now Playing</p>
+
+                    </div>
+                </div>
+                <div class="bam-block-2x2-triangle"></div>
+            </div>
+            <div class="bam-block-2x2-hover-top">
+                <div class="bam-block-2x2-hover-info">
+                    <h3 class="bam-block-2x2-hover-title">Primetime</h3>
+
+                    <div class="bam-block-2x2-hover-date">Now Playing</div>
+
+                </div>
+                    <div class="bam-btn-3">NEW RELEASE</div>
+
+            </div>
+            <div class="bam-block-2x2-hover-btm">
+
+                <div class="bam-block-2x2-hover-content">
+                    <div role="dialog" class="bam-block-2x2-hover-content-body">Based on the 2007 <em>Esquire</em> article "Tonight on <em>Dateline</em> This Man Will Die&rdquo;, Oppenheim&rsquo;s crime thriller follows <em>To Catch a Predator</em> host Chris Hansen (Robert Pattinson) in his mission to make television history.</div>
+                    <div class="bam-block-2x2-hover-content-tag"></div>
+                </div>
+                <div class="bam-block-2x2-btm-btns">
+                        <a class="btn" href="/film/2026/primetime">More<i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                    
+
+    <a class="btn buy-button" href="https://commerce.bam.org/production/58309"><div class="buttonText">Buy Tickets<i class="fa fa-chevron-right" aria-hidden="true"></i></div></a>
+
+
+                    <div class="bam-block-2x2-triangle"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- mobile version-->
+        
+        <div class="bam-block-2x2-mobile-box">
+
+                <a href="/film/2026/primetime">
+
+                    <div class="imageContainer">
+                        <picture><source sizes='255px' srcset='/globalassets/programs/cinema/2027fy/0926/primetime.jpg?format=webp&width=255&mode=crop&heightratio=1&quality=80 255w' type='image/webp'><source sizes='255px' srcset='/globalassets/programs/cinema/2027fy/0926/primetime.jpg?width=255&mode=crop&heightratio=1&quality=80 255w'><img src=/globalassets/programs/cinema/2027fy/0926/primetime.jpg?width=255&mode=crop&heightratio=1&quality=80 loading='lazy' height='255' width='255' alt=''></picture>
+                    </div>
+                </a>
+                <a href="/film/2026/primetime">
+                    <div class="eventInfo">
+                        <div class="genre">
+                            Film
+                        </div>
+                        <h3 class="title">
+                            Primetime
+                        </h3>
+                        <div class="mobileModuleDate">
+                            Now Playing
+                        </div>
+                        <div class="description">
+                            In 2006, <em>To Catch a Predator</em> host Chris Hansen sets out to make television history.
+                        </div>
+                    </div>
+                </a>
+
+        </div>
+       
+        <!-- end mobile version -->
+    </div>
+</div>
+
+</li></ul></div></div>
+
+                <h2 class="contentArea" id="SUPPORTBAM">SUPPORT BAM</h2>
+            <div class="contentBlock multiContainerWrapperBackstage"><div id="multiContainer_Media" class="multiContainerBackstage"><ul><li>
+
+
+
+
+<div class="productionblock" role="group" aria-label="production" tabindex="-1" aria-hidden="true" data-sort-title="BAM Membership ($100+)" data-sort-date="" data-sort-genre="">
+    <div class="block-layout-item">
+        <div class="bam-block-2x2-box">
+            <div class="bam-block-2x2-top">
+                <picture><source sizes='305px' srcset='/globalassets/support/21-236682_dev_05_member_640x359.jpg?format=webp&width=305&mode=crop&heightratio=0.5625&quality=80 305w' type='image/webp'><source sizes='305px' srcset='/globalassets/support/21-236682_dev_05_member_640x359.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 305w'><img src=/globalassets/support/21-236682_dev_05_member_640x359.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 loading='lazy' height='171.5625' width='305' alt='BAM Membership: Sign up'></picture>
+
+            </div>
+            <div class="bam-block-2x2-btm">
+                <div>
+                    <div class="bam-block-2x2-label">MEMBERSHIP</div>
+                    <div class="bam-block-2x2-info">
+                        <h3 class="bam-block-2x2-title">BAM Membership ($100+)</h3>
+
+                        <p class="bam-block-2x2-date"></p>
+
+                    </div>
+                </div>
+                <div class="bam-block-2x2-triangle"></div>
+            </div>
+            <div class="bam-block-2x2-hover-top">
+                <div class="bam-block-2x2-hover-info">
+                    <h3 class="bam-block-2x2-hover-title">BAM Membership ($100+)</h3>
+
+                    <div class="bam-block-2x2-hover-date"></div>
+
+                </div>
+
+            </div>
+            <div class="bam-block-2x2-hover-btm">
+
+                <div class="bam-block-2x2-hover-content">
+                    <div role="dialog" class="bam-block-2x2-hover-content-body">Unlock exclusive savings on performances and films with a BAM Membership. From ticket discounts to priority access and special events, it&rsquo;s your license to experience more for less.</div>
+                    <div class="bam-block-2x2-hover-content-tag"></div>
+                </div>
+                <div class="bam-block-2x2-btm-btns">
+                        <a class="btn" href="/join">JOIN<i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                    
+                    <div class="bam-block-2x2-triangle"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- mobile version-->
+        
+        <div class="bam-block-2x2-mobile-box">
+
+                <a href="/join">
+
+                    <div class="imageContainer">
+                        <picture><source sizes='255px' srcset='/globalassets/support/21-236682_dev_05_member_640x359.jpg?format=webp&width=255&mode=crop&heightratio=1&quality=80 255w' type='image/webp'><source sizes='255px' srcset='/globalassets/support/21-236682_dev_05_member_640x359.jpg?width=255&mode=crop&heightratio=1&quality=80 255w'><img src=/globalassets/support/21-236682_dev_05_member_640x359.jpg?width=255&mode=crop&heightratio=1&quality=80 loading='lazy' height='255' width='255' alt='BAM Membership: Sign up'></picture>
+                    </div>
+                </a>
+                <a href="/join">
+                    <div class="eventInfo">
+                        <div class="genre">
+                            MEMBERSHIP
+                        </div>
+                        <h3 class="title">
+                            BAM Membership ($100+)
+                        </h3>
+                        <div class="mobileModuleDate">
+                            
+                        </div>
+                        <div class="description">
+                            Unlock exclusive savings on performances and films with a BAM Membership. From ticket discounts to priority access and special events, it&rsquo;s your license to experience more for less.
+                        </div>
+                    </div>
+                </a>
+
+        </div>
+       
+        <!-- end mobile version -->
+    </div>
+</div>
+
+</li><li>
+
+
+
+
+<div class="productionblock" role="group" aria-label="production" tabindex="-1" aria-hidden="true" data-sort-title="BAM Patrons ($2,500+)" data-sort-date="" data-sort-genre="">
+    <div class="block-layout-item">
+        <div class="bam-block-2x2-box">
+            <div class="bam-block-2x2-top">
+                <picture><source sizes='305px' srcset='/globalassets/support/21-236682_dev_010_patron_640x359.jpg?format=webp&width=305&mode=crop&heightratio=0.5625&quality=80 305w' type='image/webp'><source sizes='305px' srcset='/globalassets/support/21-236682_dev_010_patron_640x359.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 305w'><img src=/globalassets/support/21-236682_dev_010_patron_640x359.jpg?width=305&mode=crop&heightratio=0.5625&quality=80 loading='lazy' height='171.5625' width='305' alt=''></picture>
+
+            </div>
+            <div class="bam-block-2x2-btm">
+                <div>
+                    <div class="bam-block-2x2-label">SUPPORT</div>
+                    <div class="bam-block-2x2-info">
+                        <h3 class="bam-block-2x2-title">BAM Patrons ($2,500+)</h3>
+
+                        <p class="bam-block-2x2-date"></p>
+
+                    </div>
+                </div>
+                <div class="bam-block-2x2-triangle"></div>
+            </div>
+            <div class="bam-block-2x2-hover-top">
+                <div class="bam-block-2x2-hover-info">
+                    <h3 class="bam-block-2x2-hover-title">BAM Patrons ($2,500+)</h3>
+
+                    <div class="bam-block-2x2-hover-date"></div>
+
+                </div>
+
+            </div>
+            <div class="bam-block-2x2-hover-btm">
+
+                <div class="bam-block-2x2-hover-content">
+                    <div role="dialog" class="bam-block-2x2-hover-content-body">Priority access to premium seats, personalized ticket services, exclusive invitations, and more.</div>
+                    <div class="bam-block-2x2-hover-content-tag"></div>
+                </div>
+                <div class="bam-block-2x2-btm-btns">
+                        <a class="btn" href="/patrons">MORE<i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+                    
+                    <div class="bam-block-2x2-triangle"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- mobile version-->
+        
+        <div class="bam-block-2x2-mobile-box">
+
+                <a href="/patrons">
+
+                    <div class="imageContainer">
+                        <picture><source sizes='255px' srcset='/globalassets/support/21-236682_dev_010_patron_640x359.jpg?format=webp&width=255&mode=crop&heightratio=1&quality=80 255w' type='image/webp'><source sizes='255px' srcset='/globalassets/support/21-236682_dev_010_patron_640x359.jpg?width=255&mode=crop&heightratio=1&quality=80 255w'><img src=/globalassets/support/21-236682_dev_010_patron_640x359.jpg?width=255&mode=crop&heightratio=1&quality=80 loading='lazy' height='255' width='255' alt=''></picture>
+                    </div>
+                </a>
+                <a href="/patrons">
+                    <div class="eventInfo">
+                        <div class="genre">
+                            SUPPORT
+                        </div>
+                        <h3 class="title">
+                            BAM Patrons ($2,500+)
+                        </h3>
+                        <div class="mobileModuleDate">
+                            
+                        </div>
+                        <div class="description">
+                            Priority access to premium seats, personalized ticket services, exclusive invitations, and more.
+                        </div>
+                    </div>
+                </a>
+
+        </div>
+       
+        <!-- end mobile version -->
+    </div>
+</div>
+
+</li></ul></div></div>
+
+
+
+
+    </div>
+
+
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="bam-footer">
+
+            <div class="bam-footer-content">
+                <div class="bam-footer-attributions">
+                    <div class="footer-acknowledgement-container">
+
+
+                                                
+                    </div>
+                    <div class="photoCredits">
+                        
+                    </div>
+                </div>
+                <div class="bam-footer-content-top">
+                    <div class="bam-footer-links">
+                        <div class="bam-footer-social">
+                            <h2 class="bam-footer-follow">Follow Us</h2>
+                            <ul class="bam-footer-social-icons">
+                                <li><a class="bam-footer-social-link" href="http://instagram.com/bam_brooklyn" target="_blank"><i aria-hidden="true" class="icon-instagram bam-footer-instagram"></i><span class="sr-only">Open BAM on Instagram</span></a></li>
+                                <li><a class="bam-footer-social-link" href="https://www.youtube.com/user/BAMorg" target="_blank"><i aria-hidden="true" class="icon-youtube bam-footer-youtube"></i><span class="sr-only">Open BAM on Youtube</span></a></li>
+                            </ul>
+                        </div>
+                        <div class="bam-footer-nav">
+                            <ul>
+                                <li><a class="bam-footer-link" href="/faq">FAQ</a></li>
+                                <li><a class="bam-footer-link" href="/visit">Visit</a></li>
+                                <li><a class="bam-footer-link" href="/donate">Donate Now</a></li>
+                                <li><a class="bam-footer-link" href="/membership">Membership</a></li>
+                                <li><a class="bam-footer-link" href="/press">Press</a></li>
+                                <li><a class="bam-footer-link" href="/contact-us/">Contact Us</a></li>
+                                <li><a class="bam-footer-link" href="/accessibility">Accessibility</a></li>
+                                <li><a class="bam-footer-link" href="/privacy">Privacy Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="bam-footer-content-btm">
+                    <!--div class="bam-mobile-footer-extra mb-2">
+                        <a class="bam-footer-content-btm-link" href="/about">About BAM</a>
+                        <a class="bam-footer-content-btm-link" href="tel:7186364100">718.636.4100</a>
+                    </div-->
+                    <p class="bam-footer-text">Brooklyn Academy of Music, 30 Lafayette Ave, Brooklyn, NY 11217<br /><a href="mailto:info@bam.org">info@BAM.org</a> <br /> BAM is a 501(c)(3) | EIN 11-2201344&#8203; <br /> © Brooklyn Academy of Music, Inc. 2026, BAM<sup>®</sup>, Brooklyn Academy of Music<sup>®</sup>, Everybooty<sup>®</sup> and Next&nbsp;Wave<sup>®</sup> are trademarks of Brooklyn&nbsp;Academy&nbsp;of&nbsp;Music,&nbsp;Inc.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="/Scripts/isotope-3.0.6.min.js"></script>
+    <script src="/Scripts/isotope-masonry-horizontal-2.0.1.js"></script>
+    <script src="/Scripts/hammer.min.js"></script>
+    <script src="/Scripts/jquery.hammer.js"></script>
+
+    <!--
+
+    mtt - 4/2024 - removing appear, we use Intersection Observer for nav highlighting and production block visibility, we use built in browser LazyLoad parameter for image loading
+    <script src="~/Scripts/appear.js"></script>
+    -->
+    <!--
+    mtt - 4/2024 - removing jail as images should now be Lazy Loaded through browser default mechanism
+    <script src="~/Scripts/jail.js"></script>
+    -->
+    <script src="/Scripts/lightbox_me.js"></script>
+
+    <script src="/Scripts/main_new.js?n=639258845509314414"></script>
+
+    <!-- Load YouTube API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- Load Vimeo API -->
+    <script src="https://player.vimeo.com/api/player.js"></script>
+
+</body>
+
+<!-- this is part of hammer but just not needed for our interactions???
+<script src="~/Scripts/touch-emulator.js"></script>
+-->
+
+
+</html>
