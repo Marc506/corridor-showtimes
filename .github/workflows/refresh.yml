@@ -1,0 +1,76 @@
+# Optional: scrape every enabled venue twice a day and publish the site to GitHub Pages from GitHub's
+# servers, for people who host their own copy on GitHub. Off unless the repository variable
+# CLOUD_REFRESH is "true" (Settings → Secrets and variables → Actions → Variables), so copies that
+# publish from their own computer (scripts/publish.sh) are not overwritten.
+# Also needs Settings → Pages → Source: "GitHub Actions". Optional repository secrets: TMDB_TOKEN
+# (film languages), ANTHROPIC_API_KEY (lets Claude repair recipes that stopped working).
+name: Refresh showtimes
+
+on:
+  schedule:
+    - cron: "0 5,17 * * *"        # 01:00 / 13:00 New York (EDT); an hour earlier in winter
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: vars.CLOUD_REFRESH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      CINEMA_NO_BROWSER: "1"      # no Chromium here: browser-only venues use their fallback or go stale
+      TMDB_TOKEN: ${{ secrets.TMDB_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[llm]"
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      # CI starts with an empty database; loading the last published export keeps "old data + stale
+      # marker" working when a venue fails (the first run finds nothing and starts empty).
+      - name: Restore the last published data
+        run: python -m scraper.store --seed "${{ steps.pages.outputs.base_url }}/showtimes.json"
+
+      - name: Scrape
+        run: python -m scraper.run --no-export
+
+      - name: Repair broken recipes
+        if: env.ANTHROPIC_API_KEY != ''
+        continue-on-error: true
+        run: python -m scraper.repair --failed
+
+      - name: Export
+        run: python -m scraper.export
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          cp site/index.html site/app.js site/styles.css site/data.js site/manifest.webmanifest site/*.png _site/
+          cp data/showtimes.json _site/showtimes.json
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

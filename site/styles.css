@@ -201,6 +201,7 @@ body[data-view="list"] main { max-width: 1100px; }
 .tl-via { position: absolute; right: 3px; top: 2px; font-size: 9px; color: var(--muted); border: 1px dashed; border-radius: 3px; padding: 0 2px; }
 .tl-now-wrap { position: absolute; top: 0; bottom: 0; left: var(--label-w); right: 0; pointer-events: none; z-index: 2; }
 .tl-now { position: absolute; top: -26px; bottom: 0; width: 2px; background: var(--bad); }
+.tl-now.in-row { top: 0; z-index: 2; pointer-events: none; }
 .tl-now::before { content: ""; position: absolute; top: 0; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--bad); }
 
 /* vertical timeline (narrow screens): time runs downward, venues are columns */
@@ -222,6 +223,7 @@ body[data-view="list"] main { max-width: 1100px; }
 .timeline.vertical .tl-title { -webkit-line-clamp: 4; }
 .timeline.vertical .tl-now-wrap { left: 0; top: 64px; }
 .timeline.vertical .tl-now { top: auto; left: -44px; right: 0; width: auto; height: 2px; }
+.timeline.vertical .tl-now.in-row { left: 0; }
 
 /* ---------- Week ---------- */
 .week { margin-top: 12px; }
@@ -292,3 +294,22 @@ body[data-view="list"] main { max-width: 1100px; }
 .vwrap { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; flex: 1; }
 .vwrap .badge { white-space: nowrap; }
 .footer .credits { margin-top: 6px; opacity: 0.8; }
+
+/* ---------- region row (shown only when cinemas span several regions) ---------- */
+.regions { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+.regions[hidden] { display: none; }
+.chip.region { --c: var(--muted, #888); font-weight: 600; letter-spacing: .02em; }
+
+/* ---------- "add your cinemas" guide ---------- */
+.customize-btn { border: 1px dashed var(--muted); background: none; color: var(--fg); border-radius: 999px; padding: 3px 10px; font-size: 13px; white-space: nowrap; }
+.guide { max-height: calc(100dvh - 32px); overflow: auto; max-width: 560px; width: calc(100% - 32px); border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--fg); padding: 20px 22px 16px; line-height: 1.5; }
+.guide::backdrop { background: rgba(0, 0, 0, 0.45); }
+.guide h3 { margin: 0 0 8px; font-size: 18px; padding-right: 24px; }
+.guide ol { padding-left: 20px; margin: 10px 0; }
+.guide li { margin-bottom: 10px; }
+.guide .prompt { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+.guide .prompt code { flex: 1; background: var(--chip-off); border-radius: 6px; padding: 6px 8px; font-family: var(--mono); font-size: 13px; user-select: all; }
+.guide .copy-btn { flex: none; }
+.guide .muted { color: var(--muted); font-size: 13px; }
+.guide .pop-close { position: absolute; top: 8px; right: 10px; }
+.guide a { color: var(--accent); }

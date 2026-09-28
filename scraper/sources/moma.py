@@ -68,7 +68,7 @@ def parse_title_line(p: Tag) -> tuple[list[str], int | None, str | None]:
     return [t for t in titles if t], year, director
 
 
-def parse_listing(html: str, ref: date, h1_is_series: bool = True) -> list[dict]:
+def parse_listing(html: str, ref: date, h1_is_series: bool = True, tz=None) -> list[dict]:
     """h1_is_series=False for the /calendar/film index, whose <h1> is just 'Film'."""
     soup = BeautifulSoup(html, "lxml")
     h1 = soup.find("h1")
@@ -100,7 +100,7 @@ def parse_listing(html: str, ref: date, h1_is_series: bool = True) -> list[dict]
             continue
         rows.append({
             "title": " + ".join(titles), "year": year if len(titles) == 1 else None,
-            "director": director, "start": to_local(datetime(current.year, current.month, current.day, *tm)),
+            "director": director, "start": to_local(datetime(current.year, current.month, current.day, *tm), tz),
             "note": "; ".join(notes) or None, "screen": screen, "series": series,
             "detail_url": urljoin(SITE, href),
         })
@@ -129,8 +129,8 @@ class MomaScraper(BaseScraper):
         out = []
         for page in pages:
             is_index = page.url.rstrip("/").endswith("/calendar/film")
-            for r in parse_listing(page.body, ref_date(page), h1_is_series=not is_index):
-                start_s = iso(r["start"])
+            for r in parse_listing(page.body, ref_date(page, self.tz), h1_is_series=not is_index, tz=self.tz):
+                start_s = iso(r["start"], self.tz)
                 out.append(Screening(
                     id=make_id(self.venue.id, start_s, r["title"]),
                     venue_id=self.venue.id, title=r["title"], start=start_s,

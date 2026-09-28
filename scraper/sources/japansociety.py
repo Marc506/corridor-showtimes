@@ -13,9 +13,9 @@ API = "https://japansociety.org/wp-json/events/v1/data"
 CATEGORIES = "9127,10825,9194"      # Film, Film Series, Monthly Classics
 
 
-def parse_js_datetime(date_s: str, time_s: str) -> datetime:
+def parse_js_datetime(date_s: str, time_s: str, tz=None) -> datetime:
     """'October 7, 2026' + '7:00 pm' -> aware datetime."""
-    return to_local(datetime.strptime(f"{date_s.strip()} {time_s.strip().upper()}", "%B %d, %Y %I:%M %p"))
+    return to_local(datetime.strptime(f"{date_s.strip()} {time_s.strip().upper()}", "%B %d, %Y %I:%M %p"), tz)
 
 
 @register("japansociety")
@@ -38,16 +38,16 @@ class JapanSocietyScraper(BaseScraper):
                     if not d.get("date") or not d.get("time_start"):
                         continue
                     try:
-                        start = parse_js_datetime(d["date"], d["time_start"])
+                        start = parse_js_datetime(d["date"], d["time_start"], self.tz)
                     except ValueError:
                         continue
                     end = None
                     if d.get("time_end"):
                         try:
-                            end = iso(parse_js_datetime(d["date"], d["time_end"]))
+                            end = iso(parse_js_datetime(d["date"], d["time_end"], self.tz), self.tz)
                         except ValueError:
                             pass
-                    start_s = iso(start)
+                    start_s = iso(start, self.tz)
                     out.append(Screening(
                         id=make_id(self.venue.id, start_s, title),
                         venue_id=self.venue.id,

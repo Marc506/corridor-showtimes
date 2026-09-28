@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Marc506/corridor-showtimes/config/venues.schema.json",
+  "title": "Corridor Showtimes venues.yaml (version 2)",
+  "type": "object",
+  "required": ["version", "venues"],
+  "properties": {
+    "version": {"const": 2},
+    "venues": {"type": "array", "items": {"$ref": "#/$defs/venue"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "adapterRef": {
+      "type": "object",
+      "required": ["adapter"],
+      "properties": {
+        "adapter": {"type": "string", "minLength": 1},
+        "module": {"type": "string"},
+        "recipe": {"type": ["string", "object"]}
+      }
+    },
+    "venue": {
+      "type": "object",
+      "required": ["id", "name", "source"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "short": {"type": "string"},
+        "region": {"type": "string", "minLength": 1},
+        "timezone": {"type": "string", "minLength": 1},
+        "color": {"type": "string", "pattern": "^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$"},
+        "website": {"type": ["string", "null"]},
+        "source": {"$ref": "#/$defs/adapterRef"},
+        "fallback": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/adapterRef"}]},
+        "enabled": {"type": "boolean"},
+        "horizon_days": {"type": "integer", "minimum": 1, "maximum": 365},
+        "rate_limit_s": {"type": "number", "minimum": 0},
+        "max_requests_per_run": {"type": "integer", "minimum": 1},
+        "allow_empty": {"type": "boolean"},
+        "default_language": {"type": ["string", "null"]},
+        "primary_cooldown_h": {"type": "number", "minimum": 0},
+        "browser": {
+          "type": "object",
+          "properties": {
+            "headless": {"type": "boolean"},
+            "challenge_timeout_s": {"type": "number", "minimum": 0}
+          }
+        }
+      }
+    }
+  }
+}

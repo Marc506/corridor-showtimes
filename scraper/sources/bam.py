@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 from datetime import timedelta
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
@@ -45,7 +46,7 @@ def parse_detail(html: str) -> dict:
 @register("bam")
 class BamScraper(BaseScraper):
     def fetch(self) -> list[RawPage]:
-        start = today_local()
+        start = today_local(self.tz)
         end = start + timedelta(days=self.venue.horizon_days)
         return [self.get_page(API, ext="json", params={"start": _us_date(start), "end": _us_date(end)})]
 
@@ -62,8 +63,8 @@ class BamScraper(BaseScraper):
                 other = [g for g in genres if g and g != "Film"]
                 more = ev.get("moreLink")
                 for perf in ev.get("performances") or []:
-                    start = parse_iso(perf)
-                    start_s = iso(start)
+                    start = parse_iso(perf, self.tz)
+                    start_s = iso(start, self.tz)
                     out.append(Screening(
                         id=make_id(self.venue.id, start_s, title),
                         venue_id=self.venue.id,
@@ -72,7 +73,7 @@ class BamScraper(BaseScraper):
                         day=start.date().isoformat(),
                         note=", ".join(other) or None,
                         detail_url=SITE + more if more and more.startswith("/") else more,
-                        ticket_url=ev.get("buyLink") or None,
+                        ticket_url=urljoin(SITE, ev["buyLink"]) if ev.get("buyLink") else None,
                         scraped_at=page.fetched_at,
                     ))
         return out

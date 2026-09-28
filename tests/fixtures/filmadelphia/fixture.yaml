@@ -1,0 +1,4 @@
+fetched_at: "2026-09-25T01:00:00Z"
+pages:
+  - file: feed.json
+    url: https://prod5.agileticketing.net/websales/feed.ashx?guid=6634566a-a49f-4dec-89e6-bb4c5eda4814&showslist=true&withmedia=false&format=json&v=latest

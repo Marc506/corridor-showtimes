@@ -70,8 +70,8 @@ class MetrographScraper(BaseScraper):
                             tm = datetime.strptime(label.replace(" ", "").upper(), "%I:%M%p").time()
                         except (ValueError, AttributeError):
                             continue
-                        start = to_local(datetime.combine(day, tm))
-                        start_s = iso(start)
+                        start = to_local(datetime.combine(day, tm), self.tz)
+                        start_s = iso(start, self.tz)
                         out.append(Screening(
                             id=make_id(self.venue.id, start_s, title),
                             venue_id=self.venue.id, title=title, start=start_s, day=day.isoformat(),

@@ -16,7 +16,55 @@
 | MoMA | 浏览器（Cloudflare），通常回退到 screenslate |
 | Philadelphia Film Society | 售票系统 Agile Ticketing 的公开 feed |
 
-设计见 `ARCHITECTURE.md`，每家网站的抓取细节和坑见 `SOURCES.md`。
+设计见 `ARCHITECTURE.md`，每家网站的抓取细节和坑见 `SOURCES.md`，各售票 / 建站平台的读取方式见 `PLATFORMS.md`。
+
+**想看自己关注的影院？** 不需要会编程：把本项目下载到电脑上，让 AI 编程助手帮你加，一般 10–20 分钟。见下面的「自定义影院」。
+
+---
+
+## 自定义影院
+
+在线版只收录作者关注的影院。你可以在自己电脑上做一份，加入任何美国影院：免费，不用写代码。技术部分交给 AI 编程助手，你只需要回答几个问题。
+
+### 需要准备
+
+- 一台电脑（Mac、Windows、Linux 都行），大约 20 分钟。
+- 一个**能在你电脑上运行程序的 AI 助手**：[Claude Code](https://claude.com/claude-code)（有桌面版）、[Cursor](https://cursor.com) 或 [Codex](https://openai.com/codex)。只能聊天的助手（比如 ChatGPT 或 Claude 的网页版）做不了这件事：它们没法在你电脑上安装东西，也打不开影院网站。
+- 影院的名字，以及影院网站上列出场次的那个网页。
+
+### 步骤
+
+1. **下载本项目。** 打开本项目的 GitHub 页面（<https://github.com/Marc506/corridor-showtimes>），点绿色的 **Code** 按钮，再点 **Download ZIP**。双击下载好的文件解压，会得到一个叫 `corridor-showtimes-main` 的文件夹。（Mac 用户如果以后想让它每天自动更新：把文件夹放到你的个人文件夹里，不要放在「下载」「文稿」「桌面」里。）
+2. **在 AI 助手里打开这个文件夹。** Claude Code 桌面版 / Cursor：选「打开文件夹」（Open folder）并选中它。命令行版的助手：先 `cd` 进这个文件夹，再启动助手。
+3. **把这句话发给它：**
+
+   > 请阅读这个文件夹里的 AGENTS.md，帮我添加一家影院。
+
+   （`AGENTS.md` 是专门写给 AI 助手看的说明书，里面告诉它每一步该怎么做。）
+4. **按它的提问回答**（见下表）。第一次会安装一些东西，需要几分钟。
+5. **看结果。** 完成后它会在浏览器里打开网页（`site/index.html`），顶部会出现你的影院按钮。
+
+### AI 助手可能会说什么、你怎么回答
+
+| 它大概会说… | 你这样回答 |
+|---|---|
+| 「影院叫什么名字？排片页的网址是什么？在哪个城市？」 | 例如：*Nitehawk Williamsburg，https://nitehawkcinema.com/williamsburg/ ，纽约布鲁克林*。网址从浏览器地址栏复制。 |
+| 「我可以运行这个命令吗？」/「允许……？」 | 点允许。这些命令只是往这个文件夹里安装 Python 组件、读取影院网站。 |
+| 「需要安装一个叫 uv（或 Python）的工具，可以吗？」 | 可以。 |
+| 「找到 N 场，最早一场是……」 | 不用做什么，这就是成功了。 |
+| 「这家影院的网站格式比较特殊，我来为它写一份读取规则」 | 等几分钟，它在写并且自己测试。 |
+| 「这个网站挡住了程序访问（Cloudflare 等）」 | 这家影院没法自动添加，本项目也不会去绕过这类防护。纽约和旧金山的影院有时可以用另一个数据源，助手会主动提出。 |
+| 「这个页面上没有找到场次」 | 换成真正列出场次的那个网页（在影院网站上找 Calendar、Showtimes 或 Now Playing）。 |
+
+### 之后
+
+- 所有东西都在**你自己的电脑上**，不会改动在线版网站。
+- 场次**不会自己更新**。想更新时对助手说「更新一下排片」，或者让它帮你设成每天自动更新。
+- 再加一家，就把同一句话再发一遍。不想看作者的那几家影院：点网页顶部它们的按钮关掉即可（会记住），或者让助手帮你关掉。
+
+### 实在解决不了
+
+[在 GitHub 上提一个 Issue](https://github.com/Marc506/corridor-showtimes/issues/new?template=help-add-cinema.yml)（需要一个免费的 GitHub 账号），写上影院名、排片页网址、用的是哪个 AI 助手、它最后说了什么。这段文字可以让助手帮你写好。
 
 ---
 
@@ -96,7 +144,7 @@ Metrograph、FLC、Film Forum、MoMA 的网站不写语言，要靠 [TMDB](https
 .venv/bin/python -m scraper.run                          # 全部影院 + 导出网页数据
 .venv/bin/python -m scraper.run --venue metrograph       # 只跑一家（可重复 --venue）
 .venv/bin/python -m scraper.run --venue bam --dry-run    # 打印解析结果，不写库
-.venv/bin/python -m scraper.run --venue moma --source screenslate   # 强制用兜底源
+.venv/bin/python -m scraper.run --venue moma --source fallback      # 强制用兜底源（旧写法 screenslate 也行）
 .venv/bin/python -m scraper.run --venue moma --source primary       # 只用主源，不兜底
 .venv/bin/python -m scraper.run --venue filmforum --parse-fixture tests/fixtures/filmforum/now_playing.html
 .venv/bin/python -m scraper.export                       # 只重新生成 site/data.js
@@ -107,24 +155,62 @@ Metrograph、FLC、Film Forum、MoMA 的网站不写语言，要靠 [TMDB](https
 
 ## 新增一家影院
 
-1. 在 `config/venues.yaml` 加一条（`id`、`name`、`short`、`color`、`scraper`，其余字段见文件里的例子）。
-2. 新建 `scraper/sources/<scraper>.py`：继承 `BaseScraper`，实现 `fetch()`（只联网）和 `parse()`（纯解析，可离线测试），类上加 `@register("<scraper>")`。需要导演 / 片长但列表页没有时，再实现 `enrich()`，用 `self.enrich_by_url(...)` 抓详情页（自动缓存 7 天）。
-3. `python -m scraper.run --venue <id> --dry-run` 看结果。
-4. 把 `data/raw/<日期>/<id>*.html|json` 复制到 `tests/fixtures/<id>/`，写 `tests/test_<id>.py`。
-5. 如果 screenslate 收录了它，查 nid 填进 `screenslate_nid`，主源失败时会自动兜底：
-   `curl -s 'https://www.screenslate.com/jsonapi/node/venue?filter[title]=<影院名>'`
+每家影院是 `config/venues.yaml` 里的一条，`source:` 决定怎么读排片：
 
-`venues.yaml` 里可选的字段：
+1. **平台适配器**：网站用的是已知的售票 / 建站系统（Filmbot、Veezi、Agile、The Events Calendar、Squarespace……），只填参数，不写代码；
+2. **配方**（recipe）：用一小段 YAML 描述这个网站自己的 HTML（`scraper/recipes/<id>.yaml`）；
+3. **自定义模块**：两者都表达不了时才写 Python（`scraper/sources/<id>.py`）。
+
+一般不用自己选，三种加法：
+
+| 方式 | 怎么做 | 结果 |
+|---|---|---|
+| **AI 助手**（不用写代码） | 在 Claude Code、Cursor 或 Codex 里打开项目文件夹，发送「请阅读这个文件夹里的 AGENTS.md，帮我添加一家影院。」（见上面「自定义影院」） | `AGENTS.md` 带着助手完成安装、运行向导，必要时按任务书写配方 |
+| **本地向导** | `python -m scraper.add "Nitehawk Williamsburg" https://nitehawkcinema.com/williamsburg/ --tz America/New_York` | 识别平台、试抓、写入配置和测试，并立刻抓一次，打开 `site/index.html` 就能看到。没有匹配的平台时生成 `handoff/<id>/BRIEF.md`，可以交给任何编程助手；如果你自己设置了 `ANTHROPIC_API_KEY`（可选），则由 Claude 自动写配方 |
+| **Claude Code** | 在本仓库里 `/add-venue "影院名" https://…` | 同样的流程，做成了技能（`.claude/skills/add-venue/SKILL.md`） |
+
+向导的结论只有四种：**识别成功**（适配器 + 参数）、**需要配方**、**被拦截**（防火墙或验证码；本项目不做任何绕过——纽约、旧金山的影院仍可以只用 screenslate 兜底）、**这一页没有场次**（多半给的是首页而不是排片页）。
+
+常用命令：
+
+```bash
+.venv/bin/python -m scraper.add "影院名" <排片页网址> [--tz America/Los_Angeles] [--region LA] [--lang zh]
+.venv/bin/python -m scraper.add ... --json          # 机器可读结果（脚本 / CI 用）
+.venv/bin/python -m scraper.add --verify <id>       # 联网抓一次、保存 fixture、跑契约测试
+.venv/bin/python -m scraper.repair --venue <id>     # 配方失效时让 Claude 修（需要 API key，每天最多一次）
+.venv/bin/pytest tests/test_contract.py -k <id>     # 单家影院的契约测试
+```
+
+手写的话：`venues.yaml` 加一条（格式见文件开头的说明和现有条目），`source:` 写 `{adapter: filmbot, base_url: …}` 这样的参数；自定义模块写法见 `handoff/<id>/BRIEF.md` 的第 3 节或 `scraper/sources/japansociety.py`。旧的 v1 写法（`scraper:` / `city:` / `screenslate_nid:`）仍然可以加载。
+
+`venues.yaml` 里的字段：
 
 | 字段 | 作用 |
 |---|---|
+| `region` | 网页顶部「区域」筛选用的标签（NYC / PHL / LA …）；只有一个区域时不显示那一行 |
+| `timezone` | 影院所在时区（默认 `America/New_York`），时间按它显示 |
+| `website` | 影院官网，列表视图里影院名链接到这里 |
+| `source` | 数据源：`{adapter: <名字>, 参数…}`；`adapter: custom` + `module` 是自定义模块 |
+| `fallback` | 主源失败时的兜底源，例如 `{adapter: screenslate, nid: 6}`，也可以是另一个适配器 |
 | `horizon_days` | 只保留今天起多少天内的场次 |
 | `rate_limit_s` | 同一网站两次请求的最小间隔 |
+| `max_requests_per_run` | 每次运行对该站的请求上限（默认 20；适配器和配方遵守） |
 | `allow_empty` | 抓到 0 场也算成功（片少的影院） |
-| `screenslate_nid` | 主源失败时用 screenslate 兜底 |
 | `primary_cooldown_h` | 主源失败后多少小时内直接用兜底（MoMA 用它避免每次都开浏览器） |
 | `browser.headless` / `browser.challenge_timeout_s` | 需要浏览器的影院（MoMA） |
 | `default_language` | 网站和 TMDB 都没有语言时的默认值 |
+
+screenslate 的 nid 查法：`curl -s 'https://www.screenslate.com/jsonapi/node/venue?filter[title]=<影院名>'`
+
+### 在云端运行（GitHub Actions，可选）
+
+给想把自己那份放在 GitHub 上的人用，默认关闭。开启方法：在仓库 Settings → Secrets and variables → Actions → Variables 里新建变量 `CLOUD_REFRESH`，值为 `true`；Settings → Pages → Source 选 "GitHub Actions"。之后 `.github/workflows/refresh.yml` 每天 UTC 05:00 / 17:00（纽约 1 点 / 13 点）运行：先下载上次发布的 `showtimes.json` 灌回数据库（这样某家失败时仍保留旧数据并标记为旧），再以 `CINEMA_NO_BROWSER=1` 抓取、导出、部署到 Pages。可选的 Secrets：`TMDB_TOKEN`（语言数据）、`ANTHROPIC_API_KEY`（配方失效时自动修复）。作者的在线版由本机 `publish.sh` 发布，不开启它。
+
+云端的限制：数据中心 IP 更容易被限速或拦截——Metrograph 在云端可能只能靠 screenslate 兜底；需要浏览器的影院（MoMA）在云端一律用兜底源。本机运行更稳。
+
+### 数据来源与礼貌抓取
+
+每个适配器只读影院网站或售票系统面向公众发布的页面 / feed：Agile 的 feed 官方要求使用方缓存，我们每天只读两次；Eventive 只使用影院自己的 Eventive 页面随浏览器下发的公开 key，影院要求时移除；其余平台说明见英文 README 的适配器表和 `PLATFORMS.md`。每次运行每家影院只发少量请求（`max_requests_per_run`，默认 20，另有每站间隔），遇到 429 / 403 立即停止，不绕过任何防火墙、挑战页或验证码。网页本身是静态的，不收集访问者信息，偏好只存在浏览器本地。
 
 ---
 
@@ -146,7 +232,7 @@ Metrograph、FLC、Film Forum、MoMA 的网站不写语言，要靠 [TMDB](https
 它的防火墙拒绝 Python 的 TLS 握手，所以这个源通过系统自带的 `curl` 请求（`transport = "curl"`）。如果 curl 也 403，说明对方改了策略，只能等或换源。
 
 **Philadelphia Film Society**
-`filmadelphia.org` 整站被防火墙拦截（浏览器也会被判为机器人），所以改用它的售票系统 Agile Ticketing 公开的 JSON feed（官方提供，每 10 分钟更新）。如果哪天 feed 返回空或 404，可能是 GUID 换了：搜索 `prod5.agileticketing.net entrypoint.aspx "Philadelphia Film Society - EVENTS"` 找新的 GUID，填到 `venues.yaml` 的 `agile_guid`。
+`filmadelphia.org` 整站被防火墙拦截（浏览器也会被判为机器人），所以改用它的售票系统 Agile Ticketing 公开的 JSON feed（官方提供，每 10 分钟更新）。如果哪天 feed 返回空或 404，可能是 GUID 换了：搜索 `prod5.agileticketing.net entrypoint.aspx "Philadelphia Film Society - EVENTS"` 找新的 GUID，填到 `venues.yaml` 的 `agile_guid`（或改用 `source: {adapter: agile, guid: …, host: prod5.agileticketing.net}`）。
 
 **定时任务没跑**
 `launchctl print gui/$(id -u)/com.cinema.refresh | grep -E "state|last exit"`；退出码 127 = 路径或权限问题（见上面的文件夹说明）。launchd 自己的输出在 `logs/launchd.err.log`。
@@ -159,8 +245,15 @@ Metrograph、FLC、Film Forum、MoMA 的网站不写语言，要靠 [TMDB](https
 ## 目录
 
 ```
-config/venues.yaml        影院注册表
-scraper/                  抓取、存储、导出（sources/ 下每家一个文件）
+config/venues.yaml        影院注册表（config/venues.schema.json 校验）
+scraper/                  抓取、存储、导出
+scraper/adapters/         平台适配器 + 配方解释器（recipe.py）
+scraper/recipes/          配方文件
+scraper/sources/          自定义模块（每家一个文件）
+scraper/add.py detect.py  加影院向导与平台探测
+templates/BRIEF.md.j2     交给 AI 助手的任务书模板
+AGENTS.md CLAUDE.md       写给 AI 助手的说明（加影院的固定流程 + 开发规则）
+.github/                  可选的云端定时抓取工作流、加影院求助的 Issue 模板
 site/                     网页（index.html / app.js / styles.css；data.js 是生成物）
 data/                     showtimes.sqlite、showtimes.json、raw/ 原始快照、cache/ 详情页缓存、browser_profile/
 scripts/refresh.sh        定时任务调用的脚本

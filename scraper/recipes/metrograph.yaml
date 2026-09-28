@@ -1,0 +1,18 @@
+# Metrograph /nyc/: about four weeks on one page, one container per day (SOURCES.md §6).
+# Production uses scraper/sources/metrograph.py (it also attaches per-day notes from the film
+# descriptions, which a recipe does not express); this recipe is the interpreter's regression test.
+pages:
+  - url: "https://metrograph.com/nyc/"
+date:
+  kind: container
+  selector: "div.calendar-list-day"
+  attr: id
+  regex: "calendar-list-day-(\\d{4}-\\d{2}-\\d{2})"
+  format: "%Y-%m-%d"
+item: "div.item"
+fields:
+  title:      {selector: "h4 a"}
+  times:      {selector: "div.showtimes a", format: "%I:%M%p"}
+  meta:       {selector: "div.film-metadata", regex: "^(?:(?P<director>[^/]*?)\\s*/\\s*)?(?P<year>(?:18|19|20)\\d{2})\\s*/\\s*(?P<runtime_min>\\d+)\\s*min(?:\\s*/\\s*(?P<format>[^/]+))?$"}
+  detail_url: {selector: "h4 a", attr: href}
+  ticket_url: {per_time: true, attr: href}

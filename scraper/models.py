@@ -11,7 +11,7 @@ class Screening:
     id: str
     venue_id: str
     title: str
-    start: str                      # ISO 8601 with offset, America/New_York
+    start: str                      # ISO 8601 with offset, in the venue's timezone
     day: str                        # local date "YYYY-MM-DD"
     end: str | None = None
     director: str | None = None
@@ -24,7 +24,7 @@ class Screening:
     note: str | None = None
     detail_url: str | None = None
     ticket_url: str | None = None
-    source: str = "primary"         # "primary" | "screenslate"
+    source: str = "primary"         # "primary" | the fallback adapter's name ("screenslate")
     scraped_at: str = ""            # ISO UTC
 
     def to_dict(self) -> dict:
@@ -47,19 +47,48 @@ class VenueStatus:
 
 @dataclass
 class VenueConfig:
+    """One entry of config/venues.yaml (v2 shape; v1 entries are converted on load, see registry)."""
+
     id: str
     name: str
-    scraper: str
+    scraper: str | None = None             # v1: scraper/sources/<scraper>.py; kept as an alias of source.module
     short: str = ""
-    city: str = "NYC"
+    region: str = ""                       # "NYC", "PHL", "LA" … front-end filter (v1 name: city)
+    timezone: str = "America/New_York"
     color: str = "#888888"
+    website: str | None = None
+    source: dict = field(default_factory=dict)       # {adapter: <name>, ...params}
+    fallback: dict | None = None                     # {adapter: <name>, ...params} or None
     enabled: bool = True
-    screenslate_nid: int | None = None
+    screenslate_nid: int | None = None     # v1 alias of fallback: {adapter: screenslate, nid: …}
     horizon_days: int = 30
     rate_limit_s: float = 1.0
+    max_requests_per_run: int = 20
     allow_empty: bool = False
     default_language: str | None = None    # last resort when neither the site nor TMDB says
+    city: str | None = None                # v1 alias of region
     extra: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        self.region = self.region or self.city or "NYC"
+        self.city = self.region
+        self.timezone = self.timezone or "America/New_York"
+        if not self.source and self.scraper:
+            self.source = {"adapter": "custom", "module": self.scraper}
+        if self.source.get("adapter") == "custom" and not self.scraper:
+            self.scraper = self.source.get("module")
+        if self.fallback is None and self.screenslate_nid:
+            self.fallback = {"adapter": "screenslate", "nid": self.screenslate_nid}
+        if self.fallback and self.fallback.get("adapter") == "screenslate" and not self.screenslate_nid:
+            self.screenslate_nid = self.fallback.get("nid")
+
+    @property
+    def adapter(self) -> str | None:
+        return self.source.get("adapter")
+
+    @property
+    def source_params(self) -> dict:
+        return {k: v for k, v in self.source.items() if k != "adapter"}
 
     @classmethod
     def from_dict(cls, d: dict) -> "VenueConfig":

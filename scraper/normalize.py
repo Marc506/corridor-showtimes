@@ -8,7 +8,8 @@ import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-TZ = ZoneInfo("America/New_York")
+DEFAULT_TIMEZONE = "America/New_York"
+TZ = ZoneInfo(DEFAULT_TIMEZONE)          # default only; venues carry their own `timezone`
 
 FILM_FORMATS = {"16mm", "35mm", "70mm"}
 _FORMAT_CANON = {
@@ -23,8 +24,15 @@ def now_utc_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def today_local() -> date:
-    return datetime.now(TZ).date()
+def zone(name: str | ZoneInfo | None) -> ZoneInfo:
+    """ZoneInfo for an IANA name (None -> the default, America/New_York)."""
+    if isinstance(name, ZoneInfo):
+        return name
+    return ZoneInfo(name) if name else TZ
+
+
+def today_local(tz: ZoneInfo | str | None = None) -> date:
+    return datetime.now(zone(tz)).date()
 
 
 def clean_text(s: str | None) -> str | None:
@@ -55,23 +63,29 @@ def normalize_format(fmt: str | None) -> str | None:
     return _FORMAT_CANON.get(f.lower(), f)
 
 
-def to_local(dt: datetime) -> datetime:
-    """Attach / convert to America/New_York. Naive datetimes are assumed local."""
+def to_local(dt: datetime, tz: ZoneInfo | str | None = None) -> datetime:
+    """Attach / convert to the venue's zone (default America/New_York). Naive datetimes are assumed local."""
+    z = zone(tz)
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=TZ)
-    return dt.astimezone(TZ)
+        return dt.replace(tzinfo=z)
+    return dt.astimezone(z)
 
 
-def iso(dt: datetime) -> str:
-    return to_local(dt).replace(microsecond=0).isoformat()
+def iso(dt: datetime, tz: ZoneInfo | str | None = None) -> str:
+    return to_local(dt, tz).replace(microsecond=0).isoformat()
 
 
-def parse_iso(s: str) -> datetime:
-    return to_local(datetime.fromisoformat(s))
+def parse_iso(s: str, tz: ZoneInfo | str | None = None) -> datetime:
+    return to_local(datetime.fromisoformat(s), tz)
 
 
-def end_from_runtime(start: datetime, runtime_min: int | None) -> str | None:
-    return iso(start + timedelta(minutes=runtime_min)) if runtime_min else None
+def end_from_runtime(start: datetime, runtime_min: int | None, tz: ZoneInfo | str | None = None) -> str | None:
+    """start + runtime, rendered in `tz` (default: start's own zone if it has one, else the default zone)."""
+    if not runtime_min:
+        return None
+    if tz is None and isinstance(start.tzinfo, ZoneInfo):
+        tz = start.tzinfo
+    return iso(start + timedelta(minutes=runtime_min), tz)
 
 
 # ---------- title casing for ALL-CAPS sources (Film Forum, Anthology) ----------
@@ -146,3 +160,58 @@ def is_english_primary(language: str | None) -> bool | None:
     if not language:
         return None
     return language.split(",")[0].strip().lower() == "english"
+
+
+# ---------- dates without a year, ISO durations ----------
+MONTH_NUMBERS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug",
+                                              "sep", "oct", "nov", "dec"], 1)}
+
+
+def month_number(name: str) -> int | None:
+    return MONTH_NUMBERS.get((name or "").strip()[:3].lower())
+
+
+def nearest_date(month: int, day: int, ref: date, bias_days: int = 30) -> date | None:
+    """A month/day without a year: the candidate year that puts it nearest to `ref`, biased toward the
+    future (a listing fetched on Dec 28 that says 'Jan 2' means next year)."""
+    cands = []
+    for y in (ref.year - 1, ref.year, ref.year + 1):
+        try:
+            cands.append(date(y, month, day))
+        except ValueError:
+            pass
+    return min(cands, key=lambda d: abs((d - ref).days + bias_days)) if cands else None
+
+
+_DURATION = re.compile(r"^P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$", re.I)
+
+
+def iso_duration_minutes(s) -> int | None:
+    """'PT2H1M' -> 121, 'PT95M' -> 95; plain numbers are minutes."""
+    if s is None:
+        return None
+    if isinstance(s, (int, float)):
+        return int(s) or None
+    s = str(s).strip()
+    if s.isdigit():
+        return int(s) or None
+    m = _DURATION.match(s)
+    if not m or not any(m.groups()):
+        return None
+    d, h, mi, _ = (int(x or 0) for x in m.groups())
+    return (d * 1440 + h * 60 + mi) or None
+
+
+_FORMAT_SUFFIX = re.compile(r"(?:\s*[\(\[]\s*|\s+[-–—:]\s+(?:on\s+|in\s+)?)"
+                            r"(35\s?mm|16\s?mm|70\s?mm|8\s?mm|super\s?8|4k(?: dcp| restoration)?|dcp|vhs)"
+                            r"(?:\s*[\)\]])?\s*$", re.I)
+
+
+def split_format_suffix(title: str) -> tuple[str, str | None]:
+    """'Idlewild (35mm)' / 'The Misconceived - 35MM' -> (title, '35mm'); '4K restoration' is not a print format."""
+    m = _FORMAT_SUFFIX.search(title or "")
+    if not m:
+        return title, None
+    raw = re.sub(r"\s+", " ", m.group(1).lower()).replace("35 mm", "35mm").replace("16 mm", "16mm").replace("70 mm", "70mm")
+    fmt = None if "restoration" in raw else normalize_format(raw.replace(" ", "") if raw.endswith("mm") else raw)
+    return title[:m.start()].strip(), fmt

@@ -1,4 +1,4 @@
-"""run.py degradation: primary fails -> screenslate; cooldown skips the primary next time."""
+"""run.py degradation: primary fails -> the venue's fallback; cooldown skips the primary next time."""
 from datetime import date
 
 from scraper import run
@@ -31,9 +31,9 @@ class FakeScreenslate(FailingPrimary):
 
 def _setup(monkeypatch, tmp_path, cooldown=20):
     monkeypatch.setattr(run, "build_scraper", lambda v, client=None: FailingPrimary(v))
-    monkeypatch.setattr(run, "get_scraper_class", lambda name: FakeScreenslate)
-    monkeypatch.setattr(run, "today_local", lambda: date(2026, 9, 24))
-    monkeypatch.setattr("scraper.store.today_local", lambda: date(2026, 9, 24))
+    monkeypatch.setattr(run, "build_fallback", lambda v, client=None: FakeScreenslate(v) if v.fallback else None)
+    monkeypatch.setattr(run, "today_local", lambda tz=None: date(2026, 9, 24))
+    monkeypatch.setattr("scraper.store.today_local", lambda tz=None: date(2026, 9, 24))
     FailingPrimary.calls = 0
     venue = VenueConfig(id="v", name="V", scraper="x", screenslate_nid=81,
                         extra={"primary_cooldown_h": cooldown})
@@ -64,3 +64,18 @@ def test_force_primary_disables_fallback(monkeypatch, tmp_path):
     venue, store = _setup(monkeypatch, tmp_path)
     st = run.run_venue(venue, store, client=None, dry_run=False, force_source="primary")
     assert st.status == "failed" and st.source == "primary"
+
+
+def test_fallback_can_be_any_adapter(monkeypatch, tmp_path):
+    venue, store = _setup(monkeypatch, tmp_path, cooldown=0)
+    venue.fallback = {"adapter": "veezi", "site_token": "x" * 26}
+    st = run.run_venue(venue, store, client=None, dry_run=False)
+    assert (st.status, st.source) == ("ok", "veezi")
+    assert store.screenings_since("2026-09-24")[0]["source"] == "screenslate"   # rows keep their own label
+
+
+def test_no_fallback_configured(monkeypatch, tmp_path):
+    venue, store = _setup(monkeypatch, tmp_path, cooldown=0)
+    venue.fallback = None
+    st = run.run_venue(venue, store, client=None, dry_run=False)
+    assert st.status == "failed" and st.error == "ScrapeError: Cloudflare"

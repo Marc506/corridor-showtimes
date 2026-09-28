@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 import httpx
 
 from .models import RawPage, Screening, VenueConfig, VenueStatus
-from .normalize import TZ, now_utc_iso, today_local
+from .normalize import TZ, now_utc_iso, today_local, zone
 
 log = logging.getLogger(__name__)
 
@@ -62,12 +62,13 @@ class HttpClient:
             time.sleep(wait)
         self._last_hit[host] = time.monotonic()
 
-    def _curl(self, url: str) -> _Resp:
+    def _curl(self, url: str, headers: dict | None = None) -> _Resp:
         import subprocess
         marker = "\n__CURL_STATUS__"
+        extra = [a for k, v in (headers or {}).items() for a in ("-H", f"{k}: {v}")]
         proc = subprocess.run(
             ["curl", "-sS", "-L", "--compressed", "-m", str(int(self.timeout)),
-             "-A", UA, "-H", "Accept-Language: en-US,en;q=0.9",
+             "-A", UA, "-H", "Accept-Language: en-US,en;q=0.9", *extra,
              "-w", marker + "%{http_code} %{url_effective}", url],
             capture_output=True, text=True)
         if proc.returncode != 0:
@@ -77,7 +78,7 @@ class HttpClient:
         return _Resp(int(status), body, final or url)
 
     def get(self, url: str, *, min_interval: float = 0.0, params: dict | None = None,
-            transport: str = "httpx") -> _Resp:
+            transport: str = "httpx", headers: dict | None = None) -> _Resp:
         if params:
             url = str(httpx.URL(url, params=params))
         last_exc: Exception | None = None
@@ -85,9 +86,9 @@ class HttpClient:
             self._throttle(url, min_interval)
             try:
                 if transport == "curl":
-                    r = self._curl(url)
+                    r = self._curl(url, headers)
                 else:
-                    hr = self._client.get(url)
+                    hr = self._client.get(url, headers=headers)
                     r = _Resp(hr.status_code, hr.text, str(hr.url))
             except httpx.HTTPError as e:
                 last_exc = e
@@ -116,9 +117,11 @@ class BrowserSession:
     PROFILE = ROOT / "data" / "browser_profile"
     CHALLENGE_MARKERS = ("just a moment", "attention required", "verify you are human")
 
-    def __init__(self, headless: bool = True, challenge_timeout_s: float = 30):
+    def __init__(self, headless: bool = True, challenge_timeout_s: float = 30,
+                 timezone_id: str = "America/New_York"):
         self.headless = headless
         self.challenge_timeout_s = challenge_timeout_s
+        self.timezone_id = timezone_id
         self._pw = self._ctx = None
 
     def _ensure(self):
@@ -128,7 +131,7 @@ class BrowserSession:
             self._pw = sync_playwright().start()
             self._ctx = self._pw.chromium.launch_persistent_context(
                 str(self.PROFILE), headless=self.headless, locale="en-US",
-                timezone_id="America/New_York", viewport={"width": 1280, "height": 900})
+                timezone_id=self.timezone_id, viewport={"width": 1280, "height": 900})
         return self._ctx
 
     def get_html(self, url: str) -> tuple[str, str]:
@@ -172,13 +175,39 @@ class BrowserSession:
         self._ctx = self._pw = None
 
 
+class BrowserDisabled(ScrapeError):
+    """CINEMA_NO_BROWSER=1 (CI): browser-only sources fail fast so the venue falls back / goes stale."""
+
+
+def browser_disabled() -> bool:
+    import os
+    return os.environ.get("CINEMA_NO_BROWSER", "").strip() not in ("", "0", "false")
+
+
+class RequestBudgetExceeded(ScrapeError):
+    """More GETs than the venue's max_requests_per_run: a paging rule is probably looping."""
+
+
 class BaseScraper:
     scraper_name: str = ""
     needs_browser: bool = False
+    # adapter metadata (see scraper.adapters); hand-written sources leave these alone
+    PARAMS: dict[str, type] = {}
+    OPTIONAL_PARAMS: dict[str, type] = {}
+    DETECT_ORDER: int = 100
+    enforce_budget: bool = False          # adapters: stop after venue.max_requests_per_run GETs
 
-    def __init__(self, venue: VenueConfig, client: HttpClient | None = None):
+    def __init__(self, venue: VenueConfig, client: HttpClient | None = None, params: dict | None = None):
         self.venue = venue
         self.client = client or HttpClient()
+        self.params = dict(params if params is not None else venue.source_params)
+        self.tz = zone(venue.timezone)
+        self.requests_made = 0
+
+    @classmethod
+    def detect(cls, probe) -> "object | None":
+        """Adapters: return a scraper.adapters.Candidate if `probe` (scraper.detect.SiteProbe) shows this platform."""
+        return None
 
     # --- to implement per source -------------------------------------------------
     def fetch(self) -> list[RawPage]:
@@ -242,17 +271,21 @@ class BaseScraper:
                 if getattr(s, f) is None and data.get(f) is not None:
                     setattr(s, f, data[f])
             if s.end is None and s.runtime_min:
-                s.end = end_from_runtime(parse_iso(s.start), s.runtime_min)
+                s.end = end_from_runtime(parse_iso(s.start, self.tz), s.runtime_min)
 
     # --- helpers --------------------------------------------------------------------
     transport: str = "httpx"             # "curl" for WAFs that reject Python's TLS (see HttpClient)
 
     def browser_page(self, url: str) -> RawPage:
         """Fetch through the shared Playwright browser (needs_browser scrapers)."""
+        if browser_disabled():
+            raise BrowserDisabled("browser disabled (CINEMA_NO_BROWSER=1)")
         if not hasattr(self, "_browser"):
             opts = self.venue.extra.get("browser") or {}
             self._browser = BrowserSession(headless=opts.get("headless", True),
-                                           challenge_timeout_s=opts.get("challenge_timeout_s", 30))
+                                           challenge_timeout_s=opts.get("challenge_timeout_s", 30),
+                                           timezone_id=self.venue.timezone)
+        self.count_request()
         wait = getattr(self, "_last_browser_hit", 0) + self.venue.rate_limit_s - time.monotonic()
         if wait > 0:
             time.sleep(wait)
@@ -264,9 +297,18 @@ class BaseScraper:
         if hasattr(self, "_browser"):
             self._browser.close()
 
-    def get_page(self, url: str, ext: str = "html", params: dict | None = None) -> RawPage:
+    def count_request(self) -> None:
+        self.requests_made += 1
+        if self.enforce_budget and self.requests_made > self.venue.max_requests_per_run:
+            raise RequestBudgetExceeded(
+                f"more than max_requests_per_run={self.venue.max_requests_per_run} requests this run")
+
+    def get_page(self, url: str, ext: str = "html", params: dict | None = None,
+                 headers: dict | None = None) -> RawPage:
+        self.count_request()
+        kw = {"headers": headers} if headers else {}
         r = self.client.get(url, min_interval=self.venue.rate_limit_s, params=params,
-                            transport=self.transport)
+                            transport=self.transport, **kw)
         return RawPage(url=str(r.url), body=r.text, fetched_at=now_utc_iso(), ext=ext)
 
     @property
@@ -310,9 +352,9 @@ class BaseScraper:
         )
 
 
-def ref_date(page: RawPage):
-    """Local (NY) date a page was fetched — the anchor for sites that omit month/year."""
-    return datetime.fromisoformat(page.fetched_at.replace("Z", "+00:00")).astimezone(TZ).date()
+def ref_date(page: RawPage, tz=None):
+    """Venue-local date a page was fetched — the anchor for sites that omit month/year."""
+    return datetime.fromisoformat(page.fetched_at.replace("Z", "+00:00")).astimezone(zone(tz)).date()
 
 
 def dedupe(screenings: list[Screening]) -> list[Screening]:

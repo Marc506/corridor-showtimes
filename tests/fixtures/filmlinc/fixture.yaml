@@ -1,0 +1,4 @@
+fetched_at: "2026-09-25T01:00:00Z"
+pages:
+  - file: showtimes.json
+    url: https://api.filmlinc.org/showtimes

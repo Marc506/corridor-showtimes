@@ -1,0 +1,4 @@
+fetched_at: "2026-09-25T01:00:00Z"
+pages:
+  - file: events.json
+    url: https://japansociety.org/wp-json/events/v1/data

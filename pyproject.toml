@@ -10,13 +10,20 @@ dependencies = [
   "pyyaml",
   "playwright==1.62.0",   # matches the Chromium build already installed on this Mac (ms-playwright/chromium-1234)
   "python-dateutil",
+  "jsonschema",
+  "icalendar",
+  "jinja2",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest"]
+llm = ["anthropic"]            # optional: Claude writes / repairs recipes (scraper/recipe_gen.py)
 
 [tool.setuptools]
-packages = ["scraper", "scraper.sources"]
+packages = ["scraper", "scraper.sources", "scraper.adapters"]
+
+[tool.setuptools.package-data]
+scraper = ["recipes/*.yaml", "recipes/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

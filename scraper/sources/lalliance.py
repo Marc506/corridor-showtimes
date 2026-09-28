@@ -53,7 +53,7 @@ def parse_list(html: str) -> list[dict]:
     return cards
 
 
-def parse_detail(html: str) -> dict:
+def parse_detail(html: str, tz=None) -> dict:
     soup = BeautifulSoup(html, "lxml")
     out: dict = {"showings": [], "director": None, "year": None, "runtime_min": None,
                  "format": None, "series": None, "ticket_url": None, "title": None}
@@ -77,7 +77,7 @@ def parse_detail(html: str) -> dict:
                 current = datetime.strptime(m.group(1), "%B %d, %Y").date()
             elif current and TIME_RE.match(text):
                 tm = datetime.strptime(text.upper().replace(" ", ""), "%I:%M%p").time()
-                out["showings"].append(to_local(datetime.combine(current, tm)))
+                out["showings"].append(to_local(datetime.combine(current, tm), tz))
 
     text = soup.get_text("\n", strip=True)
     films = [f for f in (parse_dir_line(line) for line in text.split("\n")) if f]
@@ -113,10 +113,10 @@ class LAllianceScraper(BaseScraper):
             page = details.get(card["url"])
             if not page:
                 continue
-            d = parse_detail(page.body)
+            d = parse_detail(page.body, self.tz)
             title = card["title"] or d["title"]
             for start in d["showings"]:
-                start_s = iso(start)
+                start_s = iso(start, self.tz)
                 out.append(Screening(
                     id=make_id(self.venue.id, start_s, title),
                     venue_id=self.venue.id, title=title, start=start_s, day=start.date().isoformat(),

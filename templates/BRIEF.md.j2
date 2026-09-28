@@ -1,0 +1,109 @@
+{# Rendered by scraper/handoff.py into handoff/<id>/BRIEF.md. Self-contained on purpose: an agent that
+   reads only this file (plus the files it names in this repository) must be able to finish the job. #}
+# Task: add {{ venue.name }} to Corridor Showtimes
+
+**Goal:** make `python -m scraper.run --venue {{ venue.id }}` return this cinema's upcoming screenings.
+
+| | |
+|---|---|
+| Cinema | {{ venue.name }} |
+| Schedule page | {{ url }} |
+| Venue id | `{{ venue.id }}` |
+| Time zone | `{{ venue.timezone }}` |
+| Region | {{ venue.region }} |
+| Why automatic setup stopped | {{ why }} |
+{% if needs_browser %}| Rendering | the showtimes appear only after JavaScript runs — use `render: browser` |
+{% endif %}
+Everything the setup wizard saw is next to this file: `detect.json` (what was tried and what answered),
+`pages/*.html` (the pages it fetched{% if needs_browser %}, including `pages/rendered.html` after JavaScript{% endif %}),
+and `venue.yaml` (the venue entry, with `source:` still to be decided).
+
+## 1. What a screening must look like
+
+Every source returns a list of `Screening` objects (`scraper/models.py`). One screening = one venue ×
+one start time × one programme.
+
+| Field | | Meaning | Example |
+|---|---|---|---|
+{% for name, need, meaning, example in fields %}| `{{ name }}` | {{ need }} | {{ meaning }} | `{{ example }}` |
+{% endfor %}
+
+## 2. Preferred: write a recipe (no Python)
+
+Create `scraper/recipes/{{ venue.id }}.yaml` and set the venue's source to
+`{adapter: recipe, recipe: {{ venue.id }}}`. A recipe says which pages to fetch, where each screening's
+date comes from (`date.kind`: `heading` / `attr` / `container` / `page`), which CSS selector is one
+programme (`item`), and how to read each field. The engine is `scraper/adapters/recipe.py`; its
+docstring lists every primitive. It deliberately has no other features — if the page needs more
+(times without am/pm, one detail page per film), go to section 3.
+
+Schema (`scraper/recipes/recipe.schema.json`):
+
+```json
+{{ recipe_schema }}
+```
+
+Real example 1 — date headings above the items (`scraper/recipes/anthology.yaml`):
+
+```yaml
+{{ example_heading }}
+```
+
+Real example 2 — one container per day (`scraper/recipes/metrograph.yaml`):
+
+```yaml
+{{ example_container }}
+```
+
+First copy the entry from `handoff/{{ venue.id }}/venue.yaml` into `config/venues.yaml` (under `venues:`)
+with its final `source:`. Then try the recipe on the saved page without touching the network:
+
+```
+python -m scraper.run --venue {{ venue.id }} --parse-fixture handoff/{{ venue.id }}/pages/{{ first_page }}
+```
+
+## 3. Otherwise: write a Python source
+
+Create `scraper/sources/{{ venue.id }}.py` and set the source to `{adapter: custom, module: {{ venue.id }}}`.
+Subclass `BaseScraper` (`scraper/base.py`):
+
+```python
+class BaseScraper:
+    def fetch(self) -> list[RawPage]            # network only: self.get_page(url, ext="html"|"json", params=...)
+    def parse(self, pages) -> list[Screening]   # pure function of the pages — must work offline
+    def enrich(self, screenings) -> None        # optional detail-page lookups (self.enrich_by_url)
+    # self.venue (VenueConfig), self.tz (venue time zone), self.params (the venues.yaml source: keys)
+```
+
+Helpers in `scraper/normalize.py`: `to_local(dt, tz)`, `iso(dt, tz)`, `make_id(venue_id, start, title)`,
+`clean_text`, `smart_title`, `normalize_format`, `language_from_text`, `end_from_runtime`, `nearest_date`.
+
+A short real example (`scraper/sources/japansociety.py`):
+
+```python
+{{ example_source }}
+```
+
+## 4. Acceptance — all must pass
+
+```
+python -m scraper.run --venue {{ venue.id }} --dry-run
+python -m scraper.add --verify {{ venue.id }}        # fetches once, saves tests/fixtures/{{ venue.id }}/, runs the contract
+pytest tests/test_contract.py -k {{ venue.id }}
+pytest -q                                            # nothing else may break
+```
+
+The contract (`scraper/contract.py`) requires: at least one screening; ids identical across two parses;
+non-empty titles; `start` with the offset of `{{ venue.timezone }}`; `day == start[:10]`; absolute URLs;
+runtime 1–600; year 1888–next year; dates between the fetch day and `horizon_days + 60` days later.
+
+## 5. Rules
+
+- Do not work around CAPTCHAs, Cloudflare / Sucuri / Incapsula challenges or any WAF. If the site blocks
+  plain requests, stop and say so; for New York or San Francisco cinemas a `fallback: {adapter: screenslate, nid: …}`
+  may be the only source (see SOURCES.md §10).
+- At most {{ venue.max_requests_per_run }} requests to the site per run (`max_requests_per_run`); keep
+  `rate_limit_s` ≥ {{ venue.rate_limit_s }}.
+- Do not change other venues, their fixtures or their tests.
+- When everything passes, make sure `config/venues.yaml` has the entry (with its final `source:`),
+  then delete `handoff/{{ venue.id }}/`.

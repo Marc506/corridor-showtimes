@@ -1,14 +1,17 @@
 /* Corridor Showtimes — plain JS, no build step.
  * All DOM is derived from window.CINEMA_DATA + `state` by the render* functions.
  * State lives in the URL hash, e.g.
- *   #/2026-09-24?view=list&v=bam,filmlinc&film=1&up=1&q=wong&ws=today&hl=Happy%20Together
+ *   #/2026-09-24?view=list&v=bam,filmlinc&r=NYC&film=1&up=1&q=wong&ws=today&hl=Happy%20Together
+ * Times are shown in each cinema's own time zone (venues[].timezone); "today" is the viewer's date.
  */
 (function () {
   "use strict";
 
-  const TZ = "America/New_York";
+  const DEFAULT_TZ = "America/New_York";
   const DATA = window.CINEMA_DATA || { venues: [], screenings: [], days: {}, generated_at: null };
   const LS_VENUES = "cinema.venues";
+  const LS_REGIONS = "cinema.regions";
+  const REPO = "https://github.com/Marc506/corridor-showtimes";
   const FILM_FORMATS = new Set(["16mm", "35mm", "70mm", "Film"]);   // "Film" = on film, gauge unknown (screenslate)
   const DEFAULT_RUNTIME = 100;           // minutes, for blocks without a runtime (dashed border)
   const NARROW = window.matchMedia("(max-width: 640px)");
@@ -19,7 +22,22 @@
     zh: {
       never: "从未", justNow: "刚刚", minAgo: (n) => `${n} 分钟前`, hrAgo: (n) => `${n} 小时前`, dayAgo: (n) => `${n} 天前`,
       updated: (r) => `更新于 ${r}`, noDataYet: "还没有数据 — 先运行 python -m scraper.run",
-      viaTitle: "主源不可用，今天的数据来自 screenslate（可能不全）", viaTag: "主源抓取失败，数据来自 screenslate",
+      viaTitle: (src) => `主源不可用，今天的数据来自兜底源 ${src}（可能不全）`, viaTag: (src) => `主源抓取失败，数据来自 ${src}`,
+      dataFrom: (a) => `数据来自影院的 ${a} 系统`,
+      customize: "＋ 自定义影院",
+      guideTitle: "添加你自己的影院",
+      guideIntro: "这个网站只收录作者关注的影院。想看别的影院？可以在你自己的电脑上，让 AI 编程助手帮你加进去：免费，不用写代码，大约 10–20 分钟。",
+      guideSteps: [
+        ["准备一个能在电脑上运行程序的 AI 助手：", "Claude Code、Cursor 或 Codex 都可以。ChatGPT 网页版这类只能聊天的不行。"],
+        ["下载本项目：", "打开 GitHub 页面，点绿色的「Code」按钮 →「Download ZIP」，下载后双击解压。"],
+        ["在 AI 助手里打开解压出来的文件夹，发送这句话：", null],
+        ["按它的提示回答：", "它会问你影院名和排片页的网址；要安装软件或运行命令时，点「允许」。"],
+        ["完成后，它会告诉你打开哪个文件查看。", "注意：你加的影院只在你自己的电脑上，不会出现在这个网站里。"],
+      ],
+      guidePrompt: "请阅读这个文件夹里的 AGENTS.md，帮我添加一家影院。",
+      copy: "复制", copied: "已复制",
+      guideGithub: "打开 GitHub 页面", guideFull: "完整图文教程（含常见问题）",
+      guideHelp: "实在解决不了？在 GitHub 上提一个 Issue，附上影院名、网址和 AI 助手最后说的话。", guideHelpLink: "提 Issue", website: "影院官网", regions: "区域", allRegions: "全部区域",
       stale: (r) => `旧数据 · ${r}`, failed: "抓取失败",
       prevWeek: "← 上周", nextWeek: "下周 →", thisWeek: "本周", prevWeekT: "上周 (←)", nextWeekT: "下周 (→)",
       today: "今天", todaySuffix: " · 今天", prevDayT: "前一天 (←)", nextDayT: "后一天 (→)",
@@ -43,8 +61,23 @@
     en: {
       never: "never", justNow: "just now", minAgo: (n) => `${n} min ago`, hrAgo: (n) => `${n} h ago`, dayAgo: (n) => `${n} days ago`,
       updated: (r) => `Updated ${r}`, noDataYet: "No data yet — run python -m scraper.run",
-      viaTitle: "Primary source unavailable; today's data comes from screenslate (may be incomplete)",
-      viaTag: "Primary source failed; data from screenslate",
+      viaTitle: (src) => `Primary source unavailable; today's data comes from the fallback, ${src} (may be incomplete)`,
+      viaTag: (src) => `Primary source failed; data from ${src}`,
+      dataFrom: (a) => `Data from the cinema's ${a} system`,
+      customize: "+ Add your cinemas",
+      guideTitle: "Add your own cinemas",
+      guideIntro: "This site only follows the cinemas its author goes to. Want others? An AI coding assistant can add them on your own computer — free, no coding, about 10–20 minutes.",
+      guideSteps: [
+        ["Get an AI assistant that can run programs on your computer:", "Claude Code, Cursor or Codex. Chat-only assistants such as the ChatGPT website can't do this."],
+        ["Download this project:", "open the GitHub page, click the green “Code” button → “Download ZIP”, then double-click the file to unzip it."],
+        ["Open the unzipped folder in your AI assistant and send:", null],
+        ["Answer its questions:", "it asks for the cinema's name and the web page that lists showtimes; when it asks to install something or run a command, allow it."],
+        ["When it's done it tells you which file to open.", "Note: the cinemas you add live on your computer only — they don't appear on this website."],
+      ],
+      guidePrompt: "Please read AGENTS.md in this folder and help me add a cinema.",
+      copy: "Copy", copied: "Copied",
+      guideGithub: "Open the GitHub page", guideFull: "Full step-by-step guide (with FAQ)",
+      guideHelp: "Stuck? Open an issue on GitHub with the cinema's name, its URL and the assistant's last message.", guideHelpLink: "Open an issue", website: "Cinema website", regions: "Regions", allRegions: "All regions",
       stale: (r) => `Stale · ${r}`, failed: "Fetch failed",
       prevWeek: "← Prev week", nextWeek: "Next week →", thisWeek: "This week", prevWeekT: "Previous week (←)", nextWeekT: "Next week (→)",
       today: "Today", todaySuffix: " · Today", prevDayT: "Previous day (←)", nextDayT: "Next day (→)",
@@ -79,27 +112,41 @@
   let LANG = initialLang();
   const t = (key, ...args) => { const v = I18N[LANG][key]; return typeof v === "function" ? v(...args) : v; };
 
-  // ---------- time helpers (Intl only, NY hard-coded) ----------
-  const fmtDayKey = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" });
-  const fmtTime = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
-  const fmtHM = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "numeric", minute: "numeric", hourCycle: "h23" });
+  // ---------- time helpers (Intl only; one set of formatters per cinema time zone) ----------
+  const fmtCache = new Map();
+  function fmts(tz) {
+    if (!fmtCache.has(tz)) {
+      fmtCache.set(tz, {
+        dayKey: new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }),
+        time: new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", minute: "2-digit" }),
+        hm: new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", minute: "numeric", hourCycle: "h23" }),
+        zone: new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "short" }),
+      });
+    }
+    return fmtCache.get(tz);
+  }
+  const fmtLocalDayKey = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" });
+  const VIEWER_TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (_) { return DEFAULT_TZ; } })();
   const fmtDayTitle = new Intl.DateTimeFormat("zh-CN", { timeZone: "UTC", month: "long", day: "numeric", weekday: "short" });
   const fmtDayTitleEn = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "long", month: "short", day: "numeric" });
   const fmtWeekHeadZh = new Intl.DateTimeFormat("zh-CN", { timeZone: "UTC", month: "numeric", day: "numeric", weekday: "short" });
   const fmtWeekHeadEn = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "numeric", day: "numeric" });
   const fmtWeekHead = { format: (d) => (LANG === "zh" ? fmtWeekHeadZh : fmtWeekHeadEn).format(d) };
 
-  const todayKey = () => fmtDayKey.format(new Date());
-  const timeLabel = (iso) => fmtTime.format(new Date(iso)).replace(" ", "").toLowerCase();   // "7:00pm"
+  const todayKey = () => fmtLocalDayKey.format(new Date());                                  // the viewer's date
+  /** "7:00pm" in the cinema's time zone. */
+  const timeLabel = (iso, tz = DEFAULT_TZ) => fmts(tz).time.format(new Date(iso)).replace(" ", "").toLowerCase();
+  const zoneLabel = (iso, tz) => (fmts(tz).zone.formatToParts(new Date(iso)).find((p) => p.type === "timeZoneName") || {}).value || "";
   const dayDate = (key) => new Date(key + "T12:00:00Z");                                      // noon UTC: safe for date math
   const shiftDay = (key, n) => { const d = dayDate(key); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
   const validDay = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || "") && !isNaN(dayDate(s));
 
-  /** Minutes since local midnight of `day` (can exceed 1440 for after-midnight shows). */
-  function minutesInDay(iso, day) {
-    const [h, m] = fmtHM.format(new Date(iso)).split(":").map(Number);
-    const d = fmtDayKey.format(new Date(iso));
-    return h * 60 + m + (d > day ? 1440 : 0);
+  /** Minutes since midnight of `day` in time zone `tz` (can exceed 1440 for after-midnight shows). */
+  function minutesInDay(iso, day, tz = DEFAULT_TZ) {
+    const f = fmts(tz);
+    const [h, m] = f.hm.format(new Date(iso)).split(":").map(Number);
+    const d = f.dayKey.format(new Date(iso));
+    return h * 60 + m + (d > day ? 1440 : d < day ? -1440 : 0);
   }
 
   function relTime(iso) {
@@ -119,11 +166,15 @@
   const screeningById = Object.fromEntries(DATA.screenings.map((s) => [s.id, s]));
   const activeVenues = DATA.venues.filter((v) => v.status !== "disabled");
   const dataDays = Object.keys(DATA.days).sort();
+  const regionOf = (v) => v.region || v.city || "";
+  const REGIONS = [...new Set(activeVenues.map(regionOf))];
+  const tzOf = (s) => (venueById[s.venue_id] || {}).timezone || DEFAULT_TZ;
+  const isFallback = (src) => !!src && src !== "primary";
 
   // ---------- state <-> URL hash ----------
   const VIEWS = ["timeline", "list", "week"];
   const state = {
-    day: todayKey(), view: "timeline", venues: new Set(activeVenues.map((v) => v.id)),
+    day: todayKey(), view: "timeline", venues: new Set(activeVenues.map((v) => v.id)), regions: new Set(REGIONS),
     film: false, subs: false, upcoming: false, q: "", weekFromToday: false, hl: "",
   };
 
@@ -147,6 +198,25 @@
     } catch (_) { /* ignore */ }
   }
 
+  function loadStoredRegions() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LS_REGIONS) || "null");
+      if (Array.isArray(raw)) {
+        const on = REGIONS.filter((r) => raw.includes(r));
+        if (on.length) return new Set(on);
+      }
+    } catch (_) { /* storage unavailable or corrupt */ }
+    return null;
+  }
+
+  function storeRegions() {
+    try { localStorage.setItem(LS_REGIONS, JSON.stringify([...state.regions])); } catch (_) { /* ignore */ }
+  }
+
+  /** A cinema is shown when it is selected and its region is selected. */
+  const shown = (vid) => state.venues.has(vid) && state.regions.has(regionOf(venueById[vid] || {}));
+  const venuesInRegions = () => activeVenues.filter((v) => state.regions.has(regionOf(v)));
+
   function readHash() {
     const m = location.hash.match(/^#\/([^?]*)(?:\?(.*))?$/);
     const p = new URLSearchParams(m ? m[2] || "" : "");
@@ -157,6 +227,12 @@
       state.venues = new Set(ids.length ? ids : activeVenues.map((v) => v.id));
     } else {
       state.venues = loadStoredVenues() || new Set(activeVenues.map((v) => v.id));
+    }
+    if (p.has("r")) {
+      const rs = p.get("r").split(",").filter((r) => REGIONS.includes(r));
+      state.regions = new Set(rs.length ? rs : REGIONS);
+    } else {
+      state.regions = loadStoredRegions() || new Set(REGIONS);
     }
     state.film = p.get("film") === "1";
     state.subs = p.get("sub") === "1";
@@ -171,6 +247,7 @@
     if (state.view !== "timeline") p.set("view", state.view);
     const all = state.venues.size === activeVenues.length && activeVenues.every((v) => state.venues.has(v.id));
     if (!all) p.set("v", [...state.venues].join(","));
+    if (state.regions.size < REGIONS.length) p.set("r", [...state.regions].join(","));
     if (state.film) p.set("film", "1");
     if (state.subs) p.set("sub", "1");
     if (state.upcoming) p.set("up", "1");
@@ -185,6 +262,7 @@
   function update(patch) {
     Object.assign(state, patch);
     if (patch.venues) storeVenues();
+    if (patch.regions) storeRegions();
     writeHash();
     render();
   }
@@ -214,7 +292,7 @@
 
   function visibleForDay(day) {
     const now = new Date();
-    return screeningsForDay(day).filter((s) => state.venues.has(s.venue_id) && passesFilters(s, now));
+    return screeningsForDay(day).filter((s) => shown(s.venue_id) && passesFilters(s, now));
   }
 
   /** Collapse screenings of the same programme at the same venue into one row. */
@@ -236,9 +314,9 @@
       if (!byVenue.has(s.venue_id)) byVenue.set(s.venue_id, []);
       byVenue.get(s.venue_id).push(s);
     }
-    const earliest = (l) => l.reduce((m, s) => (s.start < m ? s.start : m), "~");
-    // venues ordered by their earliest screening of the day (screenslate style)
-    return [...byVenue.entries()].sort((a, b) => earliest(a[1]).localeCompare(earliest(b[1])));
+    const earliest = (l) => l.reduce((m, s) => Math.min(m, Date.parse(s.start)), Infinity);
+    // venues ordered by their earliest screening of the day (compared as instants)
+    return [...byVenue.entries()].sort((a, b) => earliest(a[1]) - earliest(b[1]));
   }
 
   // ---------- DOM helpers ----------
@@ -270,16 +348,16 @@
   }
 
   function statusBadge(v) {
-    if (v.status === "ok" && v.source === "screenslate") {
-      return el("span", { class: "badge ss", title: `${t("viaTitle")}\n${v.error || ""}` }, "via screenslate");
+    if (v.status === "ok" && isFallback(v.source)) {
+      return el("span", { class: "badge ss", title: `${t("viaTitle", v.source)}\n${v.error || ""}` }, `via ${v.source}`);
     }
     if (v.status === "stale") return el("span", { class: "badge", title: v.error || "" }, t("stale", relTime(v.fetched_at)));
     if (v.status === "failed") return el("span", { class: "badge failed", title: v.error || "" }, t("failed"));
     return null;
   }
 
-  const viaBadge = (s) => s.source === "screenslate"
-    ? el("span", { class: "tag via", title: t("viaTag") }, "via screenslate") : null;
+  const viaBadge = (s) => isFallback(s.source)
+    ? el("span", { class: "tag via", title: t("viaTag", s.source) }, `via ${s.source}`) : null;
 
   // ---------- render ----------
   /** Static text in index.html carries data-i18n / -title / -placeholder / -aria keys. */
@@ -305,6 +383,7 @@
     applyStaticText();
     document.body.dataset.view = state.view;
     renderHeader();
+    renderRegions();
     renderChips();
     if (state.view === "week") renderWeek();
     else if (state.view === "list") renderList();
@@ -362,7 +441,7 @@
     const now = new Date();
     let unknown = 0;
     for (const d of days) for (const s of screeningsForDay(d)) {
-      if (state.venues.has(s.venue_id) && needsNoEnglish(s) === null && passesFilters(s, now, true)) unknown++;
+      if (shown(s.venue_id) && needsNoEnglish(s) === null && passesFilters(s, now, true)) unknown++;
     }
     hint.textContent = unknown ? t("hiddenUnknown", unknown) : "";
     hint.title = unknown ? t("hiddenUnknownT") : "";
@@ -373,6 +452,25 @@
     return shiftDay(day, -((dow - 4 + 7) % 7));
   }
 
+  /** Region row (NYC / PHL / LA …): multi-select; hidden when every cinema is in one region. */
+  function renderRegions() {
+    const box = $("#regions");
+    box.hidden = REGIONS.length < 2;
+    if (box.hidden) return;
+    box.replaceChildren(...REGIONS.map((r) => {
+      const on = state.regions.has(r);
+      return el("button", {
+        class: "chip region" + (on ? " on" : ""), "aria-pressed": String(on),
+        onclick: (e) => {
+          if (e.target.classList.contains("only")) return update({ regions: new Set([r]) });
+          const next = new Set(state.regions);
+          next.has(r) ? next.delete(r) : next.add(r);
+          update({ regions: next.size ? next : new Set(REGIONS) });
+        },
+      }, r, el("span", { class: "only", title: t("onlyT") }, t("only")));
+    }));
+  }
+
   function renderChips() {
     const counts = {};
     const now = new Date();
@@ -380,12 +478,13 @@
     for (const d of days) for (const s of screeningsForDay(d)) {
       if (passesFilters(s, now)) counts[s.venue_id] = (counts[s.venue_id] || 0) + 1;
     }
-    $("#chips").replaceChildren(...activeVenues.map((v) => {
+    $("#chips").replaceChildren(...venuesInRegions().map((v) => {
       const on = state.venues.has(v.id);
       const problem = v.status === "stale" || v.status === "failed";
       const tip = [
         v.name,
-        `${t("chipStatus")}: ${v.status}${v.source === "screenslate" ? " (via screenslate)" : ""}`,
+        `${t("chipStatus")}: ${v.status}${isFallback(v.source) ? ` (via ${v.source})` : ""}`,
+        v.adapter ? t("dataFrom", v.adapter) : null,
         v.fetched_at ? `${t("chipLastOk")}: ${new Date(v.fetched_at).toLocaleString()}` : t("chipNever"),
         v.horizon_end ? `${t("chipUntil")}: ${v.horizon_end}` : null,
         v.error ? `${t("chipError")}: ${v.error}` : null,
@@ -403,7 +502,7 @@
         v.short || v.name,
         el("span", { class: "n" }, counts[v.id] || 0),
         el("span", { class: "only", title: t("onlyT") }, t("only")),
-        problem ? el("span", { class: "dot " + v.status }) : v.source === "screenslate" ? el("span", { class: "dot ss" }) : null);
+        problem ? el("span", { class: "dot " + v.status }) : isFallback(v.source) ? el("span", { class: "dot ss" }) : null);
     }));
   }
 
@@ -426,9 +525,10 @@
     if (!list.length) return main.replaceChildren(renderEmpty());
 
     const items = list.map((s) => {
-      const from = minutesInDay(s.start, state.day);
+      const tz = tzOf(s);
+      const from = minutesInDay(s.start, state.day, tz);
       const known = !!s.runtime_min || !!s.end;
-      const to = s.end ? Math.max(minutesInDay(s.end, state.day), from + 15) : from + (s.runtime_min || DEFAULT_RUNTIME);
+      const to = s.end ? Math.max(minutesInDay(s.end, state.day, tz), from + 15) : from + (s.runtime_min || DEFAULT_RUNTIME);
       return { s, from, to, known };
     });
     // axis: at least 10:00 → 25:00 (1am), widened to fit anything outside
@@ -448,8 +548,13 @@
       return { v: venueById[vid], items: vi, lanes: packLanes(vi) };
     });
 
+    // Each row's axis is its cinema's local clock, so "now" sits at a different spot per time zone:
+    // one line across the body when all rows share a zone, otherwise a marker inside each row.
     const now = new Date();
-    const nowMin = state.day === todayKey() ? minutesInDay(now.toISOString(), state.day) : null;
+    const zones = new Set(rows.map((r) => r.v.timezone || DEFAULT_TZ));
+    const nowFor = (tz) => (state.day === todayKey() ? minutesInDay(now.toISOString(), state.day, tz) : null);
+    const oneZone = zones.size === 1;
+    const nowMin = nowFor(oneZone ? [...zones][0] : VIEWER_TZ);
     const pos = (from, to) => vertical
       ? `top:${(from - t0) * ppm}px;height:${Math.max((to - from) * ppm - 2, 14)}px;`
       : `left:${(from - t0) * ppm}px;width:${Math.max((to - from) * ppm - 2, 14)}px;`;
@@ -462,7 +567,7 @@
       el("span", { class: "tl-hour", style: vertical ? `top:${(m - t0) * ppm}px` : `left:${(m - t0) * ppm}px` }, hourLabel(m))));
 
     const grid = hours.map((m) => el("div", { class: "tl-gridline", style: vertical ? `top:${(m - t0) * ppm}px` : `left:${(m - t0) * ppm}px` }));
-    const nowLine = nowMin != null && nowMin >= t0 && nowMin <= t1
+    const nowLine = oneZone && nowMin != null && nowMin >= t0 && nowMin <= t1
       ? el("div", { class: "tl-now", style: vertical ? `top:${(nowMin - t0) * ppm}px` : `left:${(nowMin - t0) * ppm}px` }) : null;
 
     const hl = fold(state.hl);
@@ -474,18 +579,21 @@
         const lanePos = vertical ? `left:${lane * laneH}px;width:${laneH - 4}px;` : `top:${lane * laneH + 3}px;height:${laneH - 5}px;`;
         return el("button", {
           class: cls, style: `--c:${v.color};${pos(from, to)}${lanePos}`,
-          title: `${timeLabel(s.start)} ${s.title}${filmMeta(s)}`,
+          title: `${timeLabel(s.start, tzOf(s))} ${s.title}${filmMeta(s)}`,
           onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); },
         },
-          el("span", { class: "tl-time" }, timeLabel(s.start), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : ""),
+          el("span", { class: "tl-time" }, timeLabel(s.start, tzOf(s)), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : ""),
           el("span", { class: "tl-title" }, s.title),
-          s.source === "screenslate" ? el("span", { class: "tl-via", title: "via screenslate" }, "SS") : null);
+          isFallback(s.source) ? el("span", { class: "tl-via", title: `via ${s.source}` }, s.source.slice(0, 2).toUpperCase()) : null);
       });
       const size = lanes * laneH;
+      const rowNow = oneZone ? null : nowFor(v.timezone || DEFAULT_TZ);
+      const rowNowEl = rowNow != null && rowNow >= t0 && rowNow <= t1
+        ? el("div", { class: "tl-now in-row", style: vertical ? `top:${(rowNow - t0) * ppm}px` : `left:${(rowNow - t0) * ppm}px` }) : null;
       return el("div", { class: "tl-row", style: `--c:${v.color};` + (vertical ? `width:${size}px` : `height:${size}px`) },
         el("div", { class: "tl-label", title: v.name }, el("span", { class: "sw" }),
           el("div", { class: "vwrap" }, el("span", { class: "vname" }, v.name), statusBadge(v))),
-        el("div", { class: "tl-track", style: vertical ? `height:${span * ppm}px` : `width:${span * ppm}px` }, grid, blocks));
+        el("div", { class: "tl-track", style: vertical ? `height:${span * ppm}px` : `width:${span * ppm}px` }, grid, blocks, rowNowEl));
     });
 
     const wrap = el("div", { class: "timeline" + (vertical ? " vertical" : ""), style: `--label-w:${labelW}px` },
@@ -515,13 +623,14 @@
       const v = venueById[vid];
       const films = groupFilms(list);
       return el("section", { class: "venue-group", style: `--c:${v.color}` },
-        el("h3", {}, v.name, el("span", { class: "meta" }, t("filmsShows", films.length, list.length)), statusBadge(v)),
+        el("h3", {}, v.website ? el("a", { href: v.website, target: "_blank", rel: "noopener", title: t("website") }, v.name) : v.name,
+          el("span", { class: "meta" }, t("filmsShows", films.length, list.length)), statusBadge(v)),
         films.map((f) => el("div", { class: "film" + (hl && fold(f.title) === hl ? " hl" : "") },
           el("div", { class: "times" }, f.showings.map((s) => {
             const attrs = { class: new Date(s.start) < now ? "past" : null, title: s.screen || null };
             return s.ticket_url
-              ? el("a", { ...attrs, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start))
-              : el("span", attrs, timeLabel(s.start));
+              ? el("a", { ...attrs, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
+              : el("span", attrs, timeLabel(s.start, tzOf(s)));
           })),
           el("div", { class: "info" },
             link(f.detail_url, "title", f.title),
@@ -539,18 +648,18 @@
     const ws = weekStart();
     const days = [...Array(7)].map((_, i) => shiftDay(ws, i));
     const today = todayKey();
-    const venues = activeVenues.filter((v) => state.venues.has(v.id));
+    const venues = activeVenues.filter((v) => shown(v.id));
     if (!venues.length) return main.replaceChildren(renderEmpty());
 
     const cells = {};             // venue -> day -> Map(title -> {count, film})
     let total = 0;
     for (const d of days) {
       for (const s of screeningsForDay(d)) {
-        if (!state.venues.has(s.venue_id) || !passesFilters(s)) continue;
+        if (!shown(s.venue_id) || !passesFilters(s)) continue;
         const m = ((cells[s.venue_id] ||= {})[d] ||= new Map());
         const e = m.get(s.title) || { count: 0, onfilm: false, first: s.start };
         e.count++; e.onfilm ||= FILM_FORMATS.has(s.format);
-        if (s.start < e.first) e.first = s.start;
+        if (Date.parse(s.start) < Date.parse(e.first)) e.first = s.start;
         m.set(s.title, e);
         total++;
       }
@@ -572,7 +681,7 @@
           const m = cells[v.id]?.[d];
           const beyond = v.horizon_end && d > v.horizon_end;
           return el("div", { class: "wk-cell" + (d === today ? " today" : "") + (beyond ? " beyond" : "") },
-            m ? [...m.entries()].sort((a, b) => a[1].first.localeCompare(b[1].first)).map(([title, e]) =>
+            m ? [...m.entries()].sort((a, b) => Date.parse(a[1].first) - Date.parse(b[1].first)).map(([title, e]) =>
               el("button", {
                 class: "wk-film" + (e.onfilm ? " onfilm" : ""),
                 title: t("weekFilmT", title, e.count),
@@ -588,13 +697,15 @@
   function showPopover(s, anchor) {
     const v = venueById[s.venue_id];
     const pop = $("#popover");
-    const endLabel = s.end ? ` – ${timeLabel(s.end)}` : "";
+    const tz = tzOf(s);
+    const endLabel = s.end ? ` – ${timeLabel(s.end, tz)}` : "";
+    const zone = tz !== VIEWER_TZ ? ` ${zoneLabel(s.start, tz)}` : "";   // "7:00pm PDT" for another time zone
     const meta = [s.director, s.year, s.runtime_min ? t("minutes", s.runtime_min) : null, s.format, s.language].filter(Boolean).join(" · ");
     pop.replaceChildren(...[
       el("button", { class: "pop-close", "aria-label": t("close"), onclick: hidePopover }, "×"),
       el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name, s.screen && s.screen !== v.name ? ` · ${s.screen}` : ""),
       el("h4", {}, s.title),
-      el("div", { class: "pop-time" }, `${timeLabel(s.start)}${endLabel}`, s.runtime_min || s.end ? "" : el("span", { class: "muted" }, t("runtimeUnknown"))),
+      el("div", { class: "pop-time" }, `${timeLabel(s.start, tz)}${endLabel}${zone}`, s.runtime_min || s.end ? "" : el("span", { class: "muted" }, t("runtimeUnknown"))),
       meta ? el("div", { class: "pop-meta" }, meta) : null,
       s.series ? el("div", {}, el("span", { class: "tag series" }, s.series)) : null,
       s.note ? el("div", { class: "pop-note" }, s.note) : null,
@@ -632,7 +743,7 @@
       box.append(el("br"), el("button", { onclick: () => update({ film: false, subs: false, q: "", upcoming: false }) }, t("clearFilters")));
     }
     if (state.view !== "week") {
-      const hasSel = (d) => screeningsForDay(d).some((s) => state.venues.has(s.venue_id) && passesFilters(s));
+      const hasSel = (d) => screeningsForDay(d).some((s) => shown(s.venue_id) && passesFilters(s));
       const prev = [...dataDays].reverse().find((d) => d < state.day && hasSel(d));
       const next = dataDays.find((d) => d > state.day && hasSel(d));
       if (prev || next) box.append(el("br"));
@@ -657,7 +768,29 @@
       el("a", { href: "https://github.com/Marc506/corridor-showtimes", target: "_blank", rel: "noopener" }, t("source"))));
   }
 
-  function selectAll() { update({ venues: new Set(activeVenues.map((v) => v.id)) }); }
+  // ---------- "add your cinemas" guide ----------
+  function openGuide() {
+    const dlg = $("#customize-dialog");
+    const readme = LANG === "zh" ? `${REPO}/blob/main/README.zh-CN.md#自定义影院` : `${REPO}#add-your-own-cinemas`;
+    const copyBtn = el("button", { class: "copy-btn", type: "button", onclick: async (e) => {
+      try { await navigator.clipboard.writeText(t("guidePrompt")); e.target.textContent = t("copied"); } catch (_) { /* select manually */ }
+    } }, t("copy"));
+    const steps = t("guideSteps").map(([head, body], i) => el("li", {},
+      el("strong", {}, head), " ",
+      body ?? el("div", { class: "prompt" }, el("code", {}, t("guidePrompt")), copyBtn),
+      i === 1 ? el("div", {}, el("a", { href: REPO, target: "_blank", rel: "noopener" }, `${t("guideGithub")} ↗`)) : null));
+    dlg.replaceChildren(
+      el("button", { class: "pop-close", type: "button", "aria-label": t("close"), onclick: () => dlg.close() }, "×"),
+      el("h3", { id: "guide-title" }, t("guideTitle")),
+      el("p", {}, t("guideIntro")),
+      el("ol", {}, steps),
+      el("p", { class: "guide-links" }, el("a", { href: readme, target: "_blank", rel: "noopener" }, `${t("guideFull")} ↗`)),
+      el("p", { class: "muted" }, t("guideHelp"), " ",
+        el("a", { href: `${REPO}/issues/new?template=help-add-cinema.yml`, target: "_blank", rel: "noopener" }, `${t("guideHelpLink")} ↗`)));
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  }
+
+  function selectAll() { update({ venues: new Set(activeVenues.map((v) => v.id)), regions: new Set(REGIONS) }); }
 
   // ---------- wiring ----------
   function step(n) {
@@ -673,6 +806,8 @@
     $("#today").addEventListener("click", () => update({ day: todayKey(), hl: "" }));
     $("#date-input").addEventListener("change", (e) => validDay(e.target.value) && update({ day: e.target.value, hl: "" }));
     $("#select-all").addEventListener("click", selectAll);
+    $("#customize").addEventListener("click", openGuide);
+    $("#customize-dialog").addEventListener("click", (e) => { if (e.target.id === "customize-dialog") e.target.close(); });
     $("#lang-toggle").addEventListener("click", () => setLang(LANG === "zh" ? "en" : "zh"));
     document.querySelectorAll("#views button").forEach((b) =>
       b.addEventListener("click", () => update({ view: b.dataset.view })));

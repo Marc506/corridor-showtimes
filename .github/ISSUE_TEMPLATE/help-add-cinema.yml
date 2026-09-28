@@ -1,0 +1,39 @@
+name: Help adding a cinema / 加影院求助
+description: Your AI assistant couldn't add a cinema on your computer. / AI 助手没能在你电脑上加好影院。
+title: "Help: "
+labels: ["help-add-cinema"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying! Fill in what you can — the assistant's last message helps most.
+        感谢尝试！能填多少填多少，AI 助手最后说的话最有帮助。
+  - type: input
+    id: name
+    attributes:
+      label: Cinema name / 影院名
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Showtimes page URL / 排片页网址
+    validations:
+      required: true
+  - type: input
+    id: city
+    attributes:
+      label: City / 城市
+  - type: dropdown
+    id: assistant
+    attributes:
+      label: AI assistant you used / 用的 AI 助手
+      options: [Claude Code, Cursor, Codex, Other / 其他]
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened / 发生了什么
+      description: Paste the assistant's last messages, or the wizard's last lines. / 贴上 AI 助手最后几条回复，或向导最后几行输出。
+      render: text
+    validations:
+      required: true

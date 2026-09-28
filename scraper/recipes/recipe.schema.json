@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Corridor Showtimes HTML recipe",
+  "description": "See scraper/adapters/recipe.py for the meaning of every key.",
+  "type": "object",
+  "required": ["pages", "item", "fields"],
+  "additionalProperties": false,
+  "properties": {
+    "pages": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "required": ["url"], "additionalProperties": false,
+        "properties": {
+          "url": {"type": "string", "pattern": "^https?://"},
+          "paging": {
+            "type": "object", "required": ["kind"], "additionalProperties": false,
+            "properties": {
+              "kind": {"enum": ["none", "monthly", "daily"]},
+              "months": {"type": "integer", "minimum": 1, "maximum": 6},
+              "days": {"type": "integer", "minimum": 1, "maximum": 60}
+            }
+          },
+          "render": {"enum": ["html", "browser"]},
+          "stop_when_empty": {"type": "boolean"}
+        }
+      }
+    },
+    "date": {
+      "type": "object", "required": ["kind"], "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["heading", "attr", "container", "page"]},
+        "selector": {"type": "string"},
+        "attr": {"type": "string"},
+        "regex": {"type": "string"},
+        "format": {"type": "string"}
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"enum": ["heading", "container"]}}},
+         "then": {"required": ["selector", "format"]}}
+      ]
+    },
+    "item": {"type": "string", "minLength": 1},
+    "fields": {
+      "type": "object",
+      "required": ["title", "times"],
+      "propertyNames": {"enum": ["title", "times", "meta", "director", "year", "runtime_min", "format", "language",
+                                 "series", "screen", "note", "detail_url", "ticket_url"]},
+      "additionalProperties": {"$ref": "#/$defs/field"}
+    },
+    "post": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "title_case": {"enum": ["smart", "none"]},
+        "detect_language": {"type": "boolean"}
+      }
+    }
+  },
+  "$defs": {
+    "field": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "selector": {"type": "string"},
+        "text_after": {"type": "string"},
+        "per_time": {"type": "boolean"},
+        "attr": {"type": "string"},
+        "regex": {"type": "string"},
+        "format": {"type": "string"},
+        "strip_prefix": {"type": "string"},
+        "template": {"type": "string"},
+        "case": {"enum": ["smart"]},
+        "parse": {"enum": ["language"]},
+        "all": {"type": "boolean"}
+      }
+    }
+  }
+}

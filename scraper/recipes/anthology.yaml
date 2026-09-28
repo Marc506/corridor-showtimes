@@ -1,0 +1,24 @@
+# Anthology Film Archives, list view, one page per month (SOURCES.md §4).
+# Production uses scraper/sources/anthology.py; this recipe reproduces it and is the interpreter's
+# regression test (tests/test_recipe.py).
+pages:
+  - url: "https://www.anthologyfilmarchives.org/film_screenings/calendar?view=list&month={month}&year={year}"
+    paging: {kind: monthly, months: 3}
+    stop_when_empty: true
+date:
+  kind: heading
+  selector: "h3.current-day"
+  regex: "\\b(\\d{1,2})\\b"          # "Thursday, October  1" — month and year come from the page URL
+  format: "%d"
+item: "div.film-showing"
+fields:
+  title:      {selector: "span.film-title", case: smart}
+  times:      {selector: "a[name^=showing-]", regex: "(\\d{1,2}:\\d{2}\\s*[AP]M)", format: "%I:%M %p"}
+  director:   {text_after: "span.film-title", regex: "^by (.+)$"}
+  meta:       {text_after: "span.film-title", regex: "(?:^|,\\s*)(?P<year>\\d{4}),\\s*(?P<runtime_min>\\d+)\\s*min\\b[.,]?\\s*(?P<format>[^.,]*)"}
+  language:   {text_after: "span.film-title", parse: language}
+  series:     {selector: "p.series-note", strip_prefix: "This screening is part of:", case: smart}
+  detail_url: {per_time: true, attr: name, template: "{page_url}#{value}"}
+  ticket_url: {selector: ".film-notes a[href*=veezi], a[href*=ticketing]", attr: href}
+post:
+  title_case: smart

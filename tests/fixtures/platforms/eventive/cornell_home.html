@@ -1,0 +1,134 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="fragment" content="!">
+  <title>Cornell Cinema Tickets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="/cookieconsent.css">
+    <link href="https://storage.googleapis.com/eventive-static/assets/fonts/lato/stylesheet.css" rel="stylesheet">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="msapplication-TileColor" content="#b31b1b">
+  <meta name="theme-color" content="#b31b1b">
+  <meta name="og:image" content="">
+  <meta name="og:title" content="Cornell Cinema Tickets">
+  <link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-title" content="Cornell Cinema FY27">
+<link rel="apple-touch-icon" sizes="180x180" href="https://eventive.imgix.net/app_icon.png?fm=png&w=180">
+<link rel="icon" type="image/png" sizes="32x32" href="https://eventive.imgix.net/app_icon.png?fm=png&w=32">
+<link rel="icon" type="image/png" sizes="16x16" href="https://eventive.imgix.net/app_icon.png?fm=png&w=16">
+  <style>
+    html:not(.embedded) {
+      background-color: #fff;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    html {
+      font-family: 'Lato', sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #loader, #loader-custom {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #loader img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -64px 0px 0px -64px;
+    }
+
+    #loader-custom img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    html.embedded, .embedded body {
+      height: auto;
+    }
+    .embedded #loader, .embedded #loader-custom {
+      display: none;
+    }
+    .embedded #app {
+      padding-bottom: 10px;
+    }
+  </style>
+
+  <script>
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~ Eventive inline scripts ~~~~
+    // ~ fun & games across the board ~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    // Handle malformed url - due to temporary Handlebars update, the "=" sign might have been
+    // erroneously encoded in the url contents, leading to a world of hurt. (10/23/2017)
+    var originalUrl = window.location.href,
+      fixedUrl = originalUrl.replace('&#x3D;','=');
+    if (originalUrl !== fixedUrl) {
+      window.location.href = fixedUrl;
+    }
+
+    // Last ditch effort - clientside force https in production
+    // In case we fail to autoredirect / they're on an old non-HSTS browser
+    if (window.location.protocol !== 'https:') {
+      window.location.protocol = 'https:';
+    }
+
+    // Height detection script for Sundance
+    window.onload = function() {
+      const height = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
+      window.parent.postMessage({ iframeHeight: height }, "*");
+    };
+
+    // Embed mode
+    if (window.location.search.indexOf('embed=true') !== -1) {
+      document.documentElement.className += ' embedded';
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = window.location.protocol + '//' + window.location.host + '/embedded.js';
+      document.getElementsByTagName('head')[0].appendChild(script);
+    }
+    else {
+      // cookie consent included if the page is not embedded and not in the app and does not have suprression parameter
+      if ((window.navigator.userAgent.indexOf("gonative eventive") === -1) && (window.location.search.indexOf("no_cc=1") === -1)) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = window.location.protocol + '//' + window.location.host + '/cookieconsent.umd.js';
+        document.getElementsByTagName('head')[0].appendChild(script);
+      }
+    }
+  </script>
+
+  
+</head>
+
+<body>
+  <div id="loader"><img src="/img/preloader.gif"></div>
+  <div id="app"></div>
+  <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+  
+  <script data-type="tenant" src="/cornellcinema.04b45b24c293d18f5aa0.js"></script>
+  <script data-type="global" src="/global.64c56d02b27456c55c2b.js"></script>
+  <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a42461caec5492aa',t:'MTc5MDYxNTY0MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+</html>

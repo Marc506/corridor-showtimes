@@ -30,8 +30,8 @@ class FilmLincScraper(BaseScraper):
                 for st in film.get("showtimes") or []:
                     if not st.get("dateTimeET"):
                         continue
-                    start = parse_iso(st["dateTimeET"])
-                    start_s = iso(start)
+                    start = parse_iso(st["dateTimeET"], self.tz)
+                    start_s = iso(start, self.tz)
                     notes = []
                     if st.get("specialEvent"):
                         notes.append("Special event")

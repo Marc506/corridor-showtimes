@@ -34,9 +34,12 @@
       <h2 id="day-title" class="day-title"></h2>
     </nav>
 
+    <div id="regions" class="regions" role="group" data-i18n-aria="regions" aria-label="区域" hidden></div>
+
     <div class="venue-bar">
       <div id="chips" class="chips" role="group" data-i18n-aria="venues" aria-label="影院"></div>
       <button id="select-all" class="link-btn" data-i18n="selectAll">全选</button>
+      <button id="customize" class="customize-btn" type="button" data-i18n="customize">＋ 自定义影院</button>
     </div>
 
     <div class="filters">
@@ -53,6 +56,8 @@
   <footer id="footer" class="footer"></footer>
 
   <div id="popover" class="popover" role="dialog" hidden></div>
+
+  <dialog id="customize-dialog" class="guide" aria-labelledby="guide-title"></dialog>
 
   <script src="data.js"></script>
   <script src="app.js"></script>

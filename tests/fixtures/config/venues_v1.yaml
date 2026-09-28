@@ -1,0 +1,110 @@
+# 影院注册表。加一家影院：在这里加一条 + scraper/sources/<scraper>.py 一个文件。
+# 字段见 ARCHITECTURE.md §4。scraper 模块还没写的影院先 enabled: false。
+
+- id: bam
+  name: BAM Rose Cinemas
+  short: BAM
+  city: NYC
+  color: "#3a86ff"
+  scraper: bam
+  enabled: true
+  screenslate_nid: 244
+  horizon_days: 60
+  rate_limit_s: 1
+
+- id: filmlinc
+  name: Film at Lincoln Center
+  short: FLC
+  city: NYC
+  color: "#c1121f"
+  scraper: filmlinc
+  enabled: true
+  screenslate_nid: 355
+  horizon_days: 60
+  rate_limit_s: 1
+
+- id: japansociety
+  name: Japan Society
+  short: JS
+  city: NYC
+  color: "#e9b949"
+  scraper: japansociety
+  enabled: true
+  screenslate_nid: 339
+  horizon_days: 90
+  rate_limit_s: 1
+  allow_empty: true          # 电影少，可能真的为 0
+  default_language: Japanese # 网站不写语言；TMDB 查不到时按日语算
+
+- id: anthology
+  name: Anthology Film Archives
+  short: AFA
+  city: NYC
+  color: "#6a4c93"
+  scraper: anthology
+  enabled: true
+  screenslate_nid: 327
+  horizon_days: 60
+  rate_limit_s: 2
+
+- id: filmforum
+  name: Film Forum
+  short: FF
+  city: NYC
+  color: "#2a9d8f"
+  scraper: filmforum
+  enabled: true
+  screenslate_nid: 13
+  horizon_days: 30
+  rate_limit_s: 2
+
+- id: metrograph
+  name: Metrograph
+  short: MG
+  city: NYC
+  color: "#e63946"
+  scraper: metrograph
+  enabled: true
+  screenslate_nid: 6
+  horizon_days: 30
+  rate_limit_s: 3
+  primary_cooldown_h: 2      # 被 429/403 封过之后 2 小时内不再请求，直接用 screenslate
+
+- id: lalliance
+  name: L'Alliance New York
+  short: LNY
+  city: NYC
+  color: "#457b9d"
+  scraper: lalliance
+  enabled: true
+  default_language: French   # 法国文化中心，几乎都是法语片；TMDB 查到的优先
+  screenslate_nid: 7
+  horizon_days: 90
+  rate_limit_s: 2
+
+- id: moma
+  name: MoMA
+  short: MoMA
+  city: NYC
+  color: "#f4a261"
+  scraper: moma
+  enabled: true
+  screenslate_nid: 81
+  horizon_days: 45
+  rate_limit_s: 3
+  browser:
+    headless: false          # headless 过不了 Cloudflare；有窗口的 Chromium 会短暂弹出
+    challenge_timeout_s: 30
+  primary_cooldown_h: 20     # 浏览器路径失败后 20 小时内直接用 screenslate（大约每天只试一次浏览器）
+
+- id: filmadelphia
+  name: Philadelphia Film Society
+  short: PFS
+  city: PHL
+  color: "#8d99ae"
+  scraper: filmadelphia
+  enabled: true              # 网站被 WAF 挡住，改用售票系统 Agile Ticketing 的公开 feed（SOURCES.md §9）
+  screenslate_nid: null      # screenslate 不收录费城
+  horizon_days: 60
+  rate_limit_s: 3
+  agile_guid: 6634566a-a49f-4dec-89e6-bb4c5eda4814

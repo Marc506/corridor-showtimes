@@ -84,7 +84,7 @@ class FilmForumScraper(BaseScraper):
     def parse(self, pages: list[RawPage]) -> list[Screening]:
         out = []
         for page in pages:
-            ref = ref_date(page)
+            ref = ref_date(page, self.tz)
             soup = BeautifulSoup(page.body, "lxml")
             prev: date | None = None
             for tab in soup.select('div[id^="tabs-"]'):
@@ -107,8 +107,8 @@ class FilmForumScraper(BaseScraper):
                         txt = (span.get_text() or "").strip()
                         if not re.fullmatch(r"\d{1,2}:\d{2}", txt):
                             continue
-                        start = to_local(datetime.combine(day, infer_time(txt)))
-                        start_s = iso(start)
+                        start = to_local(datetime.combine(day, infer_time(txt)), self.tz)
+                        start_s = iso(start, self.tz)
                         out.append(Screening(
                             id=make_id(self.venue.id, start_s, title),
                             venue_id=self.venue.id, title=title, start=start_s,

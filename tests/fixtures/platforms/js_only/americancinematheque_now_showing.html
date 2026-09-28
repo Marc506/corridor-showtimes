@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+<script>
+var gform;gform||(document.addEventListener("gform_main_scripts_loaded",function(){gform.scriptsLoaded=!0}),document.addEventListener("gform/theme/scripts_loaded",function(){gform.themeScriptsLoaded=!0}),window.addEventListener("DOMContentLoaded",function(){gform.domLoaded=!0}),gform={domLoaded:!1,scriptsLoaded:!1,themeScriptsLoaded:!1,isFormEditor:()=>"function"==typeof InitializeEditor,callIfLoaded:function(o){return!(!gform.domLoaded||!gform.scriptsLoaded||!gform.themeScriptsLoaded&&!gform.isFormEditor()||(gform.isFormEditor()&&console.warn("The use of gform.initializeOnLoaded() is deprecated in the form editor context and will be removed in Gravity Forms 3.1."),o(),0))},initializeOnLoaded:function(o){gform.callIfLoaded(o)||(document.addEventListener("gform_main_scripts_loaded",()=>{gform.scriptsLoaded=!0,gform.callIfLoaded(o)}),document.addEventListener("gform/theme/scripts_loaded",()=>{gform.themeScriptsLoaded=!0,gform.callIfLoaded(o)}),window.addEventListener("DOMContentLoaded",()=>{gform.domLoaded=!0,gform.callIfLoaded(o)}))},hooks:{action:{},filter:{}},addAction:function(o,r,e,t){gform.addHook("action",o,r,e,t)},addFilter:function(o,r,e,t){gform.addHook("filter",o,r,e,t)},doAction:function(o){gform.doHook("action",o,arguments)},applyFilters:function(o){return gform.doHook("filter",o,arguments)},removeAction:function(o,r){gform.removeHook("action",o,r)},removeFilter:function(o,r,e){gform.removeHook("filter",o,r,e)},addHook:function(o,r,e,t,n){null==gform.hooks[o][r]&&(gform.hooks[o][r]=[]);var d=gform.hooks[o][r];null==n&&(n=r+"_"+d.length),gform.hooks[o][r].push({tag:n,callable:e,priority:t=null==t?10:t})},doHook:function(r,o,e){var t;if(e=Array.prototype.slice.call(e,1),null!=gform.hooks[r][o]&&((o=gform.hooks[r][o]).sort(function(o,r){return o.priority-r.priority}),o.forEach(function(o){"function"!=typeof(t=o.callable)&&(t=window[t]),"action"==r?t.apply(null,e):e[0]=t.apply(null,e)})),"filter"==r)return e[0]},removeHook:function(o,r,t,n){var e;null!=gform.hooks[o][r]&&(e=(e=gform.hooks[o][r]).filter(function(o,r,e){return!!(null!=n&&n!=o.tag||null!=t&&t!=o.priority)}),gform.hooks[o][r]=e)}});
+</script>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+
+	<script src="https://kit.fontawesome.com/b8c7eb40d7.js" crossorigin="anonymous"></script>
+
+	<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	<!-- This site is optimized with the Yoast SEO plugin v28.3 - https://yoast.com/product/yoast-seo-wordpress/ -->
+	<title>Now Showing - American Cinematheque</title>
+	<link rel="canonical" href="https://www.americancinematheque.com/now-showing/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Now Showing - American Cinematheque" />
+	<meta property="og:url" content="https://www.americancinematheque.com/now-showing/" />
+	<meta property="og:site_name" content="American Cinematheque" />
+	<meta property="article:modified_time" content="2025-01-23T20:25:24+00:00" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https:\/\/schema.org","@graph":[{"@type":"WebPage","@id":"https:\/\/www.americancinematheque.com\/now-showing\/","url":"https:\/\/www.americancinematheque.com\/now-showing\/","name":"Now Showing - American Cinematheque","isPartOf":{"@id":"https:\/\/www.americancinematheque.com\/#website"},"datePublished":"2020-12-05T22:32:12+00:00","dateModified":"2025-01-23T20:25:24+00:00","breadcrumb":{"@id":"https:\/\/www.americancinematheque.com\/now-showing\/#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https:\/\/www.americancinematheque.com\/now-showing\/"]}]},{"@type":"BreadcrumbList","@id":"https:\/\/www.americancinematheque.com\/now-showing\/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https:\/\/www.americancinematheque.com\/"},{"@type":"ListItem","position":2,"name":"Now Showing"}]},{"@type":"WebSite","@id":"https:\/\/www.americancinematheque.com\/#website","url":"https:\/\/www.americancinematheque.com\/","name":"American Cinematheque","description":"","publisher":{"@id":"https:\/\/www.americancinematheque.com\/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https:\/\/www.americancinematheque.com\/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en-US"},{"@type":"Organization","@id":"https:\/\/www.americancinematheque.com\/#organization","name":"American Cinematheque","url":"https:\/\/www.americancinematheque.com\/","logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https:\/\/www.americancinematheque.com\/#\/schema\/logo\/image\/","url":"https:\/\/assets.americancinematheque.com\/wp-content\/uploads\/2020\/12\/23013035\/ac_logo_primary_stacked_black.svg","contentUrl":"https:\/\/assets.americancinematheque.com\/wp-content\/uploads\/2020\/12\/23013035\/ac_logo_primary_stacked_black.svg","width":150,"height":68,"caption":"American Cinematheque"},"image":{"@id":"https:\/\/www.americancinematheque.com\/#\/schema\/logo\/image\/"}}]}</script>
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel="alternate" type="application/rss+xml" title="American Cinematheque &raquo; Feed" href="https://www.americancinematheque.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="American Cinematheque &raquo; Comments Feed" href="https://www.americancinematheque.com/comments/feed/" />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://www.americancinematheque.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.americancinematheque.com%2Fnow-showing%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://www.americancinematheque.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.americancinematheque.com%2Fnow-showing%2F&#038;format=xml" />
+<style id="wp-img-auto-sizes-contain-inline-css">
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id="wp-emoji-styles-inline-css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id="wp-block-library-inline-css">
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}:root .has-text-align-center{text-align:center}:root .has-text-align-left{text-align:left}:root .has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{word-wrap:normal!important;border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-break:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style^=border-color],[style*=";border-color"],[style*="; border-color"]){border-style:solid}html :where([style^=border-top-color],[style*=";border-top-color"],[style*="; border-top-color"]){border-top-style:solid}html :where([style^=border-right-color],[style*=";border-right-color"],[style*="; border-right-color"]){border-right-style:solid}html :where([style^=border-bottom-color],[style*=";border-bottom-color"],[style*="; border-bottom-color"]){border-bottom-style:solid}html :where([style^=border-left-color],[style*=";border-left-color"],[style*="; border-left-color"]){border-left-style:solid}html :where([style^=border-width],[style*=";border-width"],[style*="; border-width"]){border-style:solid}html :where([style^=border-top-width],[style*=";border-top-width"],[style*="; border-top-width"]){border-top-style:solid}html :where([style^=border-right-width],[style*=";border-right-width"],[style*="; border-right-width"]){border-right-style:solid}html :where([style^=border-bottom-width],[style*=";border-bottom-width"],[style*="; border-bottom-width"]){border-bottom-style:solid}html :where([style^=border-left-width],[style*=";border-left-width"],[style*="; border-left-width"]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+
+/*# sourceURL=/wp-includes/css/dist/block-library/common.min.css */
+</style>
+<style id="classic-theme-styles-inline-css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+
+<style id="global-styles-inline-css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}.wp-block-button{--wp--preset--dimension--25: 25%;--wp--preset--dimension--50: 50%;--wp--preset--dimension--75: 75%;--wp--preset--dimension--100: 100%;}:where(body) { margin: 0; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<link rel='stylesheet' id='cpsh-shortcodes-css' href='https://www.americancinematheque.com/wp-content/plugins/column-shortcodes//assets/css/shortcodes.css?ver=1.0.1' media='all' />
+<link rel='stylesheet' id='mf-style-css' href='https://www.americancinematheque.com/wp-content/themes/mf-theme/style.css?ver=2.49' media='' />
+<link rel='stylesheet' id='mf-style-custom-css' href='https://www.americancinematheque.com/wp-content/themes/mf-theme/public/main.css?ver=2.59' media='' />
+<link rel='stylesheet' id='mf-style-googlefonts-css' href='https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&#038;family=Work+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&#038;display=swap' media='all' />
+<script id="jquery-core-js" src="https://www.americancinematheque.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1"></script>
+<script id="jquery-migrate-js" src="https://www.americancinematheque.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1"></script>
+<link rel="https://api.w.org/" href="https://www.americancinematheque.com/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://www.americancinematheque.com/wp-json/wp/v2/pages/6491" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.americancinematheque.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress 7.1.2" />
+<link rel='shortlink' href='https://www.americancinematheque.com/?p=6491' />
+        <!-- Favicon code -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#ffc40d">
+        <meta name="theme-color" content="#ffffff">
+        
+        
+            <!-- Google Tag Manager -->
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-KP28RL7');</script>
+            <!-- End Google Tag Manager -->
+
+            <!-- Hotjar Tracking Code for https://americancinematheque.com/ -->
+            <script>
+                (function(h,o,t,j,a,r){
+                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+                    h._hjSettings={hjid:1616622,hjsv:6};
+                    a=o.getElementsByTagName('head')[0];
+                    r=o.createElement('script');r.async=1;
+                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+                    a.appendChild(r);
+                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+            </script>
+        
+                        <!-- Bugherd -->
+            <script type="text/javascript" src="https://www.bugherd.com/sidebarv2.js?apikey=vpw6z747qgjrytrokm9fyg" async="true"></script>
+            <style>.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style><link rel='stylesheet' id='gforms_reset_css-css' href='https://www.americancinematheque.com/wp-content/plugins/gravityforms/legacy/css/formreset.min.css?ver=3.0.2' media='all' />
+<link rel='stylesheet' id='gforms_formsmain_css-css' href='https://www.americancinematheque.com/wp-content/plugins/gravityforms/legacy/css/formsmain.min.css?ver=3.0.2' media='all' />
+<link rel='stylesheet' id='gforms_ready_class_css-css' href='https://www.americancinematheque.com/wp-content/plugins/gravityforms/legacy/css/readyclass.min.css?ver=3.0.2' media='all' />
+<link rel='stylesheet' id='gforms_browsers_css-css' href='https://www.americancinematheque.com/wp-content/plugins/gravityforms/legacy/css/browsers.min.css?ver=3.0.2' media='all' />
+
+</head>
+
+<body class="wp-singular page-template-default page page-id-6491 wp-theme-mf-theme group-blog">
+
+	<!-- Google Tag Manager (noscript) -->
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KP28RL7"
+	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	<!-- End Google Tag Manager (noscript) -->
+
+<div id="page" class="site">
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+	
+
+<header id="masthead" class="site-header" role="banner">
+
+    <section class="topNav">
+        <div class="container">
+            <ul>
+                
+                <div class="js-topNav-my-account" style="display: inline-block"></div>
+
+         
+
+                <li class="topNav__element">
+                    <a href="/cart"><span class="screen-reader-text">Click to view items in cart</span> <span class="fal fa-shopping-cart" aria-hidden="true"></span></a>
+                </li>
+
+            </ul>
+        </div>
+    </section>
+
+
+    <div class="header__main" data-bg="orange">
+
+        <div class="header__wrapper container">
+
+            <a class="site-branding header__logo" href="https://www.americancinematheque.com" title="American Cinematheque">
+                <svg version="1.1" id="headerLogo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 200 31.3" enable-background="new 0 0 200 31.3" xml:space="preserve">
+<g>
+	<defs>
+		<rect id="headerLogo__01" width="200" height="31.3"/>
+	</defs>
+	<clipPath id="headerLogo__02">
+		<use xlink:href="#headerLogo__01"  overflow="visible"/>
+	</clipPath>
+	<path class="headerLogo__initials" clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M50.1,19.1h-7.2c-0.7,2.4-2.9,4-5.4,4c-4.1,0-6.7-3-6.7-8.6
+		s2.6-8.6,6.7-8.6c2.5,0,4.7,1.6,5.4,4h7.2c-0.6-4.5-3.7-8.3-8-9.7h-9.7c-5.3,1.8-8.6,6.6-8.6,14.3c0,0.8,0,1.6,0.1,2.3L18.3,0.2
+		H9.7L0,28.8h7.2l1.6-5.5h10l1.6,5.5H28l-1.5-4.4c1.4,2.1,3.5,3.6,5.9,4.4h9.9C46.5,27.4,49.6,23.6,50.1,19.1 M10.7,16.9l2.9-9.6H14
+		l2.9,9.6L10.7,16.9z"/>
+	<g class="headerLogo__words">
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M63.5,11.5l4.6-11.3h1.7l4.6,11.3h-1.6l-1.1-2.8h-5.5L65,11.5
+			H63.5z M66.6,7.4h4.6l-2.2-5.5h-0.1L66.6,7.4z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M76.2,11.5V0.2h2.1L82,9.6h0.1L86,0.2h2v11.3h-1.4V2.6h-0.2
+			l-3.6,8.9h-1.4l-3.6-8.9h-0.2v8.9H76.2z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M91,11.5V0.2h7.9v1.3h-6.5v3.8h5.8v1.3h-5.8v3.8h6.6v1.2H91z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M101.2,11.5V0.2h4.4c3.1,0,4.1,1.5,4.1,3.2s-0.5,2.4-2,2.9v0.1
+			c1.3,0.4,1.8,1.3,2.1,2.7l0.6,2.3h-1.5l-0.5-2.2c-0.3-1.2-0.7-2.2-2.7-2.2h-3v4.4H101.2z M102.6,5.9h3c2,0,2.7-1,2.7-2.2
+			s-0.7-2.2-2.7-2.2h-3V5.9z"/>
+		<rect x="112.7" y="0.2" clip-path="url(#headerLogo__02)" fill="#1A1A1A" width="1.4" height="11.3"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M116.6,5.9c0-3.9,2.3-5.9,5.3-5.9c2.5,0,4.6,1.4,4.9,3.9h-1.5
+			c-0.3-1.6-1.8-2.7-3.4-2.6c-2.2,0-3.9,1.5-3.9,4.6s1.6,4.6,3.9,4.6c1.7,0.1,3.1-1,3.4-2.7h1.5c-0.3,2.5-2.4,3.9-4.9,3.9
+			C118.9,11.8,116.6,9.8,116.6,5.9"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M127.9,11.5l4.6-11.3h1.7l4.6,11.3h-1.6l-1.1-2.8h-5.5l-1.1,2.8
+			H127.9z M131,7.4h4.6l-2.2-5.5h-0.1L131,7.4z M140.6,11.5V0.2h1.6l6.4,8.9h0.1V0.2h1.4v11.3h-1.6l-6.4-8.9h-0.1v8.9H140.6z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M137,28.8v-10h-3.8v-1.3h9v1.3h-3.8v10H137z M144.2,28.8V17.5
+			h1.4v5h6.7v-5h1.4v11.3h-1.4v-5h-6.7v5H144.2z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M156.7,28.8V17.5h7.9v1.3h-6.5v3.8h5.8v1.3h-5.8v3.7h6.6v1.3
+			H156.7z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M174.1,28.5L174.1,28.5l2.7,1.8l-0.8,1.1l-3.6-2.3l-1.1,0.1
+			c-2.5,0.1-4.6-1.8-4.7-4.3c0-0.2,0-0.4,0-0.7c0.1-4.1,2.8-6.9,6.7-6.9c2.5-0.1,4.6,1.8,4.8,4.3c0,0.2,0,0.4,0,0.6
+			C177.8,25.5,176.4,27.4,174.1,28.5 M171.4,27.8c3,0,5-2.6,5-5.6c0-2.2-1.3-3.6-3.4-3.6c-3,0-5,2.6-5,5.6
+			C168,26.4,169.2,27.8,171.4,27.8"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M179.5,24.6v-7h1.4v7.1c0,2.2,1.3,3.2,3.4,3.2s3.4-1,3.4-3.2
+			v-7.1h1.4v7c0,3.1-1.7,4.5-4.8,4.5S179.5,27.7,179.5,24.6"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M192,28.8V17.5h7.9v1.3h-6.5v3.8h5.8v1.3h-5.8v3.7h6.6v1.3H192z"
+			/>
+		<rect x="76.3" y="17.5" clip-path="url(#headerLogo__02)" fill="#1A1A1A" width="2.7" height="11.3"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M81.9,28.8V17.5h2.9l4.4,6.6h0.2v-6.6h2.7v11.3h-2.9l-4.4-6.6
+			h-0.1v6.6H81.9z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M95.1,28.8V17.5h8.6V20h-5.8v1.9h5.1v2.5h-5.1v1.9h5.9v2.5H95.1z
+			"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M106.3,28.8V17.5h3.9l2.6,7.5h0.1l2.6-7.5h3.9v11.3h-2.6v-7.4
+			h-0.1l-2.5,7.4h-2.6l-2.5-7.4h-0.1v7.4H106.3z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M121.4,28.8l4.1-11.3h3.5l4.1,11.3h-3.1l-0.7-2.2h-4.2l-0.7,2.2
+			H121.4z M125.8,24.1h2.6l-1.2-3.8h-0.1L125.8,24.1z"/>
+		<path clip-path="url(#headerLogo__02)" fill="#1A1A1A" d="M68.6,26.5c-1.7,0-2.8-1.2-2.8-3.4s1.1-3.3,2.8-3.3
+			c1.1,0,2,0.7,2.3,1.7h3c-0.4-2.9-2.9-4.2-5.3-4.2c-3.4,0-5.7,2-5.7,5.8s2.3,5.9,5.7,5.9c2.4,0,4.9-1.3,5.3-4.2h-3
+			C70.6,25.8,69.7,26.6,68.6,26.5"/>
+	</g>
+</g>
+</svg>
+            </a>
+
+            <nav id="site-navigation" class="header__nav main-navigation" role="navigation">
+
+                <div class="menu-main-menu-container"><ul id="menu-main-menu" class="menu"><li id="menu-item-7650" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-6491 current_page_item current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-7650"><a href="https://www.americancinematheque.com/now-showing/" aria-current="page" aria-controls="megaMenuWrapper__7650">Now Showing</a><div id="megaMenuWrapper__7650" class="megaMenuWrapper"><div class="megaMenuSide"><div class="megaMenu__closeWrapper"><button type="button" class="megaMenu__close screen-reader-text">Close<span class="fal fa-times" aria-hidden="true"></span></button></div><div class="megaMenuInner"><div class="megaMenuInner__text"><div class="megaMenuInner__body"><p>35mm, 70mm, nitrate, state-of-the-art digital. Q&amp;As, retrospectives, double-features, triple-features, marathons. We’re a year-round film festival. There&#8217;s something for everyone in our programming lineup.</p>
+</div><a href="https://www.americancinematheque.com/now-showing/" class="megaMenuInner__cta button">Now Showing</a></div><div class="megaMenuInner__image"><img src="https://assets.americancinematheque.com/wp-content/uploads/2023/05/09141629/About-Megamenu-1.png" /></div></div></div><div class="megaMenuMain"><h3 class="megaMenuMain__title"><a href="https://www.americancinematheque.com/now-showing/">Now Showing<span class="fal fa-long-arrow-right" aria-hidden="true"></span></a></h3></a>
+<ul class="sub-menu">
+	<li id="menu-item-7674" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-7674"><a href="https://www.americancinematheque.com/now-showing/" aria-current="page">Calendar</a></li>
+	<li id="menu-item-10798" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10798"><a href="https://www.americancinematheque.com/now-showing/?event_location=54&#038;view_type=list">Aero Theatre</a></li>
+	<li id="menu-item-12845" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12845"><a href="https://www.americancinematheque.com/now-showing/?event_location=102&#038;view_type=list">Los Feliz Theatre</a></li>
+	<li id="menu-item-1199728" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1199728"><a href="https://www.americancinematheque.com/now-showing/?event_location=55&#038;view_type=list">Egyptian Theatre</a></li>
+	<li id="menu-item-5564596" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5564596"><a href="/now-showing/?event_location=181&#038;view_type=list">Directors Village</a></li>
+	<li id="menu-item-671235" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-671235"><a href="https://www.americancinematheque.com/festivals/">Annual Festivals</a></li>
+	<li id="menu-item-7673" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-7673"><a href="https://www.americancinematheque.com/now-showing-series/">By Series</a></li>
+</ul>
+</li>
+<li id="menu-item-1513090" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1513090"><a href="https://www.americancinematheque.com/join-us/membership/" aria-controls="megaMenuWrapper__1513090">Membership</a><div id="megaMenuWrapper__1513090" class="megaMenuWrapper"><div class="megaMenuSide"><div class="megaMenu__closeWrapper"><button type="button" class="megaMenu__close screen-reader-text">Close<span class="fal fa-times" aria-hidden="true"></span></button></div><div class="megaMenuInner"><div class="megaMenuInner__text"><div class="megaMenuInner__body"><p>Everything we do is rooted in the collective, communal experience of the movies and bringing people together around the cinematic arts. Your membership ensures access to that experience is available to everyone and includes a number of personal benefits.</p>
+</div></div><div class="megaMenuInner__image"><img src="https://assets.americancinematheque.com/wp-content/uploads/2023/05/09142138/Become-A-Member-Home-Page.png" /></div></div></div><div class="megaMenuMain"><h3 class="megaMenuMain__title"><a href="https://www.americancinematheque.com/join-us/membership/">Membership<span class="fal fa-long-arrow-right" aria-hidden="true"></span></a></h3></a>
+<ul class="sub-menu">
+	<li id="menu-item-1513025" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1513025"><a href="https://www.americancinematheque.com/join-us/membership/">Become a Member</a></li>
+	<li id="menu-item-1512975" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1512975"><a href="https://www.americancinematheque.com/join-us/membership/#gift-of-membership">Give the Gift of Membership</a>
+	<ul class="sub-menu">
+		<li id="menu-item-5563814" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5563814"><a href="https://www.americancinematheque.com/activate-membership/">Activate Gift Membership</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li id="menu-item-5308226" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5308226"><a href="https://www.americancinematheque.com/impact/" aria-controls="megaMenuWrapper__5308226">Impact</a><div id="megaMenuWrapper__5308226" class="megaMenuWrapper"><div class="megaMenuSide"><div class="megaMenu__closeWrapper"><button type="button" class="megaMenu__close screen-reader-text">Close<span class="fal fa-times" aria-hidden="true"></span></button></div><div class="megaMenuInner"><div class="megaMenuInner__text"><div class="megaMenuInner__body"><p>The American Cinematheque is a member-donor-volunteer supported 501(c)(3) non-profit arts organization whose mission is to celebrate the experience of cinema. </p>
+</div><a href="https://www.americancinematheque.com/impact/" class="megaMenuInner__cta button">Impact</a></div><div class="megaMenuInner__image"><img src="https://assets.americancinematheque.com/wp-content/uploads/2022/08/24205807/Vault_American_Cinematheque_MM.jpg" /></div></div></div><div class="megaMenuMain"><h3 class="megaMenuMain__title"><a href="https://www.americancinematheque.com/impact/">Impact<span class="fal fa-long-arrow-right" aria-hidden="true"></span></a></h3></a>
+<ul class="sub-menu">
+	<li id="menu-item-5307367" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5307367"><a href="https://www.americancinematheque.com/impact/archive/">Archive</a></li>
+	<li id="menu-item-5307368" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5307368"><a href="https://www.americancinematheque.com/impact/wescreen/">WeScreen</a></li>
+	<li id="menu-item-6556" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6556"><a href="https://www.americancinematheque.com/join-us/donate/">Donate</a></li>
+	<li id="menu-item-515353" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-515353"><a href="https://www.americancinematheque.com/join-us/volunteer/">Volunteer</a></li>
+</ul>
+</li>
+<li id="menu-item-6543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6543"><a href="https://www.americancinematheque.com/about/" aria-controls="megaMenuWrapper__6543">About</a><div id="megaMenuWrapper__6543" class="megaMenuWrapper"><div class="megaMenuSide"><div class="megaMenu__closeWrapper"><button type="button" class="megaMenu__close screen-reader-text">Close<span class="fal fa-times" aria-hidden="true"></span></button></div><div class="megaMenuInner"><div class="megaMenuInner__text"><div class="megaMenuInner__body"><p>Since it began screening films to the public in 1985, the American Cinematheque has provided diverse film programming and immersive in-person discussions and events with thousands of filmmakers and luminaries, presenting new and repertory cinema to Los Angeles.</p>
+</div><a href="https://www.americancinematheque.com/about/" class="megaMenuInner__cta button">About</a></div><div class="megaMenuInner__image"><img src="https://assets.americancinematheque.com/wp-content/uploads/2023/05/09141631/About-Megamenu-2.png" /></div></div></div><div class="megaMenuMain"><h3 class="megaMenuMain__title"><a href="https://www.americancinematheque.com/about/">About<span class="fal fa-long-arrow-right" aria-hidden="true"></span></a></h3></a>
+<ul class="sub-menu">
+	<li id="menu-item-6550" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6550"><a href="https://www.americancinematheque.com/about/theatres/">Theatres</a></li>
+	<li id="menu-item-6548" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6548"><a href="https://www.americancinematheque.com/about/news-press/">News &#038; Press</a></li>
+	<li id="menu-item-6547" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6547"><a href="https://www.americancinematheque.com/about/faqs/">FAQs</a></li>
+	<li id="menu-item-6544" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6544"><a href="https://www.americancinematheque.com/about/admission-policies/">Admission Policies</a></li>
+	<li id="menu-item-6546" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6546"><a href="https://www.americancinematheque.com/about/contact/">Contact</a></li>
+</ul>
+</li>
+<li id="menu-item-406078" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-406078"><a href="https://www.americancinematheque.com/shop/">Shop</a></li>
+<li id="menu-item-5515089" class="podcast menu-item menu-item-type-custom menu-item-object-custom menu-item-5515089"><a target="_blank" href="https://acpodcast.com/">AC Podcast</a></li>
+</ul></div>
+                <button id="menu-toggle" class="menu-toggle" aria-controls="mobile-menu" aria-expanded="false">
+                    <span class="line line-top"></span>
+                    <span class="line line-middle"></span>
+                    <span class="line line-bottom"></span>
+                </button>
+
+                <div id="mobile-nav" class="header__nav__mobile">
+                    <div class="mobileMenus">
+                        <div class="menu-mobile-container"><ul id="mobile-menu" class="menu"><li id="menu-item-6598" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-6491 current_page_item current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-6598"><a href="https://www.americancinematheque.com/now-showing/" aria-current="page">Now Showing</a>
+<ul class="sub-menu">
+	<li id="menu-item-676803" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-676803"><a href="https://www.americancinematheque.com/now-showing/" aria-current="page">Calendar</a></li>
+	<li id="menu-item-10893" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-10893"><a href="https://www.americancinematheque.com/now-showing/?event_location=54&#038;view_type=list">Aero Theatre</a></li>
+	<li id="menu-item-12852" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-12852"><a href="https://www.americancinematheque.com/now-showing/?event_location=102&#038;view_type=list">Los Feliz Theatre</a></li>
+	<li id="menu-item-1209918" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1209918"><a href="https://www.americancinematheque.com/now-showing/?event_location=55&#038;view_type=list">Egyptian Theatre</a></li>
+	<li id="menu-item-5564595" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5564595"><a href="/now-showing/?event_location=181&#038;view_type=list">Directors Village</a></li>
+	<li id="menu-item-5565299" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5565299"><a href="https://www.americancinematheque.com/runs/the-odyssey/">The Odyssey</a></li>
+	<li id="menu-item-671236" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-671236"><a href="https://www.americancinematheque.com/festivals/">Annual Festivals</a></li>
+	<li id="menu-item-7698" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-7698"><a href="https://www.americancinematheque.com/now-showing-series/">By Series</a></li>
+</ul>
+</li>
+<li id="menu-item-1631332" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-1631332"><a href="https://www.americancinematheque.com/join-us/membership/">Membership</a>
+<ul class="sub-menu">
+	<li id="menu-item-1631333" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1631333"><a href="https://www.americancinematheque.com/join-us/membership/">Become a Member</a></li>
+	<li id="menu-item-1631334" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1631334"><a href="https://www.americancinematheque.com/join-us/membership/#gift-of-membership">Give the Gift of Membership</a></li>
+	<li id="menu-item-5563819" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5563819"><a href="https://www.americancinematheque.com/activate-membership/">Activate Membership</a></li>
+	<li id="menu-item-1631338" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1631338"><a href="https://www.americancinematheque.com/join-us/membership/">Membership</a></li>
+</ul>
+</li>
+<li id="menu-item-5307465" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5307465"><a href="https://www.americancinematheque.com/impact/">Impact</a>
+<ul class="sub-menu">
+	<li id="menu-item-5307466" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5307466"><a href="https://www.americancinematheque.com/impact/archive/">Archive</a></li>
+	<li id="menu-item-5307467" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5307467"><a href="https://www.americancinematheque.com/impact/wescreen/">WeScreen</a></li>
+	<li id="menu-item-6591" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6591"><a href="https://www.americancinematheque.com/join-us/donate/">Donate</a></li>
+	<li id="menu-item-515366" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-515366"><a href="https://www.americancinematheque.com/join-us/volunteer/">Volunteer</a></li>
+	<li id="menu-item-5307500" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5307500"><a href="https://www.americancinematheque.com/impact/">Impact</a></li>
+</ul>
+</li>
+<li id="menu-item-6590" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6590"><a href="https://www.americancinematheque.com/join-us/">Support Us</a>
+<ul class="sub-menu">
+	<li id="menu-item-6592" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6592"><a href="https://www.americancinematheque.com/join-us/membership/">Membership</a></li>
+	<li id="menu-item-6605" class="allItem menu-item menu-item-type-post_type menu-item-object-page menu-item-6605"><a href="https://www.americancinematheque.com/join-us/">Support Us</a></li>
+</ul>
+</li>
+<li id="menu-item-6578" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6578"><a href="https://www.americancinematheque.com/about/">About</a>
+<ul class="sub-menu">
+	<li id="menu-item-6585" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6585"><a href="https://www.americancinematheque.com/about/theatres/">Theatres</a></li>
+	<li id="menu-item-6583" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6583"><a href="https://www.americancinematheque.com/about/news-press/">News &#038; Press</a></li>
+	<li id="menu-item-6582" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6582"><a href="https://www.americancinematheque.com/about/faqs/">FAQs</a></li>
+	<li id="menu-item-6579" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6579"><a href="https://www.americancinematheque.com/about/admission-policies/">Admission Policies</a></li>
+	<li id="menu-item-6581" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6581"><a href="https://www.americancinematheque.com/about/contact/">Contact</a></li>
+	<li id="menu-item-6603" class="allItem menu-item menu-item-type-post_type menu-item-object-page menu-item-6603"><a href="https://www.americancinematheque.com/about/">About</a></li>
+</ul>
+</li>
+<li id="menu-item-406079" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-406079"><a href="https://www.americancinematheque.com/shop/">Shop</a></li>
+<li id="menu-item-5515087" class="podcast menu-item menu-item-type-custom menu-item-object-custom menu-item-5515087"><a target="_blank" href="https://acpodcast.com/">AC Podcast</a></li>
+</ul></div>                    </div>
+                </div>
+
+            </nav>
+
+        </div><!-- .header__wrapper -->
+
+    </div>
+
+</header>
+
+	<div id="content" class="site-content">
+
+<div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+
+        
+<section class="hero" data-bg="orange">
+    <div class="container">
+                    <h1 class="hero__title">Now Showing</h1>
+        
+    </div>
+            <div class="hero__image" style="background-image: url(https://assets.americancinematheque.com/wp-content/uploads/2021/05/22193239/Now-Showing_Megamenu.png);"></div>
+    </section>
+
+    <section class="pageBreadcrumbs">
+        <div class="container">
+            <p id="breadcrumbs"><span><span><a href="https://www.americancinematheque.com/">Home</a></span> / <span class="breadcrumb_last" aria-current="page">Now Showing</span></span></p>        </div>
+    </section>
+
+
+<section class="generalContent" data-padding-top="standard" data-padding-bottom="standard">
+
+    <div class="container" style="max-width: 1600px">
+
+            <div class="generalContent__content">
+            
+        <div id="eventsApp">
+            <router-view></router-view>
+        </div>
+
+        
+        </div>
+    
+    </div>
+
+</section>
+
+    </main><!-- #main -->
+</div><!-- #primary -->
+
+
+	</div><!-- #content -->
+
+	
+
+    
+        
+            <section class="emailSignup">
+                <div class="container">
+
+                    <div class="emailSignup__form">
+
+                                                    <h2 class="emailSignup__formTitle">Subscribe for AC updates</h2>
+                        
+                                                    
+                <div class='gf_browser_chrome gform_wrapper gform_legacy_markup_wrapper gform-theme--no-framework' data-form-theme='legacy' data-form-index='0' id='gform_wrapper_4' ><div id='gf_4' class='gform_anchor' tabindex='-1'></div><form method='post' enctype='multipart/form-data' target='gform_ajax_frame_4' id='gform_4'  action='/now-showing/#gf_4' data-formid='4' novalidate>
+                        <div class='gform-body gform_body'><ul id='gform_fields_4' class='gform_fields top_label form_sublabel_below description_below validation_below'><li id="field_4_5" class="gfield gfield--type-honeypot gform_validation_container field_sublabel_below gfield--has-description field_description_below field_validation_below gfield_visibility_visible"  ><label class='gfield_label gform-field-label' for='input_4_5'><span class='gform-field-label__text'>Instagram</span></label><div class='ginput_container'><input name='input_5' id='input_4_5' type='text' value='' autocomplete='new-password'/></div><div class='gfield_description' id='gfield_description_4_5'>This field is for validation purposes and should be left unchanged.</div></li><li id="field_4_1" class="gfield gfield--type-name gfield_contains_required field_sublabel_above gfield--no-description field_description_below hidden_label field_validation_below gfield_visibility_visible"  ><label class='gfield_label gform-field-label gfield_label_before_complex' ><span class='gform-field-label__text'>Name</span><span class="gfield_required"><span class="gfield_required gfield_required_asterisk">*</span></span></label><div class='ginput_complex ginput_container ginput_container--name no_prefix has_first_name no_middle_name has_last_name no_suffix gf_name_has_2 ginput_container_name gform-grid-row' id='input_4_1'>
+                            
+                            <span id='input_4_1_3_container' class='name_first gform-grid-col gform-grid-col--size-auto' >
+                                                    <label for='input_4_1_3' class='gform-field-label gform-field-label--type-sub '>First</label>
+                                                    <input type='text' name='input_1.3' id='input_4_1_3' value=''   aria-required='true'   placeholder='First Name'  />
+                                                </span>
+                            
+                            <span id='input_4_1_6_container' class='name_last gform-grid-col gform-grid-col--size-auto' >
+                                                            <label for='input_4_1_6' class='gform-field-label gform-field-label--type-sub '>Last</label>
+                                                            <input type='text' name='input_1.6' id='input_4_1_6' value=''   aria-required='true'   placeholder='Last Name'  />
+                                                        </span>
+                            
+                        </div></li><li id="field_4_2" class="gfield gfield--type-email gfield_contains_required field_sublabel_below gfield--no-description field_description_below field_validation_below gfield_visibility_visible"  ><label class='gfield_label gform-field-label' for='input_4_2'><span class='gform-field-label__text'>Email</span><span class="gfield_required"><span class="gfield_required gfield_required_asterisk">*</span></span></label><div class='ginput_container ginput_container_email'>
+                            <input name='input_2' id='input_4_2' type='email' value='' class='large'   placeholder='Email Address' aria-required="true" aria-invalid="false"  />
+                        </div></li><li id="field_4_4" class="gfield gfield--type-consent gfield--type-choice gfield_contains_required field_sublabel_below gfield--no-description field_description_below hidden_label field_validation_below gfield_visibility_visible gfield--choice-align-vertical"  ><label class='gfield_label gform-field-label gfield_label_before_complex' ><span class='gform-field-label__text'>Consent</span><span class="gfield_required"><span class="gfield_required gfield_required_asterisk">*</span></span></label><div class='ginput_container ginput_container_consent'><input name='input_4.1' id='input_4_4_1' type='checkbox' value='1'   aria-required="true" aria-invalid="false"   /> <label class="gform-field-label gform-field-label--type-inline gfield_consent_label" for='input_4_4_1' ><span class='gform-field-label__text'>I agree to the <a href="/terms">terms and conditions</a></span><span class="gfield_required gfield_required_asterisk">*</span></label><input type='hidden' name='input_4.2' value='I agree to the &lt;a href=&quot;/terms&quot;&gt;terms and conditions&lt;/a&gt;' class='gform_hidden' /><input type='hidden' name='input_4.3' value='2' class='gform_hidden' /></div></li></ul></div>
+        <div class='gform-footer gform_footer top_label'> <button type='submit' id='gform_submit_button_4' class='gform_button button' onclick='gform.submission.handleButtonClick(this);' data-submission-type='submit' >Subscribe</button> <input type='hidden' name='gform_ajax' value='form_id=4&amp;title=&amp;description=&amp;tabindex=0&amp;theme=legacy&amp;hash=07ddf5e9f1a39e65cb1b283f627d3577' />
+            <input type='hidden' class='gform_hidden' name='gform_submission_method' data-js='gform_submission_method_4' value='iframe' />
+            <input type='hidden' class='gform_hidden' name='gform_theme' data-js='gform_theme_4' id='gform_theme_4' value='legacy' />
+            <input type='hidden' class='gform_hidden' name='gform_style_settings' data-js='gform_style_settings_4' id='gform_style_settings_4' value='' />
+            <input type='hidden' class='gform_hidden' name='is_submit_4' value='1' />
+            <input type='hidden' class='gform_hidden' name='gform_submit' value='4' />
+            
+            <input type='hidden' class='gform_hidden' name='gform_currency' data-currency='USD' value='blSMJ9RWnGB6/7McxY9+2601cCc2nAgsG33N+luSveeF3S9dokw/4Nao3Js9CMYfoplw9eTKBwcftEsa3uUrELqS/avNt/A2CWWOO41KPqlZ6B4=' />
+            <input type='hidden' class='gform_hidden' name='gform_unique_id' value='' />
+            <input type='hidden' class='gform_hidden' name='state_4' value='WyJ7XCI0LjFcIjpcIjQwNjFlZGNlYmNmYjY1M2U4OWZlNjEwNGFkYzkzZDhlXCIsXCI0LjJcIjpcIjFkMTM1MzIwMjMwNjY3M2I5MGUxNmMxOWMzNDhmZDlhXCIsXCI0LjNcIjpcImNmMTc2MzEzYWNmMDdmZTVmNTM5ZjA4MjY1Nzc3NzBmXCIsXCJnZm9ybV9zdWJtaXNzaW9uX21ldGhvZFwiOltcIjQ2ZTAyM2ZhYTAxMTgyYjUwNjkxODExYWFkYjM1ODc5XCIsXCI0YWFlZjY5MzhkNWFiNjA0OTZhMjQyNjEwMGI1ZDZkZVwiLFwiZWRkMzNiNWQzZWJlZDU2ZTQzNTE4YzIxMjg5YTg5YTlcIl0sXCJnZm9ybV90aGVtZVwiOlwiZjYxZmJiZDBlZWMyYmJjMDUzNzhjMDhiODJhOWY3YjlcIixcImdmb3JtX3N0eWxlX3NldHRpbmdzXCI6XCJjMGNmNGI3YWIxNzA4ZGQzYjM2NmM2YmYyMGRlOTdlOFwiLFwiZm9ybV9pZFwiOlwiNDQyYmMyZDhlODZjMjEzZjQ4ODdkODZlZDA5OTI1NGRcIixcInVybFwiOlwiYWQ0MGEwNDg4MzIyNjkwZDlhYzVlMjY5OWNhYmM2YmFcIixcInN0YXRlX3RpbWVzdGFtcFwiOlwiMDAyODFlNmNmYjBhODFlMmI1NjBkNWYwMzA5OWE5OWNcIn0iLCIxZTgzOTNjMGNhNDBjZTEzN2RiMjg3OGYzY2U1YmJmYyIsMTc5MDYxNTQxNl0=' />
+            <input type='hidden' autocomplete='off' class='gform_hidden' name='gform_target_page_number_4' id='gform_target_page_number_4' value='0' />
+            <input type='hidden' autocomplete='off' class='gform_hidden' name='gform_source_page_number_4' id='gform_source_page_number_4' value='1' />
+            <input type='hidden' name='gform_field_values' value='' />
+            
+        </div>
+                        </form>
+                        </div>
+		                <iframe style='display:none;width:0px;height:0px;' src='about:blank' name='gform_ajax_frame_4' id='gform_ajax_frame_4' title='This iframe contains the logic required to handle Ajax powered Gravity Forms.'></iframe>
+		                <script>
+gform.initializeOnLoaded( function() {jQuery('#gform_ajax_frame_4').on('load',function(){var contents = jQuery(this).contents().find('*').html();var is_postback = contents.indexOf('GF_AJAX_POSTBACK') >= 0;if(!is_postback){return;}var form_content = jQuery(this).contents().find('#gform_wrapper_4');var is_confirmation = jQuery(this).contents().find('#gform_confirmation_wrapper_4').length > 0;var is_redirect = contents.indexOf('gformRedirect(){') >= 0;var is_form = form_content.length > 0 && ! is_redirect && ! is_confirmation;var mt = parseInt(jQuery('html').css('margin-top'), 10) + parseInt(jQuery('body').css('margin-top'), 10) + 100;if(is_form){jQuery('#gform_wrapper_4').html(form_content.html());if(form_content.hasClass('gform_validation_error')){jQuery('#gform_wrapper_4').addClass('gform_validation_error');} else {jQuery('#gform_wrapper_4').removeClass('gform_validation_error');}setTimeout( function() { /* delay the scroll by 50 milliseconds to fix a bug in chrome */ jQuery(document).scrollTop(jQuery('#gform_wrapper_4').offset().top - mt); }, 50 );var current_page = jQuery('#gform_source_page_number_4').val();jQuery(document).trigger('gform_page_loaded', [4, current_page]);window['gf_submitting_4'] = false;}else if(!is_redirect){var confirmation_content = jQuery(this).contents().find('.GF_AJAX_POSTBACK').html();if(!confirmation_content){confirmation_content = contents;}jQuery('#gform_wrapper_4').replaceWith(confirmation_content);jQuery(document).scrollTop(jQuery('#gf_4').offset().top - mt);jQuery(document).trigger('gform_confirmation_loaded', [4]);window['gf_submitting_4'] = false;wp.a11y.speak(jQuery('#gform_confirmation_message_4').text());}else{jQuery('#gform_4').append(contents);if(window['gformRedirect']) {gformRedirect();}}jQuery(document).trigger("gform_pre_post_render", [{ formId: "4", currentPage: "current_page", abort: function() { this.preventDefault(); } }]);        if (event && event.defaultPrevented) {                return;        }        const gformWrapperDiv = document.getElementById( "gform_wrapper_4" );        if ( gformWrapperDiv ) {            const visibilitySpan = document.createElement( "span" );            visibilitySpan.id = "gform_visibility_test_4";            gformWrapperDiv.insertAdjacentElement( "afterend", visibilitySpan );        }        const visibilityTestDiv = document.getElementById( "gform_visibility_test_4" );        let postRenderFired = false;        function triggerPostRender() {            if ( postRenderFired ) {                return;            }            postRenderFired = true;            gform.core.triggerPostRenderEvents( 4, current_page );            if ( visibilityTestDiv ) {                visibilityTestDiv.parentNode.removeChild( visibilityTestDiv );            }        }        function debounce( func, wait, immediate ) {            var timeout;            return function() {                var context = this, args = arguments;                var later = function() {                    timeout = null;                    if ( !immediate ) func.apply( context, args );                };                var callNow = immediate && !timeout;                clearTimeout( timeout );                timeout = setTimeout( later, wait );                if ( callNow ) func.apply( context, args );            };        }        const debouncedTriggerPostRender = debounce( function() {            triggerPostRender();        }, 200 );        if ( visibilityTestDiv && visibilityTestDiv.offsetParent === null ) {            const observer = new MutationObserver( ( mutations ) => {                mutations.forEach( ( mutation ) => {                    if ( mutation.type === 'attributes' && visibilityTestDiv.offsetParent !== null ) {                        debouncedTriggerPostRender();                        observer.disconnect();                    }                });            });            observer.observe( document.body, {                attributes: true,                childList: false,                subtree: true,                attributeFilter: [ 'style', 'class' ],            });        } else {            triggerPostRender();        }    } );} );
+</script>
+                        
+                    </div>
+
+                                            <div class="emailSignup__image" style="background-image: url(https://assets.americancinematheque.com/wp-content/uploads/2022/08/24212419/AC_Website_Newsletter_Form.jpg);" aria-hidden="true"></div>
+                    
+                </div>
+            </section>
+
+        
+    
+    
+
+            
+            <section class="homeFooterBar">
+                <div class="container">
+
+                                            <figure class="homeFooterBar__logo">
+                            <img src="https://assets.americancinematheque.com/wp-content/uploads/2025/05/29102337/LAC_logo_primary_resize-1.png" alt="LA County Arts &amp; Culture logo">
+                        </figure>
+                                        
+                    <p class="homeFooterBar__text">The American Cinematheque is supported, in part, by the Los Angeles County Board of Supervisors through the Department of Arts and Culture.</p>
+
+                </div>
+            </section>
+            
+            
+	
+
+<section class="siteFooter__primary">
+    <div class="container">
+                <div class="siteFooter__primaryModule siteFooter__primaryLogo">
+            <a class="footer__logo" href="https://www.americancinematheque.com" title="American Cinematheque">
+                <img src="https://assets.americancinematheque.com/wp-content/uploads/2020/12/23013035/ac_logo_primary_stacked_black.svg" alt="American Cinematheque Logo">
+            </a>
+        </div>
+        
+                <div class="siteFooter__primaryModule siteFooter__primaryMenu">
+            
+                                <ul class="siteFooter__primaryMenuColumn">
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/about/" >About</a>
+                            </li>
+                        
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/now-showing/" >Now Showing</a>
+                            </li>
+                        
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/festivals/"  target="_blank" rel="noreferrer nofollow">Annual Festivals</a>
+                            </li>
+                        
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/tribute-to-ryan-gosling/"  target="_blank" rel="noreferrer nofollow">AC Awards</a>
+                            </li>
+                        
+                                    </ul>
+                
+            
+                                <ul class="siteFooter__primaryMenuColumn">
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/join-us/membership/" >Become a Member</a>
+                            </li>
+                        
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/join-us/donate/"  target="_blank" rel="noreferrer nofollow">Donate</a>
+                            </li>
+                        
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/about/contact/" >Contact Us</a>
+                            </li>
+                        
+                                                                        <li>
+                                <a href="https://www.americancinematheque.com/jobs/" >Jobs</a>
+                            </li>
+                        
+                                    </ul>
+                
+                    </div>
+        
+        <div class="siteFooter__primaryModule siteFooter__primaryLinks">
+            <ul>
+                <li>
+                    <a href="/shop">Store <span class="fal fa-shopping-bag" aria-hidden="true"></span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+<footer class="siteFooter__secondary" role="contentinfo">
+    <div class="container">
+
+        <p class="siteFooter__copyright">&copy; 2026 American Cinematheque <span>All rights reserved.</span></p>
+
+                <ul class="siteFooter__secondaryLinks">
+            
+                                    <li>
+                        <a href="https://www.americancinematheque.com/privacy-policy/" >Privacy Policy</a>
+                    </li>
+                
+            
+                                    <li>
+                        <a href="https://www.americancinematheque.com/terms/" >Terms &amp; Conditions</a>
+                    </li>
+                
+                    </ul>
+        
+        <ul class="siteFooter__social">
+            <li>
+                <a href="https://letterboxd.com/am_cinematheque/" target="_blank" rel="noreferrer nofollow" title="Follow us on Letterboxd">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M521.3 128C586.9 128 640 181.1 640 246.6s-53.1 118.6-118.7 118.6c-42.5 0-79.7-22.3-100.7-55.8c11.4-18.2 18-39.7 18-62.8s-6.6-44.6-18-62.8l0 0 .8-1.2c20.8-32.3 56.8-53.9 97.9-54.6l2 0zM320 128c42.5 0 79.7 22.3 100.7 55.8c-11.4 18.2-18 39.7-18 62.8s6.6 44.6 18 62.8l0 0-.8 1.2c-20.8 32.3-56.8 53.9-97.9 54.6l-2 0c-42.5 0-79.7-22.3-100.7-55.8c11.4-18.2 18-39.7 18-62.8s-6.6-44.6-18-62.8l0 0 .8-1.2c20.8-32.3 56.8-53.9 97.9-54.6l2 0zm-201.3 0c42.5 0 79.7 22.3 100.7 55.8c-11.4 18.2-18 39.7-18 62.8s6.6 44.6 18 62.8l0 0-.8 1.2c-20.8 32.3-56.8 53.9-97.9 54.6l-2 0C53.1 365.1 0 312.1 0 246.6S53.1 128 118.7 128z"/></svg>
+                </a>
+            </li>
+
+            <li>
+                <a href="https://www.instagram.com/am_cinematheque" target="_blank" rel="noreferrer nofollow" title="Follow us on Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+                </a>
+            </li>
+
+            <li>
+                <a href="https://twitter.com/am_cinematheque" target="_blank" rel="noreferrer nofollow" title="Follow us on X">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg>
+                </a>
+            </li>
+
+            <li>
+                <a href="https://bsky.app/profile/amcinematheque.bsky.social" target="_blank" rel="noreferrer nofollow" title="Follow us on Bluesky">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/></svg>
+                </a>
+            </li>
+
+            <li>
+                <a href="https://www.tiktok.com/@am_cinematheque" target="_blank" rel="noreferrer nofollow" title="Follow us on TikTok">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z"/></svg>
+                </a>
+            </li>
+        </ul>
+
+    </div>
+</footer>
+
+</div><!-- #page -->
+
+<div class="remoteMembersNote">
+	<div class="remoteMembersNote__inner">
+		<button class="remoteMembersNote__target" type="button">
+			<p>In Bulk Membership Mode</p>
+			<span class="remoteMembersNote__button button button--alt">Exit <span class="far fa-sign-out" aria-hidden="true"></span></span>
+		</button>
+	</div>
+</div>
+
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/mf-theme/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+        <script>
+        (function () {
+            var trackUrl = "https:\/\/www.americancinematheque.com\/api\/acnm";
+            var LS_KEY   = '_acdfpi';
+            var COOKIE_RE = /(^|;)\s*_acdfpi=([^;]+)/;
+
+            /**
+             * Resolve the stable visitor ID.
+             * Priority: cookie → localStorage → generate new.
+             * Always syncs the winner back to both stores so the ID survives
+             * a cookie clear (localStorage) or a localStorage clear (cookie).
+             */
+            function getVisitorId() {
+                // 1. PHP-injected into <head> at priority 1 — available before any script runs
+                var fromPhp     = window._acdfpi || null;
+                var cookieMatch = document.cookie.match(COOKIE_RE);
+                var fromCookie  = cookieMatch ? cookieMatch[2] : null;
+                var fromStorage = null;
+                try { fromStorage = localStorage.getItem(LS_KEY); } catch (e) {}
+
+                var id = fromPhp || fromCookie || fromStorage;
+
+                if (!id) {
+                    id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        var r = Math.random() * 16 | 0;
+                        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                    });
+                }
+
+                // Sync to all stores so every script on the page shares the same ID
+                if (!fromCookie || fromCookie !== id) {
+                    var exp = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString();
+                    document.cookie = '_acdfpi=' + id + '; expires=' + exp + '; path=/; SameSite=Lax';
+                }
+                if (!fromStorage || fromStorage !== id) {
+                    try { localStorage.setItem(LS_KEY, id); } catch (e) {}
+                }
+
+                return id;
+            }
+
+            var visitorId = getVisitorId();
+
+            function decodeWebTokenExpiry(token) {
+                try {
+                    var payload = atob(token.split('.')[0] || '');
+                    var parts = payload.split('|');
+                    if (parts[0] !== 'web') return 0;
+                    var exp = parseInt(parts[4], 10);
+                    return isNaN(exp) ? 0 : exp;
+                } catch (e) {
+                    return 0;
+                }
+            }
+
+            function isWebTokenValid(token) {
+                if (!token) return false;
+                return (Date.now() / 1000) < (decodeWebTokenExpiry(token) - 30);
+            }
+
+            function getApiBase() {
+                return (window._acApiBase || (window.acSettings && window.acSettings.apiUrl) || '').replace(/\/$/, '');
+            }
+
+            async function getWebAccessToken() {
+                var accessKey = 'acWebAuthToken';
+                var refreshKey = 'acWebRefreshToken';
+                var accessToken = null;
+                var refreshToken = null;
+
+                try {
+                    accessToken = localStorage.getItem(accessKey);
+                    refreshToken = localStorage.getItem(refreshKey);
+                } catch (e) {}
+
+                if (isWebTokenValid(accessToken)) {
+                    return accessToken;
+                }
+
+                if (!refreshToken) {
+                    return null;
+                }
+
+                try {
+                    var refreshResponse = await fetch(getApiBase() + '/api/web/auth/refresh', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ refresh_token: refreshToken })
+                    });
+                    var refreshData = await refreshResponse.json();
+                    if (refreshData && refreshData.status && refreshData.access_token) {
+                        try {
+                            localStorage.setItem(accessKey, refreshData.access_token);
+                            if (refreshData.refresh_token) {
+                                localStorage.setItem(refreshKey, refreshData.refresh_token);
+                            }
+                        } catch (e) {}
+                        return refreshData.access_token;
+                    }
+                } catch (e) {}
+
+                return null;
+            }
+
+            async function sendEvent(eventName, extra) {
+                var payload = Object.assign({
+                    event: eventName,
+                    url: window.location.href,
+                    title: document.title,
+                    device_id: visitorId,
+                }, extra || {});
+
+                var headers = {
+                    'Content-Type': 'application/json',
+                    'X-Acdfpi': visitorId
+                };
+
+                var webToken = await getWebAccessToken();
+                if (webToken) {
+                    headers['Authorization'] = 'Bearer ' + webToken;
+                }
+
+                fetch(trackUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload),
+                    keepalive: true,
+                }).catch(function () {});
+            }
+
+            // Expose sendEvent so other scripts can fire tracked events through
+            // the same /api/acnm pipeline (visitor id, web token, keepalive).
+            window.acTrack = sendEvent;
+
+            // Fire page_view immediately
+            sendEvent('page_view', { referrer: document.referrer || null });
+
+            // Fire page_stay every 30s, max 10 times (5 min); skip when tab is hidden
+            var elapsed = 0;
+            var stayCount = 0;
+            var stayTimer = setInterval(function () {
+                if (document.hidden) return;
+                stayCount++;
+                elapsed += 30;
+                sendEvent('page_stay', { duration: elapsed });
+                if (stayCount >= 10) clearInterval(stayTimer);
+            }, 30000);
+        })();
+        </script>
+                <script>
+        (function () {
+            var path = window.location.pathname;
+            var excluded = ['/cart', '/checkout', '/order-details', '/my-account'];
+
+            var isExcluded = excluded.some(function (p) { return path.indexOf(p) === 0; });
+            if (isExcluded) return;
+
+            // /now-showing/ — exact base path only (not individual show pages like /now-showing/twin-peaks/)
+            // /shop/ and /join-us/membership/ — any sub-path is valid
+            var isTracked = path === '/now-showing/'
+                || path.indexOf('/shop/') === 0
+                || path.indexOf('/join-us/membership/') === 0;
+
+            if (isTracked) {
+                try {
+                    // Preserve query params (e.g. ?view_type=list&event_location=55)
+                    var url = path + (window.location.search || '');
+                    localStorage.setItem('mf_continue_shopping_url', url);
+                } catch (e) {}
+            }
+        })();
+        </script>
+        <script id="mf-site-js-js-before">
+const ajaxurl = {"ajaxUrl":"https:\/\/www.americancinematheque.com\/wp-admin\/admin-ajax.php"}
+window.theme_dir = {"theme_dir":"https:\/\/www.americancinematheque.com\/wp-content\/themes\/mf-theme"}
+const algolia_env = {"algolia_env":"production_2026"}
+window.algolia_env = "production_2026";
+window.acSettings = window.acSettings || {}; window.acSettings.apiUrl = "https:\/\/www.americancinematheque.com";
+//# sourceURL=mf-site-js-js-before
+</script>
+<script id="mf-site-js-js" src="https://www.americancinematheque.com/wp-content/themes/mf-theme/public/main.js?ver=2.40"></script>
+<script id="wp-dom-ready-js" src="https://www.americancinematheque.com/wp-includes/js/dist/dom-ready.min.js?ver=3fe927cab37bf38d6a23"></script>
+<script id="wp-hooks-js" src="https://www.americancinematheque.com/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255"></script>
+<script id="wp-i18n-js" src="https://www.americancinematheque.com/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"></script>
+<script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+</script>
+<script id="wp-a11y-js" src="https://www.americancinematheque.com/wp-includes/js/dist/a11y.min.js?ver=31c6cec5a4ff7aff483d"></script>
+<script id="gform_json-js" defer='defer' src="https://www.americancinematheque.com/wp-content/plugins/gravityforms/js/jquery.json.min.js?ver=3.0.2"></script>
+<script id="gform_gravityforms-js-extra">
+var gform_i18n = {"datepicker":{"helpTextShort":"Press F1 for help","helpText":"Press the arrow keys to navigate by day, PageUp and PageDown to navigate by month, Alt+PageUp and Alt+PageDown to navigate by year, or Escape to cancel.","openOnFocusHelpText":"Press Down arrow to browse the calendar, or Escape to close.","tooltipTxt":"Press Escape to cancel","disabledTxt":"Disabled","markedTxt":"Selected","prevTxt":"Previous","nextTxt":"Next","monthTxt":"Month","yearTxt":"Year","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"days":[{"s":"S","l":"Sunday"},{"s":"M","l":"Monday"},{"s":"T","l":"Tuesday"},{"s":"W","l":"Wednesday"},{"s":"T","l":"Thursday"},{"s":"F","l":"Friday"},{"s":"S","l":"Saturday"}]}};
+var gf_legacy_multi = [];
+var gform_gravityforms = {"strings":{"invalid_file_extension":"This type of file is not allowed. Must be one of the following:","file_uploaded":"File uploaded","delete_file":"Delete this file","in_progress":"in progress","file_exceeds_limit":"File exceeds size limit","illegal_extension":"This type of file is not allowed.","max_reached":"Maximum number of files reached","unknown_error":"There was a problem while saving the file on the server","currently_uploading":"Please wait for the uploading to complete","cancel":"Cancel","cancel_upload":"Cancel this upload","cancelled":"Cancelled","error":"Error","message":"Message"},"vars":{"images_url":"https://www.americancinematheque.com/wp-content/plugins/gravityforms/images"}};
+var gf_global = {"gf_currency_config":{"name":"U.S. Dollar","symbol_left":"$","symbol_right":"","symbol_padding":"","thousand_separator":",","decimal_separator":".","decimals":2,"code":"USD"},"base_url":"https://www.americancinematheque.com/wp-content/plugins/gravityforms","number_formats":[],"version_hash":"47dde5ff4b7f44e9e7e8bc6195d36b48","strings":{"newRowAdded":"New row added.","rowRemoved":"Row removed","formSaved":"The form has been saved.  The content contains the link to return and complete the form."}};
+//# sourceURL=gform_gravityforms-js-extra
+</script>
+<script id="gform_gravityforms-js" defer='defer' src="https://www.americancinematheque.com/wp-content/plugins/gravityforms/js/gravityforms.min.js?ver=3.0.2"></script>
+<script id="gform_placeholder-js" defer='defer' src="https://www.americancinematheque.com/wp-content/plugins/gravityforms/js/placeholders.jquery.min.js?ver=3.0.2"></script>
+<script id="gform_gravityforms_utils-js" defer='defer' src="https://www.americancinematheque.com/wp-content/plugins/gravityforms/assets/js/dist/utils.min.js?ver=3f278756f0a3032bed328ff6a9f6c01d"></script>
+<script id="gform_gravityforms_theme_vendors-js" defer='defer' src="https://www.americancinematheque.com/wp-content/plugins/gravityforms/assets/js/dist/vendor-theme.min.js?ver=b1d32e3bcae548735f8a8c723e228edd"></script>
+<script id="gform_gravityforms_theme-js-extra">
+var gform_theme_config = {"common":{"form":{"honeypot":{"version_hash":"47dde5ff4b7f44e9e7e8bc6195d36b48"},"ajax":{"ajaxurl":"https://www.americancinematheque.com/wp-admin/admin-ajax.php","ajax_submission_nonce":"e73b222d58","i18n":{"step_announcement":"Step %1$s of %2$s, %3$s","unknown_error":"There was an unknown error processing your request. Please try again.","error_403":"The request was blocked (403 error) for unknown security reasons. Remove any code-like text (scripts or DB queries) and try again."}}}},"hmr_dev":"","public_path":"https://www.americancinematheque.com/wp-content/plugins/gravityforms/assets/js/dist/","config_nonce":"71012a4896"};
+//# sourceURL=gform_gravityforms_theme-js-extra
+</script>
+<script id="gform_gravityforms_theme-js" defer='defer' src="https://www.americancinematheque.com/wp-content/plugins/gravityforms/assets/js/dist/scripts-theme.min.js?ver=a47d2ddc45fa71f5303d9c5936ccd281"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://www.americancinematheque.com/wp-includes/js/wp-emoji-release.min.js?ver=7.1.2"}}
+</script>
+<script type="module">
+/*! This file is auto-generated */
+var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof HTMLScriptElement))throw new Error("Element missing: "+e);const r=JSON.parse(t.text),s=(window._wpemojiSettings=r,"wpEmojiSettingsSupports"),o=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(s,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const r=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===r[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,r){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!r(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,r){let a;const s=(a="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),o=(s.textBaseline="top",s.font="600 32px Arial",{});return e.forEach(e=>{o[e]=t(s,e,n,r)}),o}function a(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}r.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(s));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(o),u.toString(),c.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"});const a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=e=>{i(n=e.data),a.terminate(),t(n)})}catch(e){}i(n=f(o,u,c,p))}t(n)}).then(e=>{for(const n in e)r.supports[n]=e[n],r.supports.everything=r.supports.everything&&r.supports[n],"flag"!==n&&(r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&r.supports[n]);var t;r.supports.everythingExceptFlag=r.supports.everythingExceptFlag&&!r.supports.flag,r.supports.everything||((t=r.source||{}).concatemoji?a(t.concatemoji):t.wpemoji&&t.twemoji&&(a(t.twemoji),a(t.wpemoji)))});
+//# sourceURL=https://www.americancinematheque.com/wp-includes/js/wp-emoji-loader.min.js
+</script>
+<script>
+gform.initializeOnLoaded( function() { jQuery(document).on('gform_post_render', function(event, formId, currentPage){if(formId == 4) {if(typeof Placeholders != 'undefined'){
+                        Placeholders.enable();
+                    }} } );jQuery(document).on('gform_post_conditional_logic', function(event, formId, fields, isInit){} ) } );
+</script>
+<script>
+gform.initializeOnLoaded( function() {jQuery(document).trigger("gform_pre_post_render", [{ formId: "4", currentPage: "1", abort: function() { this.preventDefault(); } }]);        if (event && event.defaultPrevented) {                return;        }        const gformWrapperDiv = document.getElementById( "gform_wrapper_4" );        if ( gformWrapperDiv ) {            const visibilitySpan = document.createElement( "span" );            visibilitySpan.id = "gform_visibility_test_4";            gformWrapperDiv.insertAdjacentElement( "afterend", visibilitySpan );        }        const visibilityTestDiv = document.getElementById( "gform_visibility_test_4" );        let postRenderFired = false;        function triggerPostRender() {            if ( postRenderFired ) {                return;            }            postRenderFired = true;            gform.core.triggerPostRenderEvents( 4, 1 );            if ( visibilityTestDiv ) {                visibilityTestDiv.parentNode.removeChild( visibilityTestDiv );            }        }        function debounce( func, wait, immediate ) {            var timeout;            return function() {                var context = this, args = arguments;                var later = function() {                    timeout = null;                    if ( !immediate ) func.apply( context, args );                };                var callNow = immediate && !timeout;                clearTimeout( timeout );                timeout = setTimeout( later, wait );                if ( callNow ) func.apply( context, args );            };        }        const debouncedTriggerPostRender = debounce( function() {            triggerPostRender();        }, 200 );        if ( visibilityTestDiv && visibilityTestDiv.offsetParent === null ) {            const observer = new MutationObserver( ( mutations ) => {                mutations.forEach( ( mutation ) => {                    if ( mutation.type === 'attributes' && visibilityTestDiv.offsetParent !== null ) {                        debouncedTriggerPostRender();                        observer.disconnect();                    }                });            });            observer.observe( document.body, {                attributes: true,                childList: false,                subtree: true,                attributeFilter: [ 'style', 'class' ],            });        } else {            triggerPostRender();        }    } );
+</script>
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

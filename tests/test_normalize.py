@@ -18,3 +18,11 @@ from scraper.normalize import smart_title
 ])
 def test_smart_title(raw, expected):
     assert smart_title(raw) == expected
+
+
+def test_format_suffix_in_titles():
+    from scraper.normalize import split_format_suffix
+    assert split_format_suffix("Idlewild (35mm)") == ("Idlewild", "35mm")
+    assert split_format_suffix("The Misconceived - 35MM") == ("The Misconceived", "35mm")
+    assert split_format_suffix("Blade Runner (4K Restoration)") == ("Blade Runner", None)
+    assert split_format_suffix("Up - Down") == ("Up - Down", None)

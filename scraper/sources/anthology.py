@@ -33,7 +33,8 @@ def parse_meta(line: str) -> tuple[int | None, int | None, str | None]:
 class AnthologyScraper(BaseScraper):
     def fetch(self) -> list[RawPage]:
         pages = []
-        y, m = today_local().year, today_local().month
+        today = today_local(self.tz)
+        y, m = today.year, today.month
         for _ in range(MONTHS_AHEAD):
             page = self.get_page(LIST, params={"view": "list", "month": m, "year": y})
             pages.append(page)
@@ -93,8 +94,8 @@ class AnthologyScraper(BaseScraper):
                 tm = datetime.strptime(t, "%I:%M %p").time()
             except ValueError:
                 continue
-            start = to_local(datetime.combine(day, tm))
-            start_s = iso(start)
+            start = to_local(datetime.combine(day, tm), self.tz)
+            start_s = iso(start, self.tz)
             anchor = a["name"]
             rows.append(Screening(
                 id=make_id(self.venue.id, start_s, title),

@@ -26,7 +26,8 @@ def build_payload(store: Store) -> dict:
         st = statuses.get(v.id)
         venues.append({
             "id": v.id, "name": v.name, "short": v.short or v.id[:3].upper(),
-            "color": v.color, "city": v.city,
+            "color": v.color, "region": v.region, "city": v.region, "timezone": v.timezone,
+            "website": v.website, "adapter": v.adapter if v.adapter != "custom" else None,
             "status": "disabled" if not v.enabled else (st.status if st else "failed"),
             "fetched_at": st.fetched_at if st else None,
             "count": st.count if st else 0,

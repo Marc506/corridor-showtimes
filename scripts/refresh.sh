@@ -32,6 +32,10 @@ trap 'rm -rf "$LOCK"' EXIT
 log "start"
 "$PY" -m scraper.run >> "$LOG" 2>&1
 rc=$?
+# optional: let Claude repair recipes that stopped working (needs ANTHROPIC_API_KEY; once per venue per day)
+if [[ "${AUTO_REPAIR:-0}" == "1" ]]; then
+  "$PY" -m scraper.repair --failed >> "$LOG" 2>&1 || log "recipe repair did not fix everything (see above)"
+fi
 "$PY" -m scraper.export >> "$LOG" 2>&1 || rc=$?
 find "$ROOT/data/raw" -mindepth 1 -maxdepth 1 -type d -mtime +14 -exec rm -rf {} + 2>/dev/null
 

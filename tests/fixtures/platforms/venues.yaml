@@ -1,0 +1,149 @@
+# Demo venues that run each platform adapter against the real pages in this directory.
+# tests/test_contract.py checks every entry; `fixture:` is a fixture manifest relative to this file.
+version: 2
+venues:
+  - id: nitehawk
+    name: Nitehawk Williamsburg
+    region: NYC
+    source: {adapter: filmbot, base_url: https://nitehawkcinema.com/williamsburg}
+    horizon_days: 45
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: filmbot/nitehawk_listings.json, url: "https://nitehawkcinema.com/williamsburg/wp-json/nj/v1/showtime/listings"}]
+
+  - id: brattle
+    name: Brattle Theatre
+    region: BOS
+    source: {adapter: filmbot, base_url: https://brattlefilm.org}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: filmbot/brattle_listings.json, url: "https://brattlefilm.org/wp-json/nj/v1/showtime/listings"}]
+
+  - id: braindead
+    name: Brain Dead Studios
+    region: LA
+    timezone: America/Los_Angeles
+    source: {adapter: filmbot, base_url: https://studios.wearebraindead.com}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: filmbot/braindead_listings.json, url: "https://studios.wearebraindead.com/wp-json/nj/v1/showtime/listings"}]
+
+  - id: vidiots
+    name: Vidiots
+    region: LA
+    timezone: America/Los_Angeles
+    source: {adapter: filmbot, base_url: https://vidiotsfoundation.org, endpoint: posts}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: filmbot/vidiots_showtime.json, url: "https://vidiotsfoundation.org/wp-json/nj/v1/showtime?per_page=100&page=1"}]
+
+  - id: roxy
+    name: Roxy Cinema New York
+    region: NYC
+    source: {adapter: veezi, site_token: tt17e5ajy3v48kh5b2kremvnz4, region: uswest}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: veezi/roxy_sessions.html, url: "https://ticketing.uswest.veezi.com/sessions/?siteToken=tt17e5ajy3v48kh5b2kremvnz4"}]
+
+  - id: anthology-veezi
+    name: Anthology Film Archives (Veezi)
+    region: NYC
+    source: {adapter: veezi, site_token: bsrxtagjxmgh2qy0b6p646xdcr, region: us}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: veezi/anthology_sessions.html, url: "https://ticketing.us.veezi.com/sessions/?siteToken=bsrxtagjxmgh2qy0b6p646xdcr"}]
+
+  - id: newbev
+    name: New Beverly Cinema
+    region: LA
+    timezone: America/Los_Angeles
+    source: {adapter: veezi, site_token: fmtswb0qqbym3de6c4bbsqj89m, region: uswest}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: veezi/newbev_sessions.html, url: "https://ticketing.uswest.veezi.com/sessions/?siteToken=fmtswb0qqbym3de6c4bbsqj89m"}]
+
+  - id: roxie
+    name: Roxie Theater
+    region: SF
+    timezone: America/Los_Angeles
+    source: {adapter: veezi, site_token: 4m48btf3yavn7xjk5yxk6nc40c, region: uswest}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: veezi/roxie_sessions.html, url: "https://ticketing.uswest.veezi.com/sessions/?siteToken=4m48btf3yavn7xjk5yxk6nc40c"}]
+
+  - id: gables
+    name: Coral Gables Art Cinema
+    region: MIA
+    source: {adapter: agile, guid: 6ec0e98b-d23e-4240-acce-5ffa059e6887, host: prod3.agileticketing.net}
+    horizon_days: 90
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: agile/gables_feed.json, url: "https://prod3.agileticketing.net/websales/feed.ashx?guid=6ec0e98b-d23e-4240-acce-5ffa059e6887"}]
+
+  - id: uniondocs
+    name: UnionDocs
+    region: NYC
+    source: {adapter: tribe, base_url: https://uniondocs.org, categories: [screenings-events]}
+    allow_empty: true
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: tribe/uniondocs_events.json, url: "https://uniondocs.org/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-09-28"}]
+
+  - id: uniondocs-ics
+    name: UnionDocs (iCal)
+    region: NYC
+    source: {adapter: ics, url: "https://uniondocs.org/events/?ical=1"}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: ics/uniondocs.ics, url: "https://uniondocs.org/events/?ical=1"}]
+
+  - id: maysles
+    name: Maysles Documentary Center
+    region: NYC
+    source: {adapter: squarespace, base_url: https://www.maysles.org, collection: calendar}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: squarespace/maysles_events.json, url: "https://www.maysles.org/calendar?format=json"}]
+
+  - id: alamo-lower-manhattan
+    name: Alamo Drafthouse Lower Manhattan
+    region: NYC
+    source: {adapter: alamo, market: nyc, cinema_id: "2103"}
+    horizon_days: 60
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: alamo/nyc_schedule.json, url: "https://drafthouse.com/s/mother/v2/schedule/market/nyc"}]
+
+  - id: trylon
+    name: Trylon Cinema
+    region: MSP
+    timezone: America/Chicago
+    source: {adapter: wp-my-calendar, base_url: https://www.trylon.org}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: wp_my_calendar/trylon_events.json, url: "https://www.trylon.org/wp-json/my-calendar/v1/events"}]
+
+  - id: cornell
+    name: Cornell Cinema
+    region: ITH
+    source: {adapter: eventive, bucket: 6a4fa3acb024f1f9ffa9cb70, api_key: e4db526c61158d3e96a154c5f2a09eb0, site: cornellcinema}
+    horizon_days: 90
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: eventive/cornell_events.json, url: "https://api.eventive.org/event_buckets/6a4fa3acb024f1f9ffa9cb70/events"}]
+
+  - id: brattle-jsonld
+    name: Brattle Theatre (JSON-LD)
+    region: BOS
+    source: {adapter: jsonld, pages: ["https://brattlefilm.org/movies/elements-of-cinema-midnight/"]}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: jsonld/brattle_elements.html, url: "https://brattlefilm.org/movies/elements-of-cinema-midnight/"}]
+
+  - id: bam-jsonld
+    name: BAM (JSON-LD)
+    region: NYC
+    source: {adapter: jsonld, pages: ["https://www.bam.org/film/2026/tony"]}
+    fixture:
+      fetched_at: "2026-09-28T16:00:00Z"
+      pages: [{file: jsonld/bam_tony.html, url: "https://www.bam.org/film/2026/tony"}]

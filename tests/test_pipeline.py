@@ -32,7 +32,7 @@ def test_validate_window_and_horizon():
 
 
 def test_store_success_then_failure_keeps_data(tmp_path, monkeypatch):
-    monkeypatch.setattr("scraper.store.today_local", lambda: date(2026, 9, 24))
+    monkeypatch.setattr("scraper.store.today_local", lambda tz=None: date(2026, 9, 24))
     store = Store(tmp_path / "t.sqlite")
     rows = [_s("x", "2026-09-25T19:00:00-04:00"), _s("x", "2026-09-26T19:00:00-04:00")]
     st = store.apply_success("x", rows, VenueStatus("x", "ok", fetched_at="T1"))
@@ -60,3 +60,21 @@ def test_run_lock_is_exclusive(tmp_path, monkeypatch):
     again = run.acquire_run_lock()
     assert again
     again.close()
+
+
+def test_seed_from_export_keeps_data_through_a_failed_ci_run(tmp_path, monkeypatch):
+    """CI starts with an empty database: seeding from the last export makes a failure 'stale', not 'failed'."""
+    monkeypatch.setattr("scraper.store.today_local", lambda tz=None: date(2026, 9, 24))
+    old = Store(tmp_path / "old.sqlite")
+    old.apply_success("x", [_s("x", "2026-09-25T19:00:00-04:00")], VenueStatus("x", "ok", fetched_at="T1"))
+    from scraper.export import build_payload
+    monkeypatch.setattr("scraper.export.today_local", lambda tz=None: date(2026, 9, 24))
+    monkeypatch.setattr("scraper.export.load_venues",
+                        lambda: [VenueConfig(id="x", name="X", source={"adapter": "custom", "module": "x"})])
+    payload = build_payload(old)
+
+    fresh = Store(tmp_path / "ci.sqlite")
+    assert fresh.seed_from_export(payload) == 1
+    assert fresh.seed_from_export(payload) == 1 and len(fresh.screenings_since("2026-09-24")) == 1   # idempotent
+    st = fresh.apply_failure("x", VenueStatus("x", "failed", error="HTTP 403"))
+    assert (st.status, st.fetched_at, st.count) == ("stale", "T1", 1)

@@ -1,110 +1,125 @@
-# 影院注册表。加一家影院：在这里加一条 + scraper/sources/<scraper>.py 一个文件。
-# 字段见 ARCHITECTURE.md §4。scraper 模块还没写的影院先 enabled: false。
+# 影院注册表（v2 格式，字段见 ARCHITECTURE.md §4）。
+# 加一家影院最简单的办法：python -m scraper.add "影院名" <排片页网址>
+# 手写时：source.adapter 选一个平台适配器（filmbot、veezi、agile、tribe …）只填参数；
+#         服务端 HTML 用 adapter: recipe；只有这两种都不行才写 scraper/sources/<module>.py（adapter: custom）。
+# 旧的 v1 列表格式（scraper: / city: / screenslate_nid:）仍然可以加载。
+version: 2
+venues:
+  - id: bam
+    name: BAM Rose Cinemas
+    short: BAM
+    region: NYC
+    timezone: America/New_York
+    color: "#3a86ff"
+    website: https://www.bam.org/film
+    source: {adapter: custom, module: bam}
+    fallback: {adapter: screenslate, nid: 244}
+    horizon_days: 60
+    rate_limit_s: 1
 
-- id: bam
-  name: BAM Rose Cinemas
-  short: BAM
-  city: NYC
-  color: "#3a86ff"
-  scraper: bam
-  enabled: true
-  screenslate_nid: 244
-  horizon_days: 60
-  rate_limit_s: 1
+  - id: filmlinc
+    name: Film at Lincoln Center
+    short: FLC
+    region: NYC
+    timezone: America/New_York
+    color: "#c1121f"
+    website: https://www.filmlinc.org/
+    source: {adapter: custom, module: filmlinc}
+    fallback: {adapter: screenslate, nid: 355}
+    horizon_days: 60
+    rate_limit_s: 1
 
-- id: filmlinc
-  name: Film at Lincoln Center
-  short: FLC
-  city: NYC
-  color: "#c1121f"
-  scraper: filmlinc
-  enabled: true
-  screenslate_nid: 355
-  horizon_days: 60
-  rate_limit_s: 1
+  - id: japansociety
+    name: Japan Society
+    short: JS
+    region: NYC
+    timezone: America/New_York
+    color: "#e9b949"
+    website: https://japansociety.org/film/
+    source: {adapter: custom, module: japansociety}
+    fallback: {adapter: screenslate, nid: 339}
+    horizon_days: 90
+    rate_limit_s: 1
+    allow_empty: true          # 电影少，可能真的为 0
+    default_language: Japanese # 网站不写语言；TMDB 查不到时按日语算
 
-- id: japansociety
-  name: Japan Society
-  short: JS
-  city: NYC
-  color: "#e9b949"
-  scraper: japansociety
-  enabled: true
-  screenslate_nid: 339
-  horizon_days: 90
-  rate_limit_s: 1
-  allow_empty: true          # 电影少，可能真的为 0
-  default_language: Japanese # 网站不写语言；TMDB 查不到时按日语算
+  - id: anthology
+    name: Anthology Film Archives
+    short: AFA
+    region: NYC
+    timezone: America/New_York
+    color: "#6a4c93"
+    website: https://www.anthologyfilmarchives.org/
+    source: {adapter: custom, module: anthology}
+    fallback: {adapter: screenslate, nid: 327}
+    horizon_days: 60
+    rate_limit_s: 2
 
-- id: anthology
-  name: Anthology Film Archives
-  short: AFA
-  city: NYC
-  color: "#6a4c93"
-  scraper: anthology
-  enabled: true
-  screenslate_nid: 327
-  horizon_days: 60
-  rate_limit_s: 2
+  - id: filmforum
+    name: Film Forum
+    short: FF
+    region: NYC
+    timezone: America/New_York
+    color: "#2a9d8f"
+    website: https://filmforum.org/
+    source: {adapter: custom, module: filmforum}
+    fallback: {adapter: screenslate, nid: 13}
+    horizon_days: 30
+    rate_limit_s: 2
 
-- id: filmforum
-  name: Film Forum
-  short: FF
-  city: NYC
-  color: "#2a9d8f"
-  scraper: filmforum
-  enabled: true
-  screenslate_nid: 13
-  horizon_days: 30
-  rate_limit_s: 2
+  - id: metrograph
+    name: Metrograph
+    short: MG
+    region: NYC
+    timezone: America/New_York
+    color: "#e63946"
+    website: https://metrograph.com/
+    source: {adapter: custom, module: metrograph}
+    fallback: {adapter: screenslate, nid: 6}
+    horizon_days: 30
+    rate_limit_s: 3
+    primary_cooldown_h: 2      # 被 429/403 封过之后 2 小时内不再请求，直接用兜底
 
-- id: metrograph
-  name: Metrograph
-  short: MG
-  city: NYC
-  color: "#e63946"
-  scraper: metrograph
-  enabled: true
-  screenslate_nid: 6
-  horizon_days: 30
-  rate_limit_s: 3
-  primary_cooldown_h: 2      # 被 429/403 封过之后 2 小时内不再请求，直接用 screenslate
+  - id: lalliance
+    name: L'Alliance New York
+    short: LNY
+    region: NYC
+    timezone: America/New_York
+    color: "#457b9d"
+    website: https://lallianceny.org/
+    source: {adapter: custom, module: lalliance}
+    fallback: {adapter: screenslate, nid: 7}
+    default_language: French   # 法国文化中心，几乎都是法语片；TMDB 查到的优先
+    horizon_days: 90
+    rate_limit_s: 2
+    max_requests_per_run: 60   # 列表 + 每张卡片一个详情页
 
-- id: lalliance
-  name: L'Alliance New York
-  short: LNY
-  city: NYC
-  color: "#457b9d"
-  scraper: lalliance
-  enabled: true
-  default_language: French   # 法国文化中心，几乎都是法语片；TMDB 查到的优先
-  screenslate_nid: 7
-  horizon_days: 90
-  rate_limit_s: 2
+  - id: moma
+    name: MoMA
+    short: MoMA
+    region: NYC
+    timezone: America/New_York
+    color: "#f4a261"
+    website: https://www.moma.org/calendar/film
+    source: {adapter: custom, module: moma}
+    fallback: {adapter: screenslate, nid: 81}
+    horizon_days: 45
+    rate_limit_s: 3
+    browser:
+      headless: false          # headless 过不了 Cloudflare；有窗口的 Chromium 会短暂弹出
+      challenge_timeout_s: 30
+    primary_cooldown_h: 20     # 浏览器路径失败后 20 小时内直接用兜底（大约每天只试一次浏览器）
 
-- id: moma
-  name: MoMA
-  short: MoMA
-  city: NYC
-  color: "#f4a261"
-  scraper: moma
-  enabled: true
-  screenslate_nid: 81
-  horizon_days: 45
-  rate_limit_s: 3
-  browser:
-    headless: false          # headless 过不了 Cloudflare；有窗口的 Chromium 会短暂弹出
-    challenge_timeout_s: 30
-  primary_cooldown_h: 20     # 浏览器路径失败后 20 小时内直接用 screenslate（大约每天只试一次浏览器）
-
-- id: filmadelphia
-  name: Philadelphia Film Society
-  short: PFS
-  city: PHL
-  color: "#8d99ae"
-  scraper: filmadelphia
-  enabled: true              # 网站被 WAF 挡住，改用售票系统 Agile Ticketing 的公开 feed（SOURCES.md §9）
-  screenslate_nid: null      # screenslate 不收录费城
-  horizon_days: 60
-  rate_limit_s: 3
-  agile_guid: 6634566a-a49f-4dec-89e6-bb4c5eda4814
+  - id: filmadelphia
+    name: Philadelphia Film Society
+    short: PFS
+    region: PHL
+    timezone: America/New_York
+    color: "#8d99ae"
+    website: https://filmadelphia.org/
+    # 网站被 WAF 挡住，改用售票系统 Agile Ticketing 的公开 feed（SOURCES.md §9）；screenslate 不收录费城
+    source: {adapter: custom, module: filmadelphia}
+    fallback: null
+    horizon_days: 60
+    rate_limit_s: 3
+    agile_guid: 6634566a-a49f-4dec-89e6-bb4c5eda4814
