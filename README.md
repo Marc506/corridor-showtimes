@@ -1,6 +1,6 @@
 # Corridor Showtimes
 
-**Every repertory screening from New York to Philadelphia, on one timeline.**
+**Showtimes from the cinemas you follow, on one timeline — starting with nine art-house and repertory cinemas from New York to Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
@@ -25,11 +25,11 @@ assistant adds them on your computer, usually in 10–20 minutes. See
 
 The public site only follows the author's cinemas. You can have your own copy with any US cinemas you
 like, on your own computer — free, no coding. An AI coding assistant does the technical part; you answer
-a few questions.
+a few questions, and the whole thing takes about 20 minutes.
 
 ### What you need
 
-- A computer (Mac, Windows or Linux) and about 20 minutes.
+- A computer (Mac, Windows or Linux).
 - An **AI assistant that can run programs on your computer**: [Claude Code](https://claude.com/claude-code)
   (has a desktop app), [Cursor](https://cursor.com) or [Codex](https://openai.com/codex). Chat-only
   assistants — the ChatGPT or Claude websites, for example — can't do this: they can't install anything

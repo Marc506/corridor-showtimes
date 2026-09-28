@@ -1,4 +1,4 @@
-# Corridor Showtimes（纽约 + 费城艺术影院排片聚合）
+# Corridor Showtimes（按你关注的影院聚合排片，默认收录纽约到费城的 9 家艺术影院）
 
 [English](README.md) · 在线版：**https://marc506.github.io/corridor-showtimes/**
 
