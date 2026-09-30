@@ -29,3 +29,22 @@ def test_non_screening_regex_does_not_eat_real_titles():
         assert NON_SCREENING.search(t)
     for t in ("The Passion of Joan of Arc", "A Passage to India", "Passing"):
         assert not NON_SCREENING.search(t)
+
+
+def test_borough_editions_lose_the_place_from_the_title():
+    import json
+    from scraper.models import RawPage
+    from scraper.sources.filmlinc import split_place
+    from tests.conftest import scraper_for
+    feed = {"films": [
+        {"id": "1", "title": "Bucking Fastard", "slug": "bucking-fastard", "showtimes": [
+            {"dateTimeET": "2026-10-03T18:00:00-04:00", "venue": "Alice Tully Hall", "presaleSchedule": {"presaleType": "nyff"}}]},
+        {"id": "2", "title": "Bucking Fastard Bronx", "slug": "bucking-fastard-bronx", "showtimes": [
+            {"dateTimeET": "2026-10-04T19:00:00-04:00", "venue": "AMC Bay Plaza Cinema"}]}]}
+    rows = scraper_for("filmlinc").parse([RawPage(url="x", body=json.dumps(feed), fetched_at="2026-09-25T01:00:00Z", ext="json")])
+    bronx = next(r for r in rows if r.screen == "AMC Bay Plaza Cinema")
+    assert (bronx.title, bronx.note, bronx.series) == ("Bucking Fastard", "Bronx", "New York Film Festival")
+    assert bronx.detail_url.endswith("/bucking-fastard-bronx/")          # still links to its own page
+    assert split_place("Queens of the Stone Age", set()) == ("Queens of the Stone Age", None)
+    assert split_place("A Bronx Tale", set()) == ("A Bronx Tale", None)
+    assert split_place("Paterson Staten Island", set()) == ("Paterson", "Staten Island")

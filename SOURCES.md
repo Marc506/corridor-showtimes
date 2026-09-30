@@ -70,6 +70,10 @@ GET https://api.filmlinc.org/showtimes?date=2026-09-25   # 单日
 
 **实测补充**：过滤正则要带复数（`vouchers?` 等，实测有 "2026 NYFF Volunteer Vouchers"）。`showtimes[].presaleSchedule.presaleType` 为 `nyff` / `met-guild` 时分别映射为系列「New York Film Festival」/「Met Opera Live in HD」。同名影片会以两个 film 条目出现（NYFF 场 + 正式上映），不是重复。API 没有片长 / 导演，也没有单片端点（`/films/<slug>` 404），时间轴按默认 100 分钟虚线画。
 
+**实测补充（2026‑09‑30）**
+- 官网的影片页（如 `/nyff2026/films/<slug>/`）有导演、片长、语言，但对程序请求仍返回 Cloudflare 挑战页（403 "Just a moment…"），`/wp-json/` 也被重定向。`api.filmlinc.org` 只有 `/showtimes` 一个端点（`/films`、`/film/<id>`、`/productions/<id>` 都 404）。所以导演和片长靠 TMDB 和 screenslate 补。
+- 纽约电影节的外区加映是单独的条目，片名带地名：`"Bucking Fastard Bronx"`（AMC Bay Plaza Cinema）。片名是「另一条目的片名 + 1–3 个词」，或以纽约各区名结尾时，去掉地名放进备注，系列沿用主条目的。
+
 ---
 
 ## 3. Japan Society — ★ JSON（WordPress 自定义端点）
@@ -259,6 +263,11 @@ GET https://lallianceny.org/events/?_event_categories=film
 - 只有日期区间的「系列总页」（如 Jean-Luc Godard: Unmade and Abandoned）没有自己的场次，但它的 `<h2>Events In This Series</h2>` 之后列出了包含的每一场（`a[href*="/event/"]`）。只取这个标题之后的链接，页面顶部导航菜单里的 `/event/` 链接要排除。据此给每一场设 `series` = 系列名，场次页自己的小标题（"The Remake"）改放 `note`。不需要额外请求，系列总页本来就会抓。
 - 有的场次页不写 `Dir.`，片目写成 `(1981, 39 min, DCP)` / `, 1982, 11 min, DCP)`，从这里取格式（和单片时的年份）。
 - 「Family Saturdays」系列里有几部儿童电影（Phantom Boy、Mary Anning、Les Choristes），它们不在「电影」分类的列表页里，目前没有抓。
+
+**实测补充（2026‑09‑30，系列子页面）**
+- 「Family Saturdays」的电影不在 Film 分类列表里，只作为系列总页「Events In This Series」下的成员出现，而且和工作坊、讲故事、木偶剧混在一起，分类标签完全相同（Family Saturdays, Kids）。做法是抓这些成员页（每次最多 15 页），页面主体里有导演片目行（`dir.` / `dirs.`）的才算电影。
+- 子页面底部有「**Other** Events in This Series」列表，列着同系列其他影片的导演和片长，解析前必须在这里截断。
+- 导演行会被排版拆成多行（`dirs. Jean-Loup` / `Felicioli` / `and Alain Gagnol, France, 2015, DCP`），要把文字拍平后再按「dir(s). … 年份 …」到句号为止匹配。国家可能写在年份后面（`2025, Switzerland/Belgium, DCP`），格式只认已知的格式词。
 
 ---
 

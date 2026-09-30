@@ -70,3 +70,36 @@ def test_credit_line_parsing():
         assert CREDIT.search(line).groups() == want, line
     assert CREDIT.search("Run Time: 118 min") is None
     assert CREDIT.search("released in 1981, it ran for years") is None
+
+
+FAMILY_FILM = """<html><body><h1 class="events-heading">Phantom Boy</h1>
+<h3>Schedule</h3><div class="brxe-code"><div><p>Saturday, October 31, 2026</p><div><div>11:30 AM</div></div></div></div>
+<p>Run Time: 84 min</p>
+<p><b>dirs. Jean-Loup</b><br><b>Felicioli</b><br>and Alain Gagnol, France, 2015, DCP</p><p>In French with English subtitles.</p>
+<h2>Venue</h2><p>Florence Gould Theater</p>
+<h2>Other Events in This Series</h2>
+<p>Mary Anning</p><p>dir. Marcel Barelli, 2025, Switzerland/Belgium, DCP</p>
+<p>Les Choristes</p><p>dir. Christophe Barratier, France, 2004, DCP</p>
+</body></html>"""
+
+WORKSHOP = """<html><body><h1 class="events-heading">Colorful Cities: A Modern Architecture Workshop</h1>
+<h3>Schedule</h3><div class="brxe-code"><div><p>Saturday, September 19, 2026</p><div><div>10:15 AM</div></div></div></div>
+<p>Run Time: 75 min</p><p>Participants build models of Le Corbusier's Cité Radieuse.</p>
+<h2>Other Events in This Series</h2><p>Phantom Boy</p><p>dirs. Jean-Loup Felicioli and Alain Gagnol, France, 2015, DCP</p>
+</body></html>"""
+
+
+def test_series_member_pages_read_only_their_own_credits():
+    from scraper.sources.lalliance import parse_detail
+    d = parse_detail(FAMILY_FILM)
+    assert d["is_film"] and d["title"] == "Phantom Boy"
+    assert (d["director"], d["year"], d["runtime_min"], d["format"]) == ("Jean-Loup Felicioli and Alain Gagnol", 2015, 84, "DCP")
+    assert d["venue"] == "Florence Gould Theater"
+    w = parse_detail(WORKSHOP)
+    assert not w["is_film"] and w["director"] is None                # the other films' credits are not its own
+
+
+def test_format_is_never_the_country():
+    from scraper.sources.lalliance import parse_dir_line
+    assert parse_dir_line("dir. Marcel Barelli, 2025, Switzerland/Belgium, DCP") == ("Marcel Barelli", 2025, None, "DCP")
+    assert parse_dir_line("Dir. Jean Renoir, 1931, 93 min, DCP.") == ("Jean Renoir", 1931, 93, "DCP")
