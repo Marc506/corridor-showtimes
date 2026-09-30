@@ -219,10 +219,14 @@
   const shown = (vid) => state.venues.has(vid) && state.regions.has(regionOf(venueById[vid] || {}));
   const venuesInRegions = () => activeVenues.filter((v) => state.regions.has(regionOf(v)));
 
+  /** A date in the URL is kept only if it isn't in the past: reopened tabs, bookmarks and home-screen
+   *  launches come back with yesterday's hash, and those should land on today. (Going back to an
+   *  earlier day with ← still works; it just isn't what a fresh visit starts on.) */
   function readHash() {
     const m = location.hash.match(/^#\/([^?]*)(?:\?(.*))?$/);
     const p = new URLSearchParams(m ? m[2] || "" : "");
-    state.day = m && validDay(m[1]) ? m[1] : todayKey();
+    const today = todayKey();
+    state.day = m && validDay(m[1]) && m[1] >= today ? m[1] : today;
     state.view = VIEWS.includes(p.get("view")) ? p.get("view") : "timeline";
     if (p.has("v")) {
       const ids = p.get("v").split(",").filter((id) => venueById[id]);
@@ -257,7 +261,8 @@
     if (state.weekFromToday) p.set("ws", "today");
     if (state.hl) p.set("hl", state.hl);
     const q = p.toString().replace(/%2C/g, ",");
-    const hash = `#/${state.day}${q ? "?" + q : ""}`;
+    const dayPart = state.day === todayKey() ? "" : state.day;     // "today" stays date-less in the URL
+    const hash = `#/${dayPart}${q ? "?" + q : ""}`;
     if (location.hash !== hash) history.replaceState(null, "", hash);
   }
 
@@ -802,6 +807,19 @@
     update({ day: shiftDay(state.day, days), hl: "" });
   }
 
+  /** If the page was showing "today" and the date has changed since (midnight, or resumed from the
+   *  background), move to the new today. Returns true if it re-rendered. */
+  let shownToday = todayKey();
+  function followToday() {
+    const now = todayKey();
+    if (now === shownToday) return false;
+    const wasOnToday = state.day === shownToday;
+    shownToday = now;
+    if (!wasOnToday) return false;
+    update({ day: now, hl: "" });
+    return true;
+  }
+
   function init() {
     readHash();
     writeHash();
@@ -842,7 +860,17 @@
     if (window.ResizeObserver) new ResizeObserver(setHeaderH).observe(top);
     setHeaderH();
     render();
-    setInterval(() => { renderHeader(); }, 60e3);   // keep "updated x min ago" fresh
+    setInterval(() => { followToday() || renderHeader(); }, 60e3);   // keep "updated x min ago" fresh
+    // Coming back to a tab / home-screen app: roll over to the new day, and after a long absence
+    // reload so the page picks up the data refreshed in the meantime.
+    let hiddenAt = null;
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { hiddenAt = Date.now(); return; }
+      if (hiddenAt && Date.now() - hiddenAt > 60 * 60e3) return location.reload();
+      hiddenAt = null;
+      followToday();
+    });
+    window.addEventListener("pageshow", (e) => { if (e.persisted) followToday(); });
   }
 
   init();
