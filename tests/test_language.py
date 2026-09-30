@@ -29,8 +29,8 @@ def test_search_title_cleanup():
 class FakeTmdb(L.TmdbLanguage):
     """TmdbLanguage with canned API responses (no network, no cache file)."""
 
-    def __init__(self, results, credits=None):
-        self.results, self.credits, self.calls = results, credits or {}, []
+    def __init__(self, results, credits=None, runtimes=None):
+        self.results, self.credits, self.runtimes, self.calls = results, credits or {}, runtimes or {}, []
         self.cache, self.disabled, self._last = {"languages": {"ja": "Japanese", "en": "English", "cn": "Cantonese"}, "films": {}}, False, 0
 
     def _get(self, path, **params):
@@ -38,7 +38,11 @@ class FakeTmdb(L.TmdbLanguage):
         if path == "/search/movie":
             return {"results": self.results}
         if path.startswith("/movie/"):
-            return {"crew": [{"job": "Director", "name": n} for n in self.credits.get(int(path.split("/")[2]), [])]}
+            movie_id = int(path.split("/")[2])
+            crew = {"crew": [{"job": "Director", "name": n} for n in self.credits.get(movie_id, [])]}
+            if path.endswith("/credits"):
+                return crew
+            return {"runtime": self.runtimes.get(movie_id, 0), "credits": crew}    # ?append_to_response=credits
         raise AssertionError(path)
 
     def save(self):
@@ -207,3 +211,26 @@ def test_future_tmdb_release_year_is_not_used():
     row = _s("Premiere")
     L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
     assert (row.director, row.year) == ("Isabelle Stever", None)
+
+
+def test_runtime_and_end_filled_from_a_sure_match():
+    tmdb = FakeTmdb([{"id": 7, "title": "All of a Sudden", "release_date": "2026-06-19", "original_language": "ja"}],
+                    credits={7: ["Ryusuke Hamaguchi"]}, runtimes={7: 196})
+    row = _s("All of a Sudden")                                      # FLC: no runtime, no end
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.director, row.runtime_min) == ("Ryusuke Hamaguchi", 196)
+    assert row.end == "2026-09-28T22:16:00-04:00"                    # 19:00 + 196 min
+    assert sum(c.startswith("/movie/") for c in tmdb.calls) == 1     # directors + runtime in one request
+
+
+def test_site_runtime_kept_and_unknown_tmdb_runtime_ignored():
+    tmdb = FakeTmdb([{"id": 8, "title": "Short Run", "release_date": "2026-01-01", "original_language": "fr"}],
+                    credits={8: ["A"]}, runtimes={8: 0})             # TMDB 0 = unknown
+    tmdb.cache["languages"]["fr"] = "French"
+    unknown = _s("Short Run")
+    L.fill_languages([unknown], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert unknown.runtime_min is None and unknown.end is None
+    listed = _s("Short Run")
+    listed.runtime_min, listed.end = 90, "2026-09-28T20:30:00-04:00"
+    L.fill_languages([listed], VenueConfig(id="v", name="V", scraper="x"), FakeTmdb(tmdb.results, {8: ["A"]}, {8: 120}))
+    assert (listed.runtime_min, listed.end) == (90, "2026-09-28T20:30:00-04:00")

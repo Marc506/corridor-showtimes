@@ -19,7 +19,7 @@ assistant adds them on your computer, usually in 10–20 minutes. See
 
 | | |
 |---|---|
-| ![Mobile list view, filtered to subtitled films](docs/mobile-list.png) | **Views.** Timeline (a lane per screen, block width = runtime), list, and week grid.<br><br>**Filters.** Cinemas, *on film* (16/35/70mm), *non-English / subtitled*, *hide started*, and title/director search. All state lives in the URL, so every view is shareable.<br><br>**Mobile.** On narrow screens the timeline flips vertical. The page is also an installable home-screen app.<br><br>**Honest data.** Each cinema shows whether its data is fresh, stale (last good copy kept), or came from the fallback source. |
+| ![Mobile list view, filtered to subtitled films](docs/mobile-list.png) | **Views.** Timeline (a lane per screen, block width = runtime), list, and week grid.<br><br>**Filters.** Cinemas, *on film* (16/35/70mm), *non-English / subtitled*, *hide started*, and title/director/series search, which lists every matching screening from today on, day by day. All state lives in the URL, so every view is shareable.<br><br>**Mobile.** On narrow screens the timeline flips vertical. The page is also an installable home-screen app.<br><br>**Honest data.** Each cinema shows whether its data is fresh, stale (last good copy kept), or came from the fallback source. |
 
 ## Add your own cinemas
 
@@ -138,10 +138,10 @@ from a per-venue default. Matching favors *unknown* over *wrong*:
 * never look up talks, shorts programs, or double bills;
 * route opera broadcasts to "subtitled" instead of a same-name movie.
 
-**Directors.** Some cinemas never list them (Film at Lincoln Center's data has none). The same TMDB
-match fills a missing director, and a missing year, but only when the match is sure to be that
-film. A match that merely agrees on language is not enough. A director listed by the cinema is never
-replaced.
+**Directors and runtimes.** Some cinemas never list them (Film at Lincoln Center's data has neither).
+The same TMDB match (one request per film, cached) fills a missing director, runtime and year, but
+only when the match is sure to be that film. A match that merely agrees on language is not enough.
+What the cinema lists is never replaced. Runtimes also give timeline blocks their real length.
 
 ## Adding a cinema
 

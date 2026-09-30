@@ -50,6 +50,9 @@
       minutes: (n) => `${n} 分钟`, close: "关闭", runtimeUnknown: "（时长未知）", tickets: "购票", details: "详情",
       noData: ["还没有数据。在项目目录运行 ", " 然后刷新本页。"], noVenues: "没有选中任何影院。", selectAll: "全选",
       dayEmpty: "这一天所选影院没有符合条件的放映。", clearFilters: "清除筛选",
+      searchSummary: (q, n, f) => `搜索「${q}」：${f} 部 · ${n} 场`, clearSearch: "清除搜索",
+      searchNone: (q) => `从今天起，所选影院没有和「${q}」匹配的场次（按片名、导演和系列搜索）。`,
+      tomorrowSuffix: " · 明天",
       range: (a, b) => `数据范围 ${a} – ${b}`, total: (n) => `${n} 场放映`, disabled: (l) => `未启用: ${l.join("、")}`,
       dashedNote: "时间轴里虚线框 = 时长未知（按 100 分钟画）",
       credits: ["排片版权归各影院所有，购票请点击链接前往影院官网。语言和导演数据来自 ", "（This product uses the TMDB API but is not endorsed or certified by TMDB）· "],
@@ -92,6 +95,9 @@
       minutes: (n) => `${n} min`, close: "Close", runtimeUnknown: " (runtime unknown)", tickets: "Tickets", details: "Details",
       noData: ["No data yet. Run ", " in the project folder, then reload."], noVenues: "No cinemas selected.", selectAll: "All",
       dayEmpty: "No matching screenings at the selected cinemas on this day.", clearFilters: "Clear filters",
+      searchSummary: (q, n, f) => `“${q}”: ${f} film${f === 1 ? "" : "s"} · ${n} show${n === 1 ? "" : "s"}`, clearSearch: "Clear search",
+      searchNone: (q) => `No screenings matching “${q}” from today on at the selected cinemas (title, director and series are searched).`,
+      tomorrowSuffix: " · Tomorrow",
       range: (a, b) => `Data ${a} – ${b}`, total: (n) => `${n} screenings`, disabled: (l) => `Disabled: ${l.join(", ")}`,
       dashedNote: "Dashed blocks = runtime unknown (drawn as 100 min)",
       credits: ["Showtimes belong to the cinemas — use the links to buy tickets from them. Language and director data from ", " (this product uses the TMDB API but is not endorsed or certified by TMDB) · "],
@@ -389,10 +395,12 @@
     hidePopover();
     applyStaticText();
     document.body.dataset.view = state.view;
+    document.body.classList.toggle("searching", !!state.q);
     renderHeader();
     renderRegions();
     renderChips();
-    if (state.view === "week") renderWeek();
+    if (state.q) renderSearch();
+    else if (state.view === "week") renderWeek();
     else if (state.view === "list") renderList();
     else renderTimeline();
     renderFooter();
@@ -446,7 +454,7 @@
   function renderSubsHint() {
     const hint = $("#f-subs-hint");
     if (!state.subs) { hint.textContent = ""; hint.title = ""; return; }
-    const days = state.view === "week" ? [...Array(7)].map((_, i) => shiftDay(weekStart(), i)) : [state.day];
+    const days = activeDays();
     const now = new Date();
     let unknown = 0;
     for (const d of days) for (const s of screeningsForDay(d)) {
@@ -483,7 +491,7 @@
   function renderChips() {
     const counts = {};
     const now = new Date();
-    const days = state.view === "week" ? [...Array(7)].map((_, i) => shiftDay(weekStart(), i)) : [state.day];
+    const days = activeDays();
     for (const d of days) for (const s of screeningsForDay(d)) {
       if (passesFilters(s, now)) counts[s.venue_id] = (counts[s.venue_id] || 0) + 1;
     }
@@ -649,6 +657,67 @@
             f.note ? el("span", { class: "tag note" }, f.note) : null,
             viaBadge(f)))));
     }));
+  }
+
+  /** Days the counters (cinema buttons, "language unknown" hint) cover: every day from today while
+   *  searching, else the week or the single day on screen. */
+  function activeDays() {
+    if (state.q) return dataDays.filter((d) => d >= todayKey());
+    return state.view === "week" ? [...Array(7)].map((_, i) => shiftDay(weekStart(), i)) : [state.day];
+  }
+
+  function dayHeading(d) {
+    const date = dayDate(d);
+    const base = LANG === "zh" ? `${fmtDayTitle.format(date)} · ${fmtDayTitleEn.format(date)}` : fmtDayTitleEn.format(date);
+    return base + (d === todayKey() ? t("todaySuffix") : d === shiftDay(todayKey(), 1) ? t("tomorrowSuffix") : "");
+  }
+
+  // ---------- Search ----------
+  /** Typing in the search box leaves the day / week and lists every matching screening from today on,
+   *  day by day (title, director and series are matched; the cinema and other filters still apply). */
+  function renderSearch() {
+    const main = $("#main");
+    const now = new Date();
+    const groups = [];
+    const films = new Set();
+    let total = 0;
+    for (const d of activeDays()) {
+      const list = screeningsForDay(d).filter((s) => shown(s.venue_id) && passesFilters(s, now))
+        .sort((a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title));
+      if (!list.length) continue;
+      groups.push([d, list]);
+      total += list.length;
+      list.forEach((s) => films.add(`${s.venue_id}|${fold(s.title)}`));
+    }
+    const head = el("div", { class: "search-head" },
+      el("strong", {}, t("searchSummary", state.q, total, films.size)),
+      groups.length ? el("span", { class: "meta" }, ` · ${groups[0][0]} – ${groups[groups.length - 1][0]}`) : null,
+      el("button", { class: "link-btn", onclick: () => update({ q: "" }) }, t("clearSearch")));
+    if (!total) {
+      const box = el("div", { class: "empty" }, t("searchNone", state.q));
+      if (state.film || state.subs || state.upcoming) {
+        box.append(el("br"), el("button", { onclick: () => update({ film: false, subs: false, upcoming: false }) }, t("clearFilters")));
+      }
+      return main.replaceChildren(head, box);
+    }
+    main.replaceChildren(head, ...groups.map(([d, list]) => el("section", { class: "search-day" },
+      el("h3", {}, dayHeading(d), el("span", { class: "meta" }, ` ${list.length}`)),
+      list.map((s) => {
+        const v = venueById[s.venue_id];
+        const past = new Date(s.start) < now;
+        const time = s.ticket_url
+          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener", title: s.screen || null }, timeLabel(s.start, tzOf(s)))
+          : el("span", { class: past ? "past" : null, title: s.screen || null }, timeLabel(s.start, tzOf(s)));
+        return el("div", { class: "film" },
+          el("div", { class: "times" }, time),
+          el("div", { class: "info" },
+            el("span", { class: "svenue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name),
+            el("button", { class: "title as-link", onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); } }, s.title),
+            el("span", { class: "meta" }, filmMeta(s)),
+            s.series ? el("span", { class: "tag series" }, s.series) : null,
+            s.note ? el("span", { class: "tag note" }, s.note) : null,
+            viaBadge(s)));
+      }))));
   }
 
   // ---------- Week ----------
@@ -845,8 +914,9 @@
     window.addEventListener("hashchange", () => { readHash(); render(); });
     document.addEventListener("click", (e) => { if (!e.target.closest("#popover")) hidePopover(); });
     document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && e.target === $("#f-q") && state.q) { e.target.value = ""; e.target.blur(); return update({ q: "" }); }
       if (e.key === "Escape") return hidePopover();
-      if (e.target.matches("input, textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target.matches("input, textarea") || e.metaKey || e.ctrlKey || e.altKey || state.q) return;
       if (e.key === "ArrowLeft") step(-1);
       if (e.key === "ArrowRight") step(1);
     });

@@ -20,7 +20,7 @@ from pathlib import Path
 import httpx
 
 from .models import Screening, VenueConfig
-from .normalize import title_norm, today_local
+from .normalize import end_from_runtime, parse_iso, title_norm, today_local
 
 log = logging.getLogger(__name__)
 
@@ -140,17 +140,21 @@ class TmdbLanguage:
             lang, tmdb_id, sure, rel_year = self._find(q, year, director)
             hit = {"lang": lang, "id": tmdb_id, "sure": sure, "year": rel_year, "at": now.isoformat()}
             self.cache["films"][key] = hit
-        if hit.get("sure") and hit.get("id") and "directors" not in hit:
-            hit["directors"] = self._directors(hit["id"])
+        if hit.get("sure") and hit.get("id") and ("directors" not in hit or "runtime" not in hit):
+            hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
         return hit if hit.get("lang") else None
 
-    def _directors(self, movie_id: int) -> list[str]:
+    def _film_facts(self, movie_id: int) -> tuple[list[str], int | None]:
+        """Directors and runtime (minutes) in one request: /movie/{id}?append_to_response=credits."""
         try:
-            crew = self._get(f"/movie/{movie_id}/credits").get("crew", [])
-        except Exception as e:  # noqa: BLE001 — best effort; retried next run (key stays absent)
-            log.warning("TMDB credits unavailable for %s (%s)", movie_id, e)
+            d = self._get(f"/movie/{movie_id}", append_to_response="credits")
+        except Exception as e:  # noqa: BLE001 — best effort; retried next run (keys stay absent)
+            log.warning("TMDB film details unavailable for %s (%s)", movie_id, e)
             raise
-        return list(dict.fromkeys(c["name"] for c in crew if c.get("job") == "Director" and c.get("name")))
+        crew = (d.get("credits") or {}).get("crew", [])
+        directors = list(dict.fromkeys(c["name"] for c in crew if c.get("job") == "Director" and c.get("name")))
+        runtime = d.get("runtime") or None                 # TMDB uses 0 for "unknown"
+        return directors, (runtime if runtime and 1 <= runtime <= 900 else None)
 
     def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None, bool, int | None]:
         results = self._get("/search/movie", query=q, include_adult="false").get("results", [])
@@ -232,7 +236,7 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
         elif s.language:
             stats["site"] += 1
         info = None
-        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director):
+        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director or not s.runtime_min):
             year, director = s.year, s.director
             if not year and hints:
                 q = search_title(s.title)
@@ -252,6 +256,11 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                 stats["director"] = stats.get("director", 0) + 1
             if not s.year and info.get("year") and info["year"] <= today_local().year:
                 s.year = info["year"]                   # a future TMDB release date isn't the film's year
+            if not s.runtime_min and info.get("runtime"):
+                s.runtime_min = info["runtime"]
+                stats["runtime"] = stats.get("runtime", 0) + 1
+                if not s.end:
+                    s.end = end_from_runtime(parse_iso(s.start), s.runtime_min)
         if s.language:
             continue
         if info and info.get("lang"):
