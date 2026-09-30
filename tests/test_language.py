@@ -289,3 +289,22 @@ def test_this_years_premiere_beats_language_consensus():
     row = _s("Paper Tiger")
     L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
     assert (row.language, row.director, row.runtime_min, row.year) == ("English", "James Gray", 131, y)
+
+
+def test_prominent_one_of_several_same_title_films_this_year():
+    """Two 2026 films called 'Artificial': Guadagnino's (popularity 4.0) and a small one (1.75)."""
+    from scraper.normalize import today_local
+    y = today_local().year
+    films = [{"id": 1, "title": "Artificial", "release_date": f"{y}-12-25", "original_language": "en", "popularity": 4.02},
+             {"id": 2, "title": "Artificial", "release_date": f"{y}-10-01", "original_language": "en", "popularity": 1.75},
+             {"id": 3, "title": "Artificial", "release_date": "2020-02-01", "original_language": "es", "popularity": 1.88}]
+    tmdb = FakeTmdb(films, credits={1: ["Luca Guadagnino"]}, runtimes={1: 128})
+    tmdb.cache["languages"]["es"] = "Spanish"
+    row = _s("Artificial")
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.director, row.runtime_min) == ("Luca Guadagnino", 128)
+    close = FakeTmdb([dict(films[0], popularity=2.0), films[1], films[2]], credits={1: ["Luca Guadagnino"]})
+    close.cache["languages"]["es"] = "Spanish"
+    row2 = _s("Artificial")
+    L.fill_languages([row2], VenueConfig(id="v", name="V", scraper="x"), close)
+    assert row2.director is None                                        # 2.0 vs 1.75: too close to call

@@ -142,6 +142,10 @@ from a per-venue default. Matching favors *unknown* over *wrong*:
 The same TMDB match (one request per film, cached) fills a missing director, runtime and year, but
 only when the match is sure to be that film. A match that merely agrees on language is not enough.
 What the cinema lists is never replaced. Runtimes also give timeline blocks their real length.
+Directors TMDB can't give, such as multi-film programmes or titles it can't pin down, come from
+screenslate's listing of the same screening: same venue, start within 10 minutes, similar title. A
+director found there then lets TMDB confirm the film and add its runtime. Only the days that need it are
+fetched, and responses are cached for 12 hours.
 
 ## Adding a cinema
 

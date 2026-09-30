@@ -29,7 +29,7 @@ TOKEN_FILE = ROOT / "config" / "tmdb_token.txt"
 CACHE_FILE = ROOT / "data" / "cache" / "tmdb.json"
 API = "https://api.themoviedb.org/3"
 MISS_TTL = timedelta(days=14)
-CACHE_VERSION = 3                  # 3: identity rules (this year / recent / famous) before language consensus
+CACHE_VERSION = 4                  # 4: + the prominent one of several same-title films from this year
 MIN_INTERVAL_S = 0.06              # TMDB allows ~50 req/s; stay far below
 
 # Titles that are events/programmes rather than one film — don't guess a language for them.
@@ -210,8 +210,11 @@ class TmdbLanguage:
             ranked = sorted(pool, key=lambda m: m.get("popularity") or 0, reverse=True)
             top, second = (ranked[0].get("popularity") or 0), (ranked[1].get("popularity") or 0)
             # rules that identify the film come first; "they're all in one language" only settles language
+            ty = sorted(this_year, key=lambda m: m.get("popularity") or 0, reverse=True)
             if len(this_year) == 1:
                 pool = this_year                        # this year's festival premiere (Paper Tiger, 2026)
+            elif len(ty) > 1 and (ty[0].get("popularity") or 0) >= 2 * max(ty[1].get("popularity") or 0, 0.5):
+                pool = ty[:1]                           # the prominent one of this year's namesakes (Artificial)
             elif len(recent) == 1:
                 pool = recent
             elif top >= 3 * max(second, 0.5):

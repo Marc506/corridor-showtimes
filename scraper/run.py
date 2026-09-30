@@ -20,6 +20,7 @@ from .base import HttpClient, dedupe
 from .models import RawPage, Screening, VenueConfig, VenueStatus
 from .normalize import now_utc_iso, today_local
 from .registry import ConfigError, build_fallback, build_scraper, load_venues
+from .crossref import fill_directors_from_screenslate
 from .language import TmdbLanguage, fill_languages, load_token, title_hints
 from .store import Store
 
@@ -115,6 +116,15 @@ def run_venue(venue: VenueConfig, store: Store | None, client: HttpClient, dry_r
 
     if screenings:
         fill_languages(screenings, venue, tmdb, hints)
+        # directors TMDB couldn't give (FLC lists none; multi-film programmes): screenslate's editors list
+        # them; a director found there then lets TMDB confirm the film and add its runtime / language
+        try:
+            changed = fill_directors_from_screenslate(screenings, venue, client)
+        except Exception as e:  # noqa: BLE001 — best effort, never fails the venue
+            log.warning("[%s] screenslate director lookup failed: %s", venue.id, e)
+            changed = []
+        if changed and tmdb:
+            fill_languages(changed, venue, tmdb, hints)
 
     if dry_run:
         print_screenings(screenings)
