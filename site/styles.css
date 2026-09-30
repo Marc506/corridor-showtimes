@@ -192,7 +192,6 @@ body[data-view="list"] main { max-width: 1100px; }
 .tl-block.past { opacity: 0.45; }
 .tl-block.hl { outline: 2px solid var(--accent); outline-offset: 1px; z-index: 1; }
 .tl-time { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tl-dir { color: var(--muted); }
 .tl-block.onfilm .tl-time { color: var(--accent); }
 .tl-title {
   font-weight: 600; overflow: hidden; overflow-wrap: anywhere;
@@ -263,7 +262,10 @@ body[data-view="list"] main { max-width: 1100px; }
 .pop-time { font-variant-numeric: tabular-nums; font-weight: 600; }
 .pop-meta { color: var(--muted); margin: 2px 0 4px; }
 .pop-note { color: var(--accent); margin: 4px 0; }
-.popover .tag { margin-left: 0; }
+/* long series names wrap instead of widening the row (list) or spilling out (popover) */
+.film .info, .film .times { min-width: 0; }
+.info .tag { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.popover .tag { margin-left: 0; white-space: normal; overflow-wrap: anywhere; max-width: 100%; line-height: 1.35; padding-top: 1px; padding-bottom: 1px; }
 .pop-links { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
 .btn { display: inline-block; padding: 4px 12px; border-radius: 6px; background: var(--fg); color: var(--bg); text-decoration: none; font-size: 13px; }
 .btn.ghost { background: none; color: var(--fg); border: 1px solid var(--line); }

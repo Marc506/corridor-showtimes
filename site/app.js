@@ -591,8 +591,7 @@
           title: `${timeLabel(s.start, tzOf(s))} ${s.title}${filmMeta(s)}`,
           onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); },
         },
-          el("span", { class: "tl-time" }, timeLabel(s.start, tzOf(s)), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : "",
-            s.director ? el("span", { class: "tl-dir" }, ` · ${s.director}`) : null),
+          el("span", { class: "tl-time" }, timeLabel(s.start, tzOf(s)), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : ""),
           el("span", { class: "tl-title" }, s.title),
           isFallback(s.source) ? el("span", { class: "tl-via", title: `via ${s.source}` }, s.source.slice(0, 2).toUpperCase()) : null);
       });
