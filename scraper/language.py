@@ -29,7 +29,7 @@ TOKEN_FILE = ROOT / "config" / "tmdb_token.txt"
 CACHE_FILE = ROOT / "data" / "cache" / "tmdb.json"
 API = "https://api.themoviedb.org/3"
 MISS_TTL = timedelta(days=14)
-CACHE_VERSION = 2                  # 2: a listed director must match even when there is only one candidate
+CACHE_VERSION = 3                  # 3: identity rules (this year / recent / famous) before language consensus
 MIN_INTERVAL_S = 0.06              # TMDB allows ~50 req/s; stay far below
 
 # Titles that are events/programmes rather than one film — don't guess a language for them.
@@ -207,16 +207,19 @@ class TmdbLanguage:
             langs = {m.get("original_language") for m in pool}
             this_year = [m for m in pool if (yr(m) or 0) >= today_local().year]
             recent = [m for m in pool if (yr(m) or 0) >= today_local().year - 2]
-            if len(langs) == 1:
-                pool, sure = pool[:1], False            # same language everywhere: fine for language, not identity
-            elif len(this_year) == 1:
-                pool = this_year                        # this year's festival premiere
+            ranked = sorted(pool, key=lambda m: m.get("popularity") or 0, reverse=True)
+            top, second = (ranked[0].get("popularity") or 0), (ranked[1].get("popularity") or 0)
+            # rules that identify the film come first; "they're all in one language" only settles language
+            if len(this_year) == 1:
+                pool = this_year                        # this year's festival premiere (Paper Tiger, 2026)
             elif len(recent) == 1:
                 pool = recent
+            elif top >= 3 * max(second, 0.5):
+                pool = [ranked[0]]                      # one clearly-famous film
+            elif len(langs) == 1:
+                pool, sure = pool[:1], False            # same language everywhere: fine for language, not identity
             else:
-                ranked = sorted(pool, key=lambda m: m.get("popularity") or 0, reverse=True)
-                top, second = (ranked[0].get("popularity") or 0), (ranked[1].get("popularity") or 0)
-                pool = [ranked[0]] if top >= 3 * max(second, 0.5) else []   # one clearly-famous film
+                pool = []
         if not pool:
             return None, None, False, None
         m = pool[0]

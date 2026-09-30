@@ -275,3 +275,17 @@ def test_search_title_strips_year_and_anniversary_suffixes():
     assert L.search_title("Ghost in the Shell: 30th Anniversary Remaster") == "Ghost in the Shell"
     assert L.search_title("Tron - 4K Remaster") == "Tron"
     assert L.search_title("1917") == "1917"
+
+
+def test_this_years_premiere_beats_language_consensus():
+    """FLC lists 'Paper Tiger' with no year or director; five TMDB films share the title, all in English,
+    and only one (James Gray's) is from this year — that one is the film, not just 'some English film'."""
+    from scraper.normalize import today_local
+    y = today_local().year
+    films = [{"id": 1, "title": "Paper Tiger", "release_date": f"{y}-11-12", "original_language": "en", "popularity": 6.3},
+             {"id": 2, "title": "Paper Tiger", "release_date": "2020-10-22", "original_language": "en", "popularity": 1.6},
+             {"id": 3, "title": "Paper Tiger", "release_date": "1975-11-05", "original_language": "en", "popularity": 1.6}]
+    tmdb = FakeTmdb(films, credits={1: ["James Gray"]}, runtimes={1: 131})
+    row = _s("Paper Tiger")
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.language, row.director, row.runtime_min, row.year) == ("English", "James Gray", 131, y)
