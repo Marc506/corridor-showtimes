@@ -52,7 +52,7 @@
       dayEmpty: "这一天所选影院没有符合条件的放映。", clearFilters: "清除筛选",
       range: (a, b) => `数据范围 ${a} – ${b}`, total: (n) => `${n} 场放映`, disabled: (l) => `未启用: ${l.join("、")}`,
       dashedNote: "时间轴里虚线框 = 时长未知（按 100 分钟画）",
-      credits: ["排片版权归各影院所有，购票请点击链接前往影院官网。语言数据来自 ", "（This product uses the TMDB API but is not endorsed or certified by TMDB）· "],
+      credits: ["排片版权归各影院所有，购票请点击链接前往影院官网。语言和导演数据来自 ", "（This product uses the TMDB API but is not endorsed or certified by TMDB）· "],
       source: "源代码", switchTo: "EN", switchToT: "Switch to English",
       // static page text (index.html data-i18n keys)
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
@@ -94,7 +94,7 @@
       dayEmpty: "No matching screenings at the selected cinemas on this day.", clearFilters: "Clear filters",
       range: (a, b) => `Data ${a} – ${b}`, total: (n) => `${n} screenings`, disabled: (l) => `Disabled: ${l.join(", ")}`,
       dashedNote: "Dashed blocks = runtime unknown (drawn as 100 min)",
-      credits: ["Showtimes belong to the cinemas — use the links to buy tickets from them. Language data from ", " (this product uses the TMDB API but is not endorsed or certified by TMDB) · "],
+      credits: ["Showtimes belong to the cinemas — use the links to buy tickets from them. Language and director data from ", " (this product uses the TMDB API but is not endorsed or certified by TMDB) · "],
       source: "Source code", switchTo: "中文", switchToT: "切换到中文",
       views: "Views", timeline: "Timeline", list: "List", week: "Week", dateNav: "Date", pickDate: "Pick a date", venues: "Cinemas",
       onFilm: "On film", subs: "Non-English (subtitled)", subsT: "Only screenings known to be non-English (with English subtitles) or silent",
@@ -591,7 +591,8 @@
           title: `${timeLabel(s.start, tzOf(s))} ${s.title}${filmMeta(s)}`,
           onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); },
         },
-          el("span", { class: "tl-time" }, timeLabel(s.start, tzOf(s)), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : ""),
+          el("span", { class: "tl-time" }, timeLabel(s.start, tzOf(s)), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : "",
+            s.director ? el("span", { class: "tl-dir" }, ` · ${s.director}`) : null),
           el("span", { class: "tl-title" }, s.title),
           isFallback(s.source) ? el("span", { class: "tl-via", title: `via ${s.source}` }, s.source.slice(0, 2).toUpperCase()) : null);
       });

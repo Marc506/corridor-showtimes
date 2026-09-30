@@ -119,19 +119,40 @@ class TmdbLanguage:
 
     # --- lookup -------------------------------------------------------------------
     def lookup(self, title: str, year: int | None, director: str | None) -> str | None:
+        return (self.details(title, year, director) or {}).get("lang")
+
+    def details(self, title: str, year: int | None, director: str | None) -> dict | None:
+        """{'lang', 'id', 'sure', 'directors', 'year'} for a title, or None for programmes / misses.
+
+        `sure` means the match identifies one film (year, director or a unique candidate agreed);
+        a match that only knows "every candidate has the same language" is not sure, and then only
+        the language may be used — never the director or year.
+        """
         q = search_title(title)
         if not q:
             return None
         key = f"{title_norm(q)}|{year or ''}"
         hit = self.cache["films"].get(key)
-        if hit:
-            if hit.get("lang") or datetime.now(timezone.utc) - datetime.fromisoformat(hit["at"]) < MISS_TTL:
-                return hit.get("lang")
-        lang, tmdb_id = self._find(q, year, director)
-        self.cache["films"][key] = {"lang": lang, "id": tmdb_id, "at": datetime.now(timezone.utc).isoformat()}
-        return lang
+        now = datetime.now(timezone.utc)
+        if hit and not hit.get("lang") and now - datetime.fromisoformat(hit["at"]) < MISS_TTL:
+            return None                                 # recent miss
+        if not hit or not hit.get("lang") or "sure" not in hit:   # new, expired miss, or cached before directors
+            lang, tmdb_id, sure, rel_year = self._find(q, year, director)
+            hit = {"lang": lang, "id": tmdb_id, "sure": sure, "year": rel_year, "at": now.isoformat()}
+            self.cache["films"][key] = hit
+        if hit.get("sure") and hit.get("id") and "directors" not in hit:
+            hit["directors"] = self._directors(hit["id"])
+        return hit if hit.get("lang") else None
 
-    def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None]:
+    def _directors(self, movie_id: int) -> list[str]:
+        try:
+            crew = self._get(f"/movie/{movie_id}/credits").get("crew", [])
+        except Exception as e:  # noqa: BLE001 — best effort; retried next run (key stays absent)
+            log.warning("TMDB credits unavailable for %s (%s)", movie_id, e)
+            raise
+        return list(dict.fromkeys(c["name"] for c in crew if c.get("job") == "Director" and c.get("name")))
+
+    def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None, bool, int | None]:
         results = self._get("/search/movie", query=q, include_adult="false").get("results", [])
         want = title_norm(q)
         exact = [m for m in results if want in (title_norm(m.get("title") or ""), title_norm(m.get("original_title") or ""))]
@@ -149,15 +170,16 @@ class TmdbLanguage:
             if len(exact_year) == 1:
                 pool = exact_year               # same year beats ±1 neighbours before any credits call
         elif not exact:
-            return None, None                   # no year and no exact title: too risky
+            return None, None, False, None      # no year and no exact title: too risky
         if len(pool) > 1 and director:
             pool = [m for m in pool if self._directed_by(m["id"], director)]
+        sure = True
         if len(pool) > 1 and not year:
             langs = {m.get("original_language") for m in pool}
             this_year = [m for m in pool if (yr(m) or 0) >= today_local().year]
             recent = [m for m in pool if (yr(m) or 0) >= today_local().year - 2]
             if len(langs) == 1:
-                pool = pool[:1]                         # every candidate has the same language: no need to pick
+                pool, sure = pool[:1], False            # same language everywhere: fine for language, not identity
             elif len(this_year) == 1:
                 pool = this_year                        # this year's festival premiere
             elif len(recent) == 1:
@@ -167,10 +189,10 @@ class TmdbLanguage:
                 top, second = (ranked[0].get("popularity") or 0), (ranked[1].get("popularity") or 0)
                 pool = [ranked[0]] if top >= 3 * max(second, 0.5) else []   # one clearly-famous film
         if not pool:
-            return None, None
+            return None, None, False, None
         m = pool[0]
         code = m.get("original_language")
-        return (self.language_name(code) if code else None), m.get("id")
+        return (self.language_name(code) if code else None), m.get("id"), sure, yr(m)
 
     def _directed_by(self, movie_id: int, director: str) -> bool:
         try:
@@ -194,18 +216,23 @@ def title_hints(rows) -> dict[str, tuple[int | None, str | None]]:
 
 def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLanguage | None,
                    hints: dict | None = None) -> None:
-    """Fill missing languages in place: opera rule, TMDB (if configured), then venue.default_language."""
+    """Fill missing film info in place.
+
+    Language: the site's own text > opera rule > TMDB > venue.default_language.
+    Director (and a missing year): only from a TMDB match that is sure to be the same film, and never
+    overwriting what the cinema's site says.
+    """
     stats = {"site": 0, "tmdb": 0, "default": 0, "unknown": 0}
-    memo: dict[tuple, str | None] = {}
+    memo: dict[tuple, dict | None] = {}
     for s in screenings:
-        if s.language:
-            stats["site"] += 1
-            continue
-        if OPERA.search(s.series or "") or OPERA.search(s.note or ""):
+        opera = bool(OPERA.search(s.series or "") or OPERA.search(s.note or ""))
+        if not s.language and opera:
             s.language = OPERA_LANGUAGE
             stats["opera"] = stats.get("opera", 0) + 1
-            continue
-        if tmdb and not tmdb.disabled:
+        elif s.language:
+            stats["site"] += 1
+        info = None
+        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director):
             year, director = s.year, s.director
             if not year and hints:
                 q = search_title(s.title)
@@ -214,15 +241,23 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
             k = (s.title, year, director)
             if k not in memo:
                 try:
-                    memo[k] = tmdb.lookup(s.title, year, director)
-                except Exception as e:  # noqa: BLE001 — language is best effort
+                    memo[k] = tmdb.details(s.title, year, director)
+                except Exception as e:  # noqa: BLE001 — best effort
                     log.warning("[%s] TMDB lookup failed for %r: %s", venue.id, s.title, e)
                     memo[k] = None
-            if memo[k]:
-                s.language = memo[k]
-                stats["tmdb"] += 1
-                continue
-        if venue.default_language:
+            info = memo[k]
+        if info and info.get("sure"):
+            if not s.director and info.get("directors"):
+                s.director = ", ".join(info["directors"][:3])
+                stats["director"] = stats.get("director", 0) + 1
+            if not s.year and info.get("year") and info["year"] <= today_local().year:
+                s.year = info["year"]                   # a future TMDB release date isn't the film's year
+        if s.language:
+            continue
+        if info and info.get("lang"):
+            s.language = info["lang"]
+            stats["tmdb"] += 1
+        elif venue.default_language:
             s.language = venue.default_language
             stats["default"] += 1
         else:

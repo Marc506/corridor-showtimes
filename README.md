@@ -95,7 +95,7 @@ it said last. The assistant can write that text for you — ask it to.
  scraper.run ── per venue: fetch → parse → validate ──┐   failure? keep last good data,
         │          (JSON API / HTML / browser / feed)  │   or fall back to screenslate
         │                                              ▼
-        │                               language enrichment (site text → TMDB → default)
+        │                    language + director enrichment (site text → TMDB → default)
         ▼
    SQLite ──► export ──► site/data.js ──► publish.sh ──► gh-pages ──► GitHub Pages
 ```
@@ -137,6 +137,11 @@ from a per-venue default. Matching favors *unknown* over *wrong*:
   candidate shares one language;
 * never look up talks, shorts programs, or double bills;
 * route opera broadcasts to "subtitled" instead of a same-name movie.
+
+**Directors.** Some cinemas never list them (Film at Lincoln Center's data has none). The same TMDB
+match fills a missing director, and a missing year, but only when the match is sure to be that
+film. A match that merely agrees on language is not enough. A director listed by the cinema is never
+replaced.
 
 ## Adding a cinema
 
@@ -184,7 +189,7 @@ against real pages (`tests/fixtures/platforms/`; details in [PLATFORMS.md](PLATF
 ```bash
 python3.12 -m venv .venv && .venv/bin/pip install -e '.[dev]'     # add ,llm for Claude-written recipes
 .venv/bin/python -m playwright install chromium        # only for sites that need a browser (MoMA)
-echo "<TMDB API Read Access Token>" > config/tmdb_token.txt   # optional: language data
+echo "<TMDB API Read Access Token>" > config/tmdb_token.txt   # optional: language + director data
 .venv/bin/python -m scraper.run                        # scrape all cinemas and export site/data.js
 open site/index.html
 ```

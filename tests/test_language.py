@@ -141,3 +141,69 @@ def test_no_year_prefers_this_years_premiere_and_language_consensus():
     same = FakeTmdb([{"id": 1, "title": "X", "release_date": "1976-01-01", "original_language": "cn", "popularity": 3.3},
                      {"id": 2, "title": "X", "release_date": "1913-01-01", "original_language": "cn", "popularity": 1.8}])
     assert same.lookup("X", None, None) == "Cantonese"
+
+
+# ---- directors from TMDB
+
+def _films_happy():
+    return [{"id": 1, "title": "Happy Together", "original_title": "春光乍洩", "release_date": "1997-05-30", "original_language": "cn"},
+            {"id": 2, "title": "Happy Together", "release_date": "1989-01-01", "original_language": "en"}]
+
+
+def test_director_and_year_filled_from_a_sure_match():
+    tmdb = FakeTmdb(_films_happy(), credits={1: ["Wong Kar-wai"]})
+    hints = L.title_hints([("Happy Together", 1997, None)])
+    rows = [_s("Happy Together")]                                   # FLC-style: no year, no director
+    L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x"), tmdb, hints)
+    assert (rows[0].language, rows[0].director, rows[0].year) == ("Cantonese", "Wong Kar-wai", 1997)
+
+
+def test_language_consensus_is_not_enough_for_a_director():
+    films = [{"id": 1, "title": "X", "release_date": "1976-01-01", "original_language": "cn", "popularity": 3.3},
+             {"id": 2, "title": "X", "release_date": "1913-01-01", "original_language": "cn", "popularity": 1.8}]
+    tmdb = FakeTmdb(films, credits={1: ["Someone"], 2: ["Someone Else"]})
+    rows = [_s("X")]
+    L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert rows[0].language == "Cantonese"
+    assert rows[0].director is None and rows[0].year is None        # which "X"? unknown -> leave blank
+    assert not any(c.startswith("/movie/") for c in tmdb.calls)     # no credits call for an unsure match
+
+
+def test_site_director_is_never_overwritten_and_site_language_still_gets_a_director():
+    tmdb = FakeTmdb(_films_happy(), credits={1: ["Wong Kar-wai"]})
+    keep = _s("Happy Together", lang="Cantonese", year=1997)
+    keep.director = "W. K. Wong (as listed)"
+    fill = _s("Happy Together", lang="Cantonese", year=1997)        # language from the site, no director
+    L.fill_languages([keep, fill], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert keep.director == "W. K. Wong (as listed)"
+    assert fill.director == "Wong Kar-wai" and fill.language == "Cantonese"
+
+
+def test_opera_broadcasts_get_no_tmdb_director():
+    tmdb = FakeTmdb([{"id": 9, "title": "Macbeth", "release_date": "2026-01-01", "original_language": "en"}],
+                    credits={9: ["Film Director"]})
+    row = _s("Macbeth")
+    row.series = "Met Opera Live in HD"
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.language, row.director) == ("Opera (subtitled)", None) and tmdb.calls == []
+
+
+def test_cache_entries_from_before_directors_are_refreshed_once():
+    tmdb = FakeTmdb(_films_happy(), credits={1: ["Wong Kar-wai"]})
+    tmdb.cache["films"]["happy together|1997"] = {"lang": "Cantonese", "id": 1, "at": "2026-09-27T00:00:00+00:00"}
+    info = tmdb.details("Happy Together", 1997, None)
+    assert (info["sure"], info["directors"], info["year"]) == (True, ["Wong Kar-wai"], 1997)
+    calls = len(tmdb.calls)
+    tmdb.details("Happy Together", 1997, None)
+    assert len(tmdb.calls) == calls                                  # cached now
+
+
+def test_future_tmdb_release_year_is_not_used():
+    from scraper.normalize import today_local
+    nxt = today_local().year + 1
+    tmdb = FakeTmdb([{"id": 3, "title": "Premiere", "release_date": f"{nxt}-02-01", "original_language": "de"}],
+                    credits={3: ["Isabelle Stever"]})
+    tmdb.cache["languages"]["de"] = "German"
+    row = _s("Premiere")
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.director, row.year) == ("Isabelle Stever", None)

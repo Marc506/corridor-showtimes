@@ -210,6 +210,8 @@ for venue in enabled venues:
    * 结果缓存在 `data/cache/tmdb.json`：命中的永久保存，未命中的 14 天后重试。
 4. **影院默认语言**（`default_language`：Japan Society = 日语，L'Alliance = 法语）。
 
+**导演补全**（同一次 TMDB 查询）：只有匹配「确定是这部片」时才用（年份对上、导演核对过、今年唯一的新片或热度明显领先的唯一一部）；只是「所有候选语言相同」的匹配只填语言，不填导演。影院网站写了的导演从不覆盖；缺年份时顺带补上 TMDB 的年份，但不填晚于今年的上映年份。导演用 `/movie/{id}/credits` 查询，和匹配结果一起缓存在 `data/cache/tmdb.json`。
+
 ### 5.6 命令行
 
 ```

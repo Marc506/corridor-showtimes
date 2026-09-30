@@ -191,7 +191,8 @@ body[data-view="list"] main { max-width: 1100px; }
 .tl-block.unknown { border-style: dashed; border-left-style: solid; background: color-mix(in srgb, var(--c) 8%, var(--card)); }
 .tl-block.past { opacity: 0.45; }
 .tl-block.hl { outline: 2px solid var(--accent); outline-offset: 1px; z-index: 1; }
-.tl-time { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tl-time { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-dir { color: var(--muted); }
 .tl-block.onfilm .tl-time { color: var(--accent); }
 .tl-title {
   font-weight: 600; overflow: hidden; overflow-wrap: anywhere;
