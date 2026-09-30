@@ -121,7 +121,7 @@ def test_hints_borrow_year_from_other_venue():
              {"id": 2, "title": "Fatherland", "release_date": "1994-01-01", "original_language": "en"},
              {"id": 3, "title": "Fatherland", "release_date": "2025-01-01", "original_language": "tl"}]
     rows = [_s("Fatherland")]
-    tmdb = FakeTmdb(films)
+    tmdb = FakeTmdb(films, credits={1: ["Paweł Pawlikowski"]})
     tmdb.cache["languages"]["pl"] = "Polish"
     L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x"), tmdb, hints)
     assert rows[0].language == "Polish"
@@ -194,7 +194,7 @@ def test_opera_broadcasts_get_no_tmdb_director():
 
 def test_cache_entries_from_before_directors_are_refreshed_once():
     tmdb = FakeTmdb(_films_happy(), credits={1: ["Wong Kar-wai"]})
-    tmdb.cache["films"]["happy together|1997"] = {"lang": "Cantonese", "id": 1, "at": "2026-09-27T00:00:00+00:00"}
+    tmdb.cache["films"]["happy together|1997|"] = {"lang": "Cantonese", "id": 1, "at": "2026-09-27T00:00:00+00:00"}
     info = tmdb.details("Happy Together", 1997, None)
     assert (info["sure"], info["directors"], info["year"]) == (True, ["Wong Kar-wai"], 1997)
     calls = len(tmdb.calls)
@@ -234,3 +234,44 @@ def test_site_runtime_kept_and_unknown_tmdb_runtime_ignored():
     listed.runtime_min, listed.end = 90, "2026-09-28T20:30:00-04:00"
     L.fill_languages([listed], VenueConfig(id="v", name="V", scraper="x"), FakeTmdb(tmdb.results, {8: ["A"]}, {8: 120}))
     assert (listed.runtime_min, listed.end) == (90, "2026-09-28T20:30:00-04:00")
+
+
+def test_a_listed_director_must_match_even_a_single_candidate():
+    """Film Forum: 'You Had to Be There' by Nick Davis (2026) is not TMDB's only exact title, a 2012 short."""
+    films = [{"id": 11, "title": "You Had to Be There", "release_date": "2012-10-22", "original_language": "en"},
+             {"id": 12, "title": "You Had to Be There: How the Toronto Godspell Ignited the Comedy Revolution...",
+              "release_date": "2026-09-18", "original_language": "en"}]
+    tmdb = FakeTmdb(films, credits={11: ["John Albarian"], 12: ["Nick Davis"]}, runtimes={11: 20, 12: 94})
+    row = _s("You Had to Be There")
+    row.director = "Nick Davis"
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.year, row.runtime_min, row.language) == (2026, 94, "English")      # the long-titled film
+    wrong = FakeTmdb(films[:1], credits={11: ["John Albarian"]}, runtimes={11: 20})
+    row2 = _s("You Had to Be There")
+    row2.director = "Nick Davis"
+    L.fill_languages([row2], VenueConfig(id="v", name="V", scraper="x"), wrong)
+    assert (row2.year, row2.runtime_min) == (None, None)                            # unknown beats wrong
+
+
+def test_title_prefix_candidates_need_a_director():
+    films = [{"id": 21, "title": "Alien: Resurrection", "release_date": "1997-11-12", "original_language": "en"}]
+    tmdb = FakeTmdb(films, credits={21: ["Jean-Pierre Jeunet"]}, runtimes={21: 109})
+    row = _s("Alien")                                                               # no director listed
+    L.fill_languages([row], VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (row.runtime_min, row.director) == (None, None)
+
+
+def test_same_person_tolerates_spelling_and_order():
+    assert L.same_person("Oleksandr Dovzhenko", "Alexander Dovzhenko")
+    assert L.same_person("Stephen Lisberger", "Steven Lisberger")
+    assert L.same_person("Tsai Ming-liang", "Ming-liang Tsai")
+    assert L.same_person("Lars Von Trier", "Lars von Trier")
+    assert not L.same_person("Nick Davis", "John Albarian")
+    assert not L.same_person("Multiple Dirs", "Jean Renoir")
+
+
+def test_search_title_strips_year_and_anniversary_suffixes():
+    assert L.search_title("Medea (1988)") == "Medea"
+    assert L.search_title("Ghost in the Shell: 30th Anniversary Remaster") == "Ghost in the Shell"
+    assert L.search_title("Tron - 4K Remaster") == "Tron"
+    assert L.search_title("1917") == "1917"

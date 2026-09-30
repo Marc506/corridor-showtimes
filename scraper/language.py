@@ -29,6 +29,7 @@ TOKEN_FILE = ROOT / "config" / "tmdb_token.txt"
 CACHE_FILE = ROOT / "data" / "cache" / "tmdb.json"
 API = "https://api.themoviedb.org/3"
 MISS_TTL = timedelta(days=14)
+CACHE_VERSION = 2                  # 2: a listed director must match even when there is only one candidate
 MIN_INTERVAL_S = 0.06              # TMDB allows ~50 req/s; stay far below
 
 # Titles that are events/programmes rather than one film — don't guess a language for them.
@@ -36,7 +37,8 @@ NOT_A_FILM = re.compile(r"\b(program(me)?|pgm|shorts|talk|lecture|conversation|w
                         r"reading|masterclass|members only|open house|gala|pass)\b", re.I)
 PREFIXES = re.compile(r"^(?:[A-Z]{2,4}:\s+|.{3,60}?\s+[Pp]resents:?\s+|(?:opening|closing|centerpiece)\s+night:\s+|"
                       r"sneak preview:\s+|preview:\s+)", re.I)
-SUFFIXES = re.compile(r"\s*(?:\((?:[^)]*restoration[^)]*|\d+k|35mm|16mm|70mm|in \d+mm|director'?s cut)\)|"
+SUFFIXES = re.compile(r"\s*(?:\((?:[^)]*restoration[^)]*|\d+k|35mm|16mm|70mm|in \d+mm|director'?s cut|(?:18|19|20)\d{2})\)|"
+                      r":\s*\d+(?:st|nd|rd|th)\s+anniversary\b.*|\s*[-–:]\s*(?:4k\s+)?remaster(?:ed)?\b.*|"
                       r"\s+(?:w/|with)\s+.*|\s+in\s+(?:35|16|70)mm)\s*$", re.I)
 # Opera/ballet broadcasts (Met Live in HD etc.) are sung in the original language with English
 # subtitles; TMDB would match them to an unrelated same-title film ("Macbeth" -> English).
@@ -64,6 +66,18 @@ def search_title(title: str) -> str | None:
     t = re.sub(r"^(?:[A-Z][\w.\-]+\s){0,3}[A-Z][\w.\-]+[’']s\s+(?=(?:The|A|An)\s)", "", t)
     t = SUFFIXES.sub("", t).strip(" -–—:")
     return t or None
+
+
+def same_person(a: str, b: str) -> bool:
+    """Loose name match for directors written differently by a cinema and by TMDB:
+    'Oleksandr Dovzhenko' ~ 'Alexander Dovzhenko', 'Stephen Lisberger' ~ 'Steven Lisberger',
+    'Tsai Ming-liang' ~ 'Ming-liang Tsai'. Same surname (last word) or a shared word of 4+ letters."""
+    ta, tb = title_norm(a).split(), title_norm(b).split()
+    if not ta or not tb:
+        return False
+    if ta == tb or ta[-1] == tb[-1]:
+        return True
+    return any(len(w) >= 4 for w in set(ta) & set(tb))
 
 
 class TmdbLanguage:
@@ -98,9 +112,12 @@ class TmdbLanguage:
     # --- cache --------------------------------------------------------------------
     def _load(self) -> dict:
         try:
-            return json.loads(CACHE_FILE.read_text(encoding="utf-8"))
+            cache = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
         except (FileNotFoundError, ValueError):
-            return {"languages": {}, "films": {}}
+            cache = {}
+        if cache.get("version") != CACHE_VERSION:          # matching rules changed: re-match every film
+            cache = {"version": CACHE_VERSION, "languages": cache.get("languages", {}), "films": {}}
+        return cache
 
     def save(self) -> None:
         CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -131,7 +148,7 @@ class TmdbLanguage:
         q = search_title(title)
         if not q:
             return None
-        key = f"{title_norm(q)}|{year or ''}"
+        key = f"{title_norm(q)}|{year or ''}|{title_norm(director or '')}"   # the result depends on all three
         hit = self.cache["films"].get(key)
         now = datetime.now(timezone.utc)
         if hit and not hit.get("lang") and now - datetime.fromisoformat(hit["at"]) < MISS_TTL:
@@ -159,7 +176,13 @@ class TmdbLanguage:
     def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None, bool, int | None]:
         results = self._get("/search/movie", query=q, include_adult="false").get("results", [])
         want = title_norm(q)
-        exact = [m for m in results if want in (title_norm(m.get("title") or ""), title_norm(m.get("original_title") or ""))]
+        names = lambda m: (title_norm(m.get("title") or ""), title_norm(m.get("original_title") or ""))  # noqa: E731
+        exact = [m for m in results if want in names(m)]
+        if director:
+            # cinemas shorten long titles ("You Had to Be There" for "You Had to Be There: How the Toronto
+            # Godspell…"); with a director to confirm it, "<title>: …" is a candidate too
+            exact += [m for m in results if m not in exact
+                      and any((m.get(f) or "").lower().startswith(q.lower() + ":") for f in ("title", "original_title"))]
         pool = exact or results[:3]
 
         def yr(m):
@@ -175,7 +198,9 @@ class TmdbLanguage:
                 pool = exact_year               # same year beats ±1 neighbours before any credits call
         elif not exact:
             return None, None, False, None      # no year and no exact title: too risky
-        if len(pool) > 1 and director:
+        if director:
+            # the cinema names the director: a candidate by someone else is a different film, even if it
+            # is the only one with this title (e.g. a 2012 short vs. the 2026 feature Film Forum shows)
             pool = [m for m in pool if self._directed_by(m["id"], director)]
         sure = True
         if len(pool) > 1 and not year:
@@ -203,8 +228,8 @@ class TmdbLanguage:
             crew = self._get(f"/movie/{movie_id}/credits").get("crew", [])
         except Exception:  # noqa: BLE001
             return False
-        names = {title_norm(c.get("name") or "") for c in crew if c.get("job") == "Director"}
-        return any(title_norm(d) in names for d in re.split(r",|&| and ", director) if d.strip())
+        names = [c.get("name") or "" for c in crew if c.get("job") == "Director"]
+        return any(same_person(d, n) for d in re.split(r",|&| and ", director) if d.strip() for n in names)
 
 
 def title_hints(rows) -> dict[str, tuple[int | None, str | None]]:
