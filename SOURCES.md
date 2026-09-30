@@ -255,6 +255,11 @@ GET https://lallianceny.org/events/?_event_categories=film
 - 只有日期区间、没有时间的卡片（Godard 系列总页、Family Saturdays）是容器，跳过。
 - 导演行是 `Dir. Jean Renoir, 1931, 93 min, DCP.`；双片连映有两行，导演合并。**不要用一个大正则去扫全文**（嵌套量词会灾难性回溯卡死），按行解析。h1 下面的副标题（"The Remake"）作为 series。
 
+**实测补充（2026‑09‑30）**
+- 只有日期区间的「系列总页」（如 Jean-Luc Godard: Unmade and Abandoned）没有自己的场次，但它的 `<h2>Events In This Series</h2>` 之后列出了包含的每一场（`a[href*="/event/"]`）。只取这个标题之后的链接，页面顶部导航菜单里的 `/event/` 链接要排除。据此给每一场设 `series` = 系列名，场次页自己的小标题（"The Remake"）改放 `note`。不需要额外请求，系列总页本来就会抓。
+- 有的场次页不写 `Dir.`，片目写成 `(1981, 39 min, DCP)` / `, 1982, 11 min, DCP)`，从这里取格式（和单片时的年份）。
+- 「Family Saturdays」系列里有几部儿童电影（Phantom Boy、Mary Anning、Les Choristes），它们不在「电影」分类的列表页里，目前没有抓。
+
 ---
 
 ## 8. MoMA — ★★★ 需要浏览器（Cloudflare managed challenge）
