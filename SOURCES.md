@@ -336,6 +336,8 @@ https://filmadelphia.org/showtimes/?start_date=9/24/2026    # 一天一页，M/D
 - 标题里的 "w/ Q&A" 等拆到 note。
 - Agile 的 `ticketsearchcriteria.aspx` 单场页面有 Incapsula WAF（curl 也被拦），但 feed 端点没有；不要抓单场页面。
 
+**实测补充（2026‑10‑02，开放字幕）**：开放字幕场次在每一场的 `CustomProperties` 里有一个**隐藏**属性 `{"Group": "Accessibility", "Name": "Amenities", "Value": "Open Captioning"}`。实测只出现在周二、Bourse 和 East 的首轮片场次上；同一天 Film Center 的回顾展场次没有。按这个标记（而不是按星期几）给场次加备注「Open captions」，网页的「有字幕」筛选把它们算进去。解析在通用的 `scraper/adapters/agile.py` 里，其他 Agile 影院同样适用。
+
 ---
 
 ## 10. screenslate.com 兜底源 — ★ 开放 JSON（Drupal 10 JSON:API + 自定义 REST）

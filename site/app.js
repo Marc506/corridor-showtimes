@@ -59,7 +59,7 @@
       source: "源代码", switchTo: "EN", switchToT: "Switch to English",
       // static page text (index.html data-i18n keys)
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
-      onFilm: "只看胶片", subs: "非英语（有字幕）", subsT: "只显示已知为非英语（有英文字幕）或默片的场次",
+      onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
       upcoming: "隐藏已开场", fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {
@@ -103,7 +103,7 @@
       credits: ["Showtimes belong to the cinemas — use the links to buy tickets from them. Language and director data from ", " (this product uses the TMDB API but is not endorsed or certified by TMDB) · "],
       source: "Source code", switchTo: "中文", switchToT: "切换到中文",
       views: "Views", timeline: "Timeline", list: "List", week: "Week", dateNav: "Date", pickDate: "Pick a date", venues: "Cinemas",
-      onFilm: "On film", subs: "Non-English (subtitled)", subsT: "Only screenings known to be non-English (with English subtitles) or silent",
+      onFilm: "On film", subs: "Subtitled / captioned", subsT: "Only screenings you can follow by reading: non-English films (English subtitles), open-caption screenings and silent films",
       upcoming: "Hide started", fromToday: "Start today", search: "Search title / director",
     },
   };
@@ -288,6 +288,7 @@
   /** Global filters shared by every view (venue chips excluded — callers decide). */
   /** true = subtitled / silent (safe without English listening), false = English, null = unknown. */
   function needsNoEnglish(s) {
+    if (/open caption/i.test(s.note || "")) return true;          // captioned screening, whatever the language
     if (!s.language) return null;
     return s.language.split(",")[0].trim().toLowerCase() !== "english";
   }

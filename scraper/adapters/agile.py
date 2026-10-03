@@ -34,6 +34,16 @@ GUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 PLACEHOLDERS = ("", "TBA", "TBD", "N/A", "NA", "UNKNOWN")
 
 
+
+OPEN_CAPTIONS = "Open captions"            # same wording as Film at Lincoln Center's flag
+
+
+def open_captioned(showing: dict) -> bool:
+    """Agile marks open-caption showings (PFS: its Tuesday first-run shows) with a *hidden* per-showing
+    property: {"Group": "Accessibility", "Name": "Amenities", "Value": "Open Captioning"}."""
+    return any(re.search(r"open[\s-]*caption", str(p.get("Value") or ""), re.I)
+               for p in showing.get("CustomProperties") or [])
+
 def props(show: dict) -> dict[str, list[str]]:
     out: dict[str, list[str]] = {}
     for p in show.get("CustomProperties") or []:
@@ -140,6 +150,8 @@ class AgileAdapter(BaseScraper):
                     pass
             start_s = iso(start, self.tz)
             notes = [n for n in (title_note, clean_text(sh.get("ShortDescriptive"))) if n]
+            if open_captioned(sh):
+                notes.append(OPEN_CAPTIONS)
             out.append(Screening(
                 id=make_id(self.venue.id, start_s, title),
                 venue_id=self.venue.id, title=title, start=start_s, day=start.date().isoformat(),

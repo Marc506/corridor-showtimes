@@ -19,7 +19,7 @@ assistant adds them on your computer, usually in 10–20 minutes. See
 
 | | |
 |---|---|
-| ![Mobile list view, filtered to subtitled films](docs/mobile-list.png) | **Views.** Timeline (a lane per screen, block width = runtime), list, and week grid.<br><br>**Filters.** Cinemas, *on film* (16/35/70mm), *non-English / subtitled*, *hide started*, and title/director/series search, which lists every matching screening from today on, day by day. All state lives in the URL, so every view is shareable.<br><br>**Mobile.** On narrow screens the timeline flips vertical. The page is also an installable home-screen app.<br><br>**Honest data.** Each cinema shows whether its data is fresh, stale (last good copy kept), or came from the fallback source. |
+| ![Mobile list view, filtered to subtitled films](docs/mobile-list.png) | **Views.** Timeline (a lane per screen, block width = runtime), list, and week grid.<br><br>**Filters.** Cinemas, *on film* (16/35/70mm), *subtitled / captioned*, *hide started*, and title/director/series search, which lists every matching screening from today on, day by day. All state lives in the URL, so every view is shareable.<br><br>**Mobile.** On narrow screens the timeline flips vertical. The page is also an installable home-screen app.<br><br>**Honest data.** Each cinema shows whether its data is fresh, stale (last good copy kept), or came from the fallback source. |
 
 ## Add your own cinemas
 
@@ -128,7 +128,7 @@ is used automatically when a primary source fails. A per-venue cooldown avoids h
 that just blocked us. Its WAF rejects Python's TLS handshake, so that one source goes through the
 system `curl`.
 
-**Subtitled-film filter.** Language comes from the cinema's own text when it has any ("In Wolof
+**Subtitled-film filter.** It shows non-English films, silent films and open-caption screenings (Philadelphia Film Society marks its Tuesday first-run captioned shows; Film at Lincoln Center flags them too). Language comes from the cinema's own text when it has any ("In Wolof
 with English subtitles", "silent"), otherwise from [TMDB](https://www.themoviedb.org/), then
 from a per-venue default. Matching favors *unknown* over *wrong*:
 * check year and director when known;
