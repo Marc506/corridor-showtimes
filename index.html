@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Corridor Showtimes</title>
+  <meta name="description" content="Showtimes from New York and Philadelphia repertory cinemas on one timeline.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Showtimes">
+  <meta name="theme-color" content="#141414">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>Corridor Showtimes</h1>
+      <span id="freshness" class="freshness"></span>
+      <nav id="views" class="views" data-i18n-aria="views" aria-label="视图">
+        <button data-view="timeline" data-i18n="timeline">时间轴</button>
+        <button data-view="list" data-i18n="list">列表</button>
+        <button data-view="week" data-i18n="week">周</button>
+      </nav>
+      <button id="lang-toggle" class="lang-toggle" type="button">EN</button>
+    </div>
+
+    <nav class="datenav" data-i18n-aria="dateNav" aria-label="日期">
+      <button id="prev" title="前一天 (←)">←</button>
+      <button id="today">今天</button>
+      <button id="next" title="后一天 (→)">→</button>
+      <input id="date-input" type="date" data-i18n-aria="pickDate" aria-label="选择日期">
+      <h2 id="day-title" class="day-title"></h2>
+    </nav>
+
+    <div id="regions" class="regions" role="group" data-i18n-aria="regions" aria-label="区域" hidden></div>
+
+    <div class="venue-bar">
+      <div id="chips" class="chips" role="group" data-i18n-aria="venues" aria-label="影院"></div>
+      <button id="select-all" class="link-btn" data-i18n="selectAll">全选</button>
+      <button id="customize" class="customize-btn" type="button" data-i18n="customize">＋ 自定义影院</button>
+    </div>
+
+    <div class="filters">
+      <label><input type="checkbox" id="f-film"> <span data-i18n="onFilm">只看胶片</span></label>
+      <label data-i18n-title="subsT" title="只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片"><input type="checkbox" id="f-subs"> <span data-i18n="subs">有字幕</span><span id="f-subs-hint" class="hint"></span></label>
+      <label id="f-upcoming-wrap"><input type="checkbox" id="f-upcoming"> <span data-i18n="upcoming">隐藏已开场</span></label>
+      <label id="f-weekstart-wrap" hidden><input type="checkbox" id="f-weekstart"> <span data-i18n="fromToday">从今天起</span></label>
+      <input id="f-q" type="search" data-i18n-placeholder="search" placeholder="搜索片名 / 导演" autocomplete="off">
+    </div>
+  </header>
+
+  <main id="main"></main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <div id="popover" class="popover" role="dialog" hidden></div>
+
+  <dialog id="customize-dialog" class="guide" aria-labelledby="guide-title"></dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
