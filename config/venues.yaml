@@ -123,3 +123,15 @@ venues:
     horizon_days: 60
     rate_limit_s: 3
     agile_guid: 6634566a-a49f-4dec-89e6-bb4c5eda4814
+
+  - id: landmark-ritz-five
+    name: Landmark Ritz Five
+    short: Ritz
+    region: PHL
+    timezone: America/New_York
+    color: '#06d6a0'
+    website: https://www.landmarktheatres.com/theaters/x081d-landmark-ritz-five-philadelphia/
+    source: {adapter: boxofficeapi, site: 'https://www.landmarktheatres.com', theater: X081D}
+    fallback: null
+    horizon_days: 45
+    rate_limit_s: 2

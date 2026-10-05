@@ -1,0 +1,7 @@
+generated_by: scraper.add
+fetched_at: '2026-10-05T17:31:17Z'
+pages:
+- file: page_0.json
+  url: https://www.landmarktheatres.com/api/gatsby-source-boxofficeapi/schedule?theaters=%7B%22id%22%3A%22X081D%22%2C%22timeZone%22%3A%22America%2FNew_York%22%7D&from=2026-10-05T03%3A00%3A00&to=2026-11-19T03%3A00%3A00&includeAllMovies=true
+- file: page_1.json
+  url: https://www.landmarktheatres.com/api/gatsby-source-boxofficeapi/movies?basic=false&castingLimit=3&ids=313&ids=631&ids=1048&ids=3075&ids=3533&ids=5144&ids=6038&ids=9434&ids=12978&ids=19259&ids=47559&ids=138365&ids=172291&ids=239839&ids=327174&ids=1000013908&ids=1000015739&ids=1000026622&ids=1000026649&ids=1000027716&ids=1000037196&ids=1000037410&ids=1000048872&ids=1000050707&ids=1000050836&ids=1000051707&ids=1000052963

@@ -288,7 +288,7 @@
   /** Global filters shared by every view (venue chips excluded — callers decide). */
   /** true = subtitled / silent (safe without English listening), false = English, null = unknown. */
   function needsNoEnglish(s) {
-    if (/open caption/i.test(s.note || "")) return true;          // captioned screening, whatever the language
+    if (/open caption|\bsubtitled\b/i.test(s.note || "")) return true;   // captioned / subtitled screening, any language
     if (!s.language) return null;
     return s.language.split(",")[0].trim().toLowerCase() !== "english";
   }

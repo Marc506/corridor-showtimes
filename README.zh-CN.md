@@ -1,8 +1,8 @@
-# Corridor Showtimes（按你关注的影院聚合排片，默认收录纽约到费城的 9 家艺术影院）
+# Corridor Showtimes（按你关注的影院聚合排片，默认收录纽约到费城的 10 家艺术影院）
 
 [English](README.md) · 在线版：**https://marc506.github.io/corridor-showtimes/**
 
-每天自动抓取 9 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
+每天自动抓取 10 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
 
 | 影院 | 数据来源 |
 |---|---|
@@ -15,6 +15,7 @@
 | L'Alliance New York | 网页（列表 + 每场详情页） |
 | MoMA | 浏览器（Cloudflare），通常回退到 screenslate |
 | Philadelphia Film Society | 售票系统 Agile Ticketing 的公开 feed |
+| Landmark Ritz Five（费城） | 网站自己的公开排片接口（Webedia 平台，全美连锁只取这一家） |
 
 设计见 `ARCHITECTURE.md`，每家网站的抓取细节和坑见 `SOURCES.md`，各售票 / 建站平台的读取方式见 `PLATFORMS.md`。
 

@@ -272,3 +272,25 @@ Paris Theater 的 Next.js RSC 内嵌 JSON（`self.__next_f` 里 `{"EventDate":"2
 | 200 但浏览器渲染后仍没有时间 token | 排片不在这个 URL 上，让用户换个链接（常见：给了首页而排片在 /calendar） |
 
 纽约、旧金山湾区的影院即使被拦，也可以只配 `fallback: screenslate`（`SOURCES.md` §10）作为唯一数据源。
+
+---
+
+## 13. Webedia Movies Pro（Landmark Theatres 等连锁）— ★ 公开 JSON
+
+2026‑10‑05 实测。Landmark Theatres（全美约 26 家）的网站是 Webedia 的 Gatsby 平台：网页源码里没有场次，浏览器用同站的公开 GET 接口加载，不需要签名或登录（另有一个带元数据的 `/api/cypher` 通用转发接口，不用它）。
+
+```
+GET <site>/api/gatsby-source-boxofficeapi/scheduledMovies?theaterId=X081D        # 哪些片在哪几天放（无时间）
+GET <site>/api/gatsby-source-boxofficeapi/schedule?theaters={"id":"X081D","timeZone":"America/New_York"}
+        &from=2026-10-05T03:00:00&to=2026-11-04T03:00:00&includeAllMovies=true
+    -> {"X081D": {"schedule": {"<movieId>": {"2026-10-07": [{"startsAt": "2026-10-07T19:00:00", "tags": [...],
+        "screen": {"name": "1"}, "data": {"ticketing": [{"provider": "default", "urls": [...]}]}}]}}}}
+GET <site>/api/gatsby-source-boxofficeapi/movies?basic=false&castingLimit=3&ids=<id>&ids=<id>…
+    -> title, release（首映日期）, runtime（**秒**）, directors.nodes[].person.{firstName,lastName}
+```
+
+- `theaters` 参数是「影院对象的 JSON 字符串」；一次请求可以覆盖一个月以上。影院编号是影院页路径的第一段：`/theaters/x081d-landmark-ritz-five-philadelphia/` → `X081D`。连锁的全站排片页（`/showtimes/`）不带影院，向导要的是单个影院页。
+- 标签：`Format.Projection.35mm|70mm|16mm|Digital`；`Showtime.Accessibility.Subtitled`（字幕场）。`ClosedCaption`、`AudioDescription`、`Screen.Accessibility.HearingImpaired` 是个人辅助设备，不算银幕字幕。
+- 片名可能带年份括号（"The Mummy (1932)"），和首映年份一致时去掉。影片页：`<site>/movies/<id>-<slug>/`。
+- 适配器：`source: {adapter: boxofficeapi, site: "https://www.landmarktheatres.com", theater: X081D}`；向导在影院页上能自动识别。
+

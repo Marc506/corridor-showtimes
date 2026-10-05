@@ -22,7 +22,7 @@ def _write(tmp_path, text):
 def test_v1_file_still_loads_and_matches_v2():
     old = {v.id: v for v in load_venues(V1)}
     new = {v.id: v for v in load_venues(VENUES_FILE)}
-    assert old.keys() == new.keys()
+    assert old.keys() <= new.keys()                 # cinemas added since then are v2-only
     for vid, v in old.items():
         n = new[vid]
         assert (v.source, v.fallback, v.region, v.timezone, v.scraper) == \

@@ -1,12 +1,12 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with nine art-house and repertory cinemas from New York to Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with ten art-house and repertory cinemas from New York to Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows nine along the Northeast Corridor: Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
-MoMA, Japan Society, L'Alliance New York, and the Philadelphia Film Society. It refreshes twice a
+follows ten along the Northeast Corridor: Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society and Landmark's Ritz Five. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
 often lag behind the cinemas' own schedules.
@@ -122,6 +122,7 @@ it said last. The assistant can write that text for you — ask it to.
 | L'Alliance New York | Event cards + detail pages | Cards carry no times; per-film notes are scoped to the date they mention |
 | MoMA | Headless browser (Playwright) | Cloudflare managed challenge. When it doesn't pass, the fallback source is used; the site's protection is never circumvented |
 | Philadelphia Film Society | **Agile Ticketing public event feed** | The website blocks all automated clients; their ticketing provider publishes an official JSON feed covering all three theaters |
+| Landmark Ritz Five (Philadelphia) | **The site's own JSON schedule** (Webedia platform) | The page renders showtimes in the browser; the same public endpoints the page calls are read directly. The chain lists ~26 US theaters, so one theater id is kept |
 
 **Fallback.** [screenslate](https://www.screenslate.com)'s open JSON:API covers the NYC venues and
 is used automatically when a primary source fails. A per-venue cooldown avoids hammering a site
@@ -181,6 +182,7 @@ against real pages (`tests/fixtures/platforms/`; details in [PLATFORMS.md](PLATF
 | `squarespace` | the Squarespace events collection's JSON view | `base_url`, `collection` |
 | `wp-my-calendar` | the WordPress *My Calendar* REST API | `base_url` |
 | `alamo` | Alamo Drafthouse's public market schedule | `market`, `cinema_id` |
+| `boxofficeapi` | Webedia Movies Pro sites (Landmark Theatres): the site's own JSON schedule | `site`, `theater` |
 | `eventive` | the Eventive API, with the key the cinema's own Eventive site ships to every browser — used only when it is on the cinema's public pages; removed if a cinema asks | `bucket`, `api_key`, `site` |
 | `spektrix` | Spektrix's public "web user" API | `client` |
 | `ics` | an iCalendar feed the site links to | `url` |
