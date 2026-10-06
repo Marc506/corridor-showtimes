@@ -65,7 +65,7 @@
       // static page text (index.html data-i18n keys)
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
       onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
-      upcoming: "隐藏已开场", specials: "影展",
+      upcoming: "隐藏已开场", specials: "只看影展",
       fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {

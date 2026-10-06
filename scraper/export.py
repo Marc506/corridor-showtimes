@@ -8,6 +8,7 @@ from collections import Counter
 from datetime import timedelta
 from pathlib import Path
 
+from .language import search_title
 from .normalize import now_utc_iso, title_norm, today_local
 from .registry import load_venues
 from .store import Store
@@ -26,37 +27,49 @@ DROP_FIELDS = {"scraped_at", "first_seen", "last_seen"}
 #   * inside a series or festival: 8+ times at 2+ a day. A festival film plays a gala night and then once a day
 #     around town (Behemoth! at NYFF: 8 shows, 1.6 a day); a festival label on a theatrical run does not change
 #     what it is (Fatherland at FLC: 38 shows, 3.8 a day).
-# Old films are never hidden however often they play, and a film without a year is kept.
+# And only a film that has opened widely is hidden: in its run at 2+ of the cinemas here. A run at one cinema is an
+# exclusive engagement (Film Forum's My Undesirable Friends) and stays. Old films are never hidden however often
+# they play, and a film without a year is kept.
 RUN_WINDOW_DAYS = 14                  # counts include the last two weeks, so a run's last shows stay hidden
 RUN_SHOWS = 3
 RUN_SHOWS_IN_SERIES = 8
 RUN_DAILY_IN_SERIES = 2.0
+RUN_VENUES = 2
 SPECIAL_NOTE = re.compile(r"Q\s*&\s*A|in[- ]person|introduc|conversation|discussion|premiere|preview|"
                           r"live (?:score|music|musical)|panel|\bwith (?:director|filmmaker)", re.I)
 
 
+def film_key(title: str) -> str:
+    """One key per film across cinemas: 'Tony (2026)' ~ 'Tony', 'Digger in VistaVision' ~ 'Digger'."""
+    return title_norm(search_title(title) or title)
+
+
 def regular_runs(rows: list[dict], recent: list[dict], this_year: int) -> set[str]:
-    """Ids of `rows` that are new films in their regular run (see RUN_SHOWS). `recent` is every stored
-    screening from RUN_WINDOW_DAYS ago on, used to count how often each cinema shows each film."""
+    """Ids of `rows` that are new films in a regular run that has opened widely (see RUN_SHOWS, RUN_VENUES).
+    `recent` is every stored screening from RUN_WINDOW_DAYS ago on, used to count how often each cinema
+    shows each film."""
     shows: Counter = Counter()
     days: dict[tuple, set] = {}
     for r in recent:
-        k = (r["venue_id"], title_norm(r["title"]))
+        k = (r["venue_id"], film_key(r["title"]))
         shows[k] += 1
         days.setdefault(k, set()).add(r["day"])
-    out = set()
-    for r in rows:
-        if not r.get("year") or r["year"] < this_year - 1 or SPECIAL_NOTE.search(r.get("note") or ""):
-            continue
-        k = (r["venue_id"], title_norm(r["title"]))
+
+    def in_run(r) -> bool:
+        if not r.get("year") or r["year"] < this_year - 1:
+            return False
+        k = (r["venue_id"], film_key(r["title"]))
         n = shows[k]
         if r.get("series"):
-            in_run = n >= RUN_SHOWS_IN_SERIES and n / len(days.get(k) or {1}) >= RUN_DAILY_IN_SERIES
-        else:
-            in_run = n >= RUN_SHOWS
-        if in_run:
-            out.add(r["id"])
-    return out
+            return n >= RUN_SHOWS_IN_SERIES and n / len(days.get(k) or {1}) >= RUN_DAILY_IN_SERIES
+        return n >= RUN_SHOWS
+
+    running = [r for r in rows if in_run(r)]
+    venues: dict[str, set] = {}
+    for r in running:
+        venues.setdefault(film_key(r["title"]), set()).add(r["venue_id"])
+    return {r["id"] for r in running
+            if len(venues[film_key(r["title"])]) >= RUN_VENUES and not SPECIAL_NOTE.search(r.get("note") or "")}
 
 
 def build_payload(store: Store) -> dict:

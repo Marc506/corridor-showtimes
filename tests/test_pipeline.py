@@ -112,10 +112,18 @@ def test_regular_runs_hide_new_films_in_their_run_only():
         + [show(0, "bam", "Possible Love", "2026-10-07", 2026), show(1, "bam", "Possible Love", "2026-10-08", 2026)]
         + [show(i, "ff", "Mystery", f"2026-10-{6 + i:02d}", None) for i in range(5)]               # no year: kept
         + [show(99, "ff", "Primetime", "2026-10-09", 2026, note="Q&A with Lance Oppenheim")]      # special event: kept
+        + [show(i, "ritz", "Primetime", f"2026-10-{6 + i:02d}", 2026) for i in range(4)]          # ... opened widely
+        + [show(i, "ambler", "Bad Apples", f"2026-10-{6 + i:02d}", 2026) for i in range(3)]
+        + [show(i, "bam", "Fatherland", f"2026-10-{6 + i:02d}", 2026) for i in range(3)]          # a second run
+        + [show(i, "coolidge", "Tony (2026)", f"2026-10-{6 + i:02d}", 2026) for i in range(3)]    # same film, other spelling
+        + [show(i, "bam", "Tony", f"2026-10-{6 + i:02d}", 2026) for i in range(3)]
+        + [show(i, "ff", "My Undesirable Friends", f"2026-10-{6 + i // 3:02d}", 2026) for i in range(9)]   # one cinema only
     )
     hidden = regular_runs(rows, rows, 2026)
     by = lambda t: {r["id"] in hidden for r in rows if r["title"] == t and not r.get("note")}  # noqa: E731
     assert by("Primetime") == {True} and by("Bad Apples") == {True} and by("Fatherland") == {True}
     assert by("Behemoth!") == {False} and by("Kwaidan") == {False} and by("Possible Love") == {False}
     assert by("Mystery") == {False}
+    assert by("Tony (2026)") == {True} and by("Tony") == {True}
+    assert by("My Undesirable Friends") == {False}             # a run at a single cinema: an exclusive, kept
     assert "ff-Primetime-99" not in hidden
