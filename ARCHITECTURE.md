@@ -330,7 +330,7 @@ window.CINEMA_DATA = {
   * 配置生成都是纯函数（`launchd_plist`、`windows_task_xml`、`systemd_units`、`cron_block`），离线测试覆盖三个平台。
 * **网页提醒**：数据超过 36 小时没更新时，「更新于」变成警告色；在本地打开（`file://`）时还会提示「自动更新可能没开」和开启方法。线上网站只变色，不提示。
 * **作者实例**：`schedule on --publish`（或旧的 `com.cinema.refresh` 任务调用 `scripts/refresh.sh`，效果相同），每次更新后发布到 GitHub Pages。`schedule on` 发现旧任务时会拒绝重复安装，`--replace-legacy` 用新任务替换它。
-* **`scripts/publish.sh`**：把 `site/` 的网页文件和最新 `data.js` 组装成一个**孤立提交**（orphan commit），强制推送到 `gh-pages` 分支，由 GitHub Pages 提供服务。每次发布都替换上一次，仓库不会因每日更新而膨胀。凭证由仓库本地的 `gh auth git-credential` 提供。
+* **`scripts/publish.sh`**：把 `site/` 的网页文件和最新 `data.js` 组装成一个**孤立提交**（orphan commit），强制推送到 `gh-pages` 分支，由 GitHub Pages 提供服务。发布前 `scripts/stamp_assets.py` 给暂存副本里 index.html 引用的 `styles.css` / `data.js` / `calendar.js` / `app.js` 加上内容版本（`app.js?v=<sha256 前 10 位>`）：Pages 让浏览器缓存 10 分钟，带版本后普通刷新（重新校验 index.html）就能拿到配套的新文件，不会出现新数据配旧脚本；工作目录里的 site/ 不改。CI 组装 `_site/` 时同样处理。每次发布都替换上一次，仓库不会因每日更新而膨胀。凭证由仓库本地的 `gh auth git-credential` 提供。
 * **项目位置**：macOS 上项目必须放在「下载」「文稿」「桌面」和 iCloud 云盘之外，因为隐私保护（TCC）不允许 launchd 任务读取这些位置；`schedule on` 按真实路径（解析快捷方式后）检查，发现就拒绝并提示移动文件夹。
 
 ### 8.2 GitHub Actions（可选，默认关闭）

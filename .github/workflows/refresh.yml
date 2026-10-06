@@ -67,6 +67,7 @@ jobs:
           mkdir -p _site
           cp site/index.html site/app.js site/calendar.js site/styles.css site/data.js site/manifest.webmanifest site/*.png _site/
           cp data/showtimes.json _site/showtimes.json
+          python scripts/stamp_assets.py _site
 
       - uses: actions/upload-pages-artifact@v3
         with:
