@@ -14,7 +14,7 @@
 | Veezi 售票页 | 3 | Roxy Cinema NYC、New Beverly、Roxie SF | `veezi` |
 | Agile Ticketing | 4 (+PFS) | IFC Center、Coolidge Corner、Gene Siskel、Belcourt | `agile`，**但 feed GUID 不在网页里**，需影院提供或人工查找；网页本身是服务端渲染，可走 `recipe` |
 | 自家公开 JSON | 3 | Alamo Drafthouse（全国）、Trylon（WP My Calendar）、Paris Theater（Next.js RSC 内嵌） | `alamo`、`wp-my-calendar`；Paris 走 `recipe`/custom |
-| Wix Events（HTML 内嵌 JSON） | 1 | Lightbox Film Center | 暂走 `recipe` |
+| Wix Events（HTML 内嵌 JSON） | 1 | Lightbox Film Center | `wix`（§14） |
 | Tessitura TNEW | 2 | BAMPFA（服务端 HTML）、Jacob Burns（纯 JS） | 无公开 JSON；BAMPFA 走 `recipe` |
 | Eventive | 1 | Northwest Film Forum | `eventive`（需站点内嵌的公开 key） |
 | 服务端 HTML、各写各的 | ~6 | Quad、Harvard Film Archive、Austin Film Society、Spectacle、Light Industry、（以及上面 Agile 的 4 家） | `recipe`（声明式配方） |
@@ -242,7 +242,7 @@ END:VEVENT
 | `alamo` | `https://drafthouse.com/s/mother/v2/schedule/market/<market>`（`nyc` 等） | `data.sessions[]{cinemaId, sessionId, presentationSlug, showTimeClt, showTimeUtc, status}` + `data.presentations[]`（片名、时长）；一个 market 含多家门店，用 `cinemaId` 拆成多个 venue 或用 `screen` 区分。891 场，无鉴权 |
 | `wp-my-calendar` | `<site>/wp-json/my-calendar/v1/events` | `{"2026-09-28": [{"event_title", "occur_begin": "2026-09-28 19:00:00", "event_link"}]}`，按日分组（Trylon） |
 
-Paris Theater 的 Next.js RSC 内嵌 JSON（`self.__next_f` 里 `{"EventDate":"2026-10-15","EventTime":"7:05 PM","TicketLink":...}`）和 Lightbox 的 Wix 预热 JSON 结构都是站点专属，不做通用适配器，交给 `recipe`（JSON 路径模式）或 custom。
+Paris Theater 的 Next.js RSC 内嵌 JSON（`self.__next_f` 里 `{"EventDate":"2026-10-15","EventTime":"7:05 PM","TicketLink":...}`）是站点专属，交给 `recipe` 或 custom；Lightbox 的 Wix 预热 JSON 是 Wix Events 的通用结构，见 §14 的 `wix` 适配器。
 
 ---
 
@@ -293,4 +293,25 @@ GET <site>/api/gatsby-source-boxofficeapi/movies?basic=false&castingLimit=3&ids=
 - 标签：`Format.Projection.35mm|70mm|16mm|Digital`；`Showtime.Accessibility.Subtitled`（字幕场）。`ClosedCaption`、`AudioDescription`、`Screen.Accessibility.HearingImpaired` 是个人辅助设备，不算银幕字幕。
 - 片名可能带年份括号（"The Mummy (1932)"），和首映年份一致时去掉。影片页：`<site>/movies/<id>-<slug>/`。
 - 适配器：`source: {adapter: boxofficeapi, site: "https://www.landmarktheatres.com", theater: X081D}`；向导在影院页上能自动识别。
+
+## 14. Wix Events（Lightbox Film Center 等 Wix 站）— ★ 页面内嵌 JSON
+
+2026‑10‑06 实测。Wix 建站的页面服务端就带着 Events 组件的数据：`<script type="application/json" id="wix-warmup-data">` 里
+`appsWarmupData.<app id>.<widget id>.events.events[]`，一页可以有几个组件（「即将放映」「往期」各一个，`filterType` 不同）。单条：
+
+```json
+{"id": "b5eb…", "title": "Talking to Strangers", "slug": "talking-to-strangers", "description": "New Restoration",
+ "location": {"name": "Bok Auditorium", "address": "800 Mifflin St, Philadelphia, PA 19148, USA", "coordinates": {"lat": 39.93, "lng": -75.16}},
+ "scheduling": {"config": {"startDate": "2026-10-07T23:00:00.000Z", "endDate": "2026-10-08T01:00:00.000Z",
+                           "timeZoneId": "America/New_York", "scheduleTbd": false, "recurrences": {"occurrences": []}}},
+ "registration": {"type": 3, "external": {"registration": "https://events.ticketleap.com/tickets/…"},
+                  "ticketing": {"soldOut": true}}}
+```
+
+- 时间是 UTC，`recurrences.occurrences[]` 非空时每项一个场次；`scheduleTbd` 的跳过。`endDate` 是活动时段（Lightbox 多为整 2 小时），作为 `end`。
+- `description` 是一句话标语（"New Restoration"、"Philadelphia Premiere"、"Co-presented with …"），记为备注；`about` 常为空，导演 / 片长交给 TMDB。
+- 票在别处卖（`registration.external`）时，Wix 自己的 `soldOut` 恒为 true，没有意义，只在用 Wix 售票时才标「Sold out」。购票链接 = `external.registration`；详情页取页面里指向 `/<slug>` 的链接（Lightbox 是 `/events/<slug>`），没有就用 Wix 默认的 `/event-details/<slug>`。
+- 每场的 `location.name` 记为 `screen`：Lightbox 没有固定影厅，在 Bok Auditorium 之外也借用过别的场地，`venues.yaml` 的 `location.places` 按这个名字给出地址。
+- Lightbox 首页组件只有最近 6 场，全量在 `/events-1`（`/events` 是单场详情页模板，只有 1 场）。探测：任一页面有 `wix-warmup-data` → 在首页链接里挑 `/events*`、`/calendar` 这类一段路径的页面，取「未开场的场次」最多的那页。
+- 适配器：`source: {adapter: wix, pages: ['https://www.lightboxfilmcenter.org/events-1']}`，每页一次 GET，不另外请求；页面里抓取日一天以前的场次（往期组件）跳过。
 

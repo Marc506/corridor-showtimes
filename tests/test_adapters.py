@@ -35,7 +35,7 @@ def detect(adapter, url, pages):
 def test_registry_lists_every_platform():
     names = set(known_adapters())
     assert {"agile", "filmbot", "veezi", "jsonld", "tribe", "squarespace", "ics", "alamo",
-            "wp-my-calendar", "eventive", "spektrix", "screenslate"} <= names
+            "wp-my-calendar", "eventive", "spektrix", "screenslate", "wix"} <= names
     order = [c.adapter_name for c in detectable_adapters()]
     assert order.index("filmbot") < order.index("veezi") < order.index("agile") < order.index("jsonld")
     assert "screenslate" not in order                   # a fallback, never detected
@@ -235,3 +235,28 @@ def test_jsonld_graph_and_references():
 def test_jsonld_detect_requires_real_dates(page, expected):
     c, _ = detect("jsonld", "https://example.org/film", {"https://example.org/film": page})
     assert (c is not None) == bool(expected)
+
+
+# ---------- wix ----------
+def test_wix_events_from_warmup_data():
+    r = rows("lightbox-wix")
+    assert len(r) == 12                                               # the page's past events are skipped
+    first = r[0]
+    assert (first.title, first.start, first.end) == ("Talking to Strangers", "2026-10-07T19:00:00-04:00",
+                                                     "2026-10-07T21:00:00-04:00")
+    assert first.screen == "Bok Auditorium" and first.note == "New Restoration"   # no false "Sold out"
+    assert first.detail_url == "https://www.lightboxfilmcenter.org/events/talking-to-strangers"
+    assert first.ticket_url.startswith("https://events.ticketleap.com/tickets/lightbox-film-center/")
+    assert [x.start for x in r if x.title.startswith("Roy From Space")] == ["2026-11-01T17:00:00-05:00"]
+
+
+def test_wix_detect_picks_the_page_with_the_most_upcoming_events(monkeypatch):
+    from datetime import datetime, timezone
+    monkeypatch.setattr("scraper.adapters.wix._now", lambda: datetime(2026, 10, 6, 17, tzinfo=timezone.utc))
+    c, _ = detect("wix", "https://www.lightboxfilmcenter.org/", {
+        "https://www.lightboxfilmcenter.org/": "wix/lightbox_home.html",            # 6 upcoming in a widget
+        "https://www.lightboxfilmcenter.org/events-1": "wix/lightbox_events.html"})  # all 12
+    assert c.source == {"adapter": "wix", "pages": ["https://www.lightboxfilmcenter.org/events-1"]}
+    assert get_adapter_class("wix").detect(SiteProbe.offline("https://example.org/", {
+        "https://example.org/": P / "squarespace/maysles_home.html"}).start()) is None
+

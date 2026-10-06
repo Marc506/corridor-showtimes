@@ -1,6 +1,6 @@
 # Corridor Showtimes — 架构
 
-艺术 / 重映影院的排片聚合器：每天抓取两次，合并成统一数据，以时间轴 / 列表 / 周三种视图展示，并发布到 GitHub Pages。公开实例覆盖纽约 + 费城九家影院；任何人 fork 后给出「影院名 + 网址」就能加入自己的影院。每家影院网站的抓取细节见 [`SOURCES.md`](SOURCES.md)，各类平台（售票系统 / 建站系统）的读取方式见 [`PLATFORMS.md`](PLATFORMS.md)。
+艺术 / 重映影院的排片聚合器：每天抓取两次，合并成统一数据，以时间轴 / 列表 / 周三种视图展示，并发布到 GitHub Pages。公开实例覆盖纽约 + 费城十一家影院；任何人 fork 后给出「影院名 + 网址」就能加入自己的影院。每家影院网站的抓取细节见 [`SOURCES.md`](SOURCES.md)，各类平台（售票系统 / 建站系统）的读取方式见 [`PLATFORMS.md`](PLATFORMS.md)。
 
 **目标**：不懂编程的人给出「影院名 + 网址」，就能把一家美国影院加进自己的排片日历。程序按网站所用的系统自动工作；做不到的，给出一份可以直接交给 AI Agent 的任务包，或者明确说「这家做不了、为什么」。
 **非目标**：托管服务（网页里直接加影院需要常驻服务器与运营方代付 LLM 费用，本项目不承担；每人在自己电脑上一份）；绕过任何反爬 / 验证码；美国以外的影院（时区是按影院配置的，留了口子）。
@@ -30,7 +30,7 @@
 │   ├── registry.py             按 source.adapter 装配抓取器；@register("<module>") 注册自定义模块
 │   ├── base.py                 BaseScraper、HTTP 客户端（httpx / curl）、Playwright 浏览器会话、详情页缓存、请求预算
 │   ├── adapters/               平台适配器（filmbot、veezi、agile、tribe、squarespace、ics、alamo、wp_my_calendar、
-│   │                           eventive、spektrix、jsonld、screenslate）与配方解释器 recipe.py；@register_adapter 注册
+│   │                           eventive、spektrix、boxofficeapi、wix、jsonld、screenslate）与配方解释器 recipe.py；@register_adapter 注册
 │   ├── recipes/<id>.yaml       配方文件；recipe.schema.json 是配方的 JSON Schema
 │   ├── sources/                自定义模块，每家一个文件（filmadelphia.py 是 agile 适配器的薄壳）
 │   ├── probe.py                SiteProbe：对一个网站的有限、礼貌的探测（§5.7）
@@ -124,7 +124,7 @@ venues:
 * **兼容 v1**：没有 `version`、顶层是列表的旧文件照样加载；每条在内存里转换成 `source: {adapter: custom, module: <scraper>}`、`fallback: {adapter: screenslate, nid: <screenslate_nid>}`、`region: <city>`。`VenueConfig` 保留 `scraper` / `screenslate_nid` / `city` 作为别名，`extra` 继续兜住未知字段。
 * **校验**：`config/venues.schema.json`（JSON Schema）加语义检查（id 重复、时区名无效、适配器不存在、适配器缺必填参数、自定义模块文件不存在）。错误是一句一行的人话——「第 3 家影院（c）缺少 name」——不出现校验器的堆栈；语言跟随 `--lang` / `CINEMA_LANG` / `LANG`。
 
-公开实例的九家：
+公开实例的十一家：
 
 | 影院 | 数据源 |
 |---|---|
@@ -137,6 +137,8 @@ venues:
 | L'Alliance New York | custom：列表卡片 + 每场详情页（配方表达不了） |
 | MoMA | custom：Playwright 浏览器；通常回退到 screenslate |
 | Philadelphia Film Society | custom `filmadelphia`：`agile` 适配器的薄壳，固定 PFS 的 GUID 与集群 |
+| Landmark Ritz Five | `boxofficeapi`：Webedia 平台的公开排片接口 |
+| Lightbox Film Center | `wix`：Wix Events 页面内嵌的 JSON |
 
 ## 5. 抓取层
 
@@ -250,6 +252,7 @@ python -m scraper.store --seed <showtimes.json 路径或 URL>   # 从上次发�
    | `eventive` | `bucket`、`api_key`、`site` | `*.eventive.org` → tenant bundle 里的 `event_bucket` / `api_key`（仅限影院公开页面里的 key） |
    | `spektrix` | `client` | `system.spektrix.com/<client>/` |
    | `ics` | `url`、`categories?` | `text/calendar` 链接、`.ics` / `webcal://` / `?ical=1` |
+   | `wix` | `pages` | 页面含 `wix-warmup-data` 且带 Events 记录；在首页链接里挑未开场场次最多的 `/events*` 页 |
    | `jsonld` | `pages`、`follow?` | 页面里 `startDate` 带时间的 `Event` / `ScreeningEvent`（Film Forum 首页那种空日期不算） |
    | `screenslate` | `nid` | 不参与探测，只作兜底 |
 

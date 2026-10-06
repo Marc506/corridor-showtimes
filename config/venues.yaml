@@ -160,3 +160,22 @@ venues:
     fallback: null
     horizon_days: 45
     rate_limit_s: 2
+
+  - id: lightbox-film-center
+    name: Lightbox Film Center
+    short: LFC
+    region: PHL
+    timezone: America/New_York
+    color: '#ff6b6b'
+    website: https://www.lightboxfilmcenter.org/
+    location:                  # 现在都在 Bok 大楼放映；过去也用过别的场地，按场次的地点名对应
+      name: Bok Auditorium
+      address: "800 Mifflin St, Philadelphia, PA 19148"
+      geo: [39.92552, -75.1603]
+      places:
+        - {match: Village of Industry, name: Village of Industry & Art, address: "320 S Broad St, Philadelphia, PA 19102", geo: [39.94603, -75.16565]}
+        - {match: Moore College, name: Moore College of Art & Design, address: "1916 Race St, Philadelphia, PA 19103", geo: [39.95722, -75.17168]}
+    source: {adapter: wix, pages: ['https://www.lightboxfilmcenter.org/events-1']}   # Wix Events 的嵌入数据
+    fallback: null
+    horizon_days: 45
+    rate_limit_s: 2

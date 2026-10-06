@@ -26,9 +26,10 @@
 | `jsonld/` | `bam_tony.html`, `vidiots_creepshow.html`, `brattle_elements.html` | 影片详情页 | `Event` / `ScreeningEvent` 正例 |
 | | `filmforum_home_empty_dates.html` | `filmforum.org` | 负例：`startDate` 为空 |
 | `ics/` | `uniondocs.ics` | `uniondocs.org/events/?ical=1` | 适配器正例 |
+| `wix/` | `lightbox_events.html`, `lightbox_home.html` | `lightboxfilmcenter.org/events-1`、首页（2026‑10‑06，只保留页面链接和 `wix-warmup-data` 原文） | 适配器正例 + 探测（首页 6 场 vs. 全量页 12 场） |
 | `alamo/` | `nyc_schedule.json`, `nyc_home.html` | `drafthouse.com/s/mother/v2/schedule/market/nyc` | 适配器正例 |
 | `wp_my_calendar/` | `trylon_events.json`, `trylon_home.html` | `trylon.org/wp-json/my-calendar/v1/events` | 适配器正例 |
-| `recipe/` | `coolidge_home.html`, `siskel.html`, `belcourt.html`, `ifc.html`, `quad.html`, `hfa_calendar.html`, `bampfa_calendar.html`, `austinfilm_calendar.html`, `roxie_calendar.html`, `spectacle.html`, `lightindustry_calendar.html`, `paris_home.html`, `lightbox_calendar.html` | 各影院官网 | 服务端渲染但结构各异：配方解释器与配方生成的测试材料 |
+| `recipe/` | `coolidge_home.html`, `siskel.html`, `belcourt.html`, `ifc.html`, `quad.html`, `hfa_calendar.html`, `bampfa_calendar.html`, `austinfilm_calendar.html`, `roxie_calendar.html`, `spectacle.html`, `lightindustry_calendar.html`, `paris_home.html`, `lightbox_calendar.html`（旧网址的 404 页） | 各影院官网 | 服务端渲染但结构各异：配方解释器与配方生成的测试材料 |
 | `blocked/` | `movingimage_cloudflare.html`, `hollywoodtheatre_cloudflare.html`, `musicbox_sucuri.html`, `cleveland_sucuri.html` | 挑战页原文 | 探测器「被拦截」判定的负例 |
 | `js_only/` | `americancinematheque_now_showing.html`, `burns_film.html` | 官网 | 服务端无时间 token 的负例 |
 

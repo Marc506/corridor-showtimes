@@ -147,3 +147,12 @@ venues:
     fixture:
       fetched_at: "2026-09-28T16:00:00Z"
       pages: [{file: jsonld/bam_tony.html, url: "https://www.bam.org/film/2026/tony"}]
+
+  - id: lightbox-wix
+    name: Lightbox Film Center
+    region: PHL
+    source: {adapter: wix, pages: ['https://www.lightboxfilmcenter.org/events-1']}
+    horizon_days: 45
+    fixture:
+      fetched_at: "2026-10-06T17:10:00Z"
+      pages: [{file: wix/lightbox_events.html, url: "https://www.lightboxfilmcenter.org/events-1"}]
