@@ -157,8 +157,8 @@ class TmdbLanguage:
             lang, tmdb_id, sure, rel_year = self._find(q, year, director)
             hit = {"lang": lang, "id": tmdb_id, "sure": sure, "year": rel_year, "at": now.isoformat()}
             self.cache["films"][key] = hit
-        if hit.get("sure") and hit.get("id") and ("directors" not in hit or "runtime" not in hit):
-            hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
+        if hit.get("sure") and hit.get("id") and self._facts_stale(hit):
+            hit.update(self._film_facts(hit["id"]))
         return hit if hit.get("lang") else None
 
     def by_imdb(self, imdb_id: str) -> dict | None:
@@ -176,12 +176,23 @@ class TmdbLanguage:
             hit = {"lang": self.language_name(code) if code else None, "id": m.get("id"), "sure": bool(m),
                    "year": int(year) if year.isdigit() else None, "at": now.isoformat()}
             self.cache["films"][key] = hit
-        if hit.get("id") and ("directors" not in hit or "runtime" not in hit):
-            hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
+        if hit.get("id") and self._facts_stale(hit):
+            hit.update(self._film_facts(hit["id"]))
         return hit if hit.get("lang") else None
 
-    def _film_facts(self, movie_id: int) -> tuple[list[str], int | None]:
-        """Directors and runtime (minutes) in one request: /movie/{id}?append_to_response=credits."""
+    @staticmethod
+    def _facts_stale(hit: dict) -> bool:
+        """Never fetched (or cached before companies were kept), or a recent film's facts a week old."""
+        if "companies" not in hit:
+            return True
+        if (hit.get("year") or 0) < today_local().year - 1:
+            return False
+        at = hit.get("facts_at")
+        return not at or datetime.now(timezone.utc) - datetime.fromisoformat(at) > FACTS_TTL
+
+    def _film_facts(self, movie_id: int) -> dict:
+        """One request (/movie/{id}?append_to_response=credits): directors, runtime (minutes), and what
+        is_mainstream() needs — production companies, budget (USD, 0 = unknown) and TMDB popularity."""
         try:
             d = self._get(f"/movie/{movie_id}", append_to_response="credits")
         except Exception as e:  # noqa: BLE001 — best effort; retried next run (keys stay absent)
@@ -190,7 +201,10 @@ class TmdbLanguage:
         crew = (d.get("credits") or {}).get("crew", [])
         directors = list(dict.fromkeys(c["name"] for c in crew if c.get("job") == "Director" and c.get("name")))
         runtime = d.get("runtime") or None                 # TMDB uses 0 for "unknown"
-        return directors, (runtime if runtime and 1 <= runtime <= 900 else None)
+        return {"directors": directors, "runtime": runtime if runtime and 1 <= runtime <= 900 else None,
+                "companies": [c.get("name") for c in d.get("production_companies") or [] if c.get("name")],
+                "budget": d.get("budget") or 0, "pop": round(float(d.get("popularity") or 0), 1),
+                "facts_at": datetime.now(timezone.utc).isoformat()}
 
     def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None, bool, int | None]:
         results = self._get("/search/movie", query=q, include_adult="false").get("results", [])
@@ -268,6 +282,44 @@ def title_hints(rows) -> dict[str, tuple[int | None, str | None]]:
     return hints
 
 
+# Studios whose new releases are "commercial" for the Hide studio films filter. Their art-house arms are not
+# here (Focus Features, Searchlight Pictures, Sony Pictures Classics), nor A24, Neon, Mubi and the like.
+MAJOR_STUDIOS = {
+    "walt disney pictures", "walt disney animation studios", "pixar", "marvel studios", "lucasfilm ltd.",
+    "20th century studios", "twentieth century fox", "warner bros. pictures", "warner bros. animation",
+    "warner animation group", "new line cinema", "dc studios", "dc films", "universal pictures", "illumination",
+    "dreamworks animation", "columbia pictures", "sony pictures animation", "tristar pictures", "screen gems",
+    "paramount pictures", "paramount animation", "lionsgate", "lions gate films", "summit entertainment",
+    "metro-goldwyn-mayer", "amazon mgm studios", "legendary pictures", "blumhouse productions",
+}
+# Studios' art-house arms: their films are never "commercial" here, whatever the budget (Searchlight's
+# $36M Behemoth! is a Tony Gilroy film, not a blockbuster).
+SPECIALTY_ARMS = {"searchlight pictures", "fox searchlight pictures", "focus features", "sony pictures classics"}
+BIG_BUDGET = 30_000_000
+WIDE_POPULARITY = 50          # with a big budget: an auteur's $40M film nobody has heard of yet stays (Artificial)
+BIG_POPULARITY = 150          # on its own: a hit is a hit
+FACTS_TTL = timedelta(days=7) # popularity moves as a new release opens: refresh recent films weekly
+
+
+def is_mainstream(info: dict | None, year: int | None) -> bool | None:
+    """A new release (this year or last) from a major studio (not its art-house arm), very popular on TMDB, or
+    with a budget of $30M+ and fairly popular.
+    Old films are never mainstream: a repertory print of a studio picture is what an art house is for.
+    None when it can't be told (no sure TMDB match, or no year) — the filter then keeps the screening."""
+    if not info or not info.get("sure") or "companies" not in info:
+        return None
+    year = year or info.get("year")
+    if not year:
+        return None
+    if year < today_local().year - 1:
+        return False
+    studios = {c.lower() for c in info.get("companies") or []}
+    if studios & SPECIALTY_ARMS:
+        return False
+    pop, budget = info.get("pop") or 0, info.get("budget") or 0
+    return bool(studios & MAJOR_STUDIOS or pop >= BIG_POPULARITY or (budget >= BIG_BUDGET and pop >= WIDE_POPULARITY))
+
+
 def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLanguage | None,
                    hints: dict | None = None) -> None:
     """Fill missing film info in place.
@@ -287,7 +339,8 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
         elif s.language:
             stats["site"] += 1
         info = None
-        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director or not s.runtime_min):
+        recent = (s.year or today_local().year) >= today_local().year - 1   # a possible new release: is it mainstream?
+        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director or not s.runtime_min or recent):
             year, director = s.year, s.director
             if not year and hints:
                 q = search_title(s.title)
@@ -302,6 +355,7 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                     memo[k] = None
             info = memo[k]
         if info and info.get("sure"):
+            s.mainstream = is_mainstream(info, s.year)
             if not s.director and info.get("directors"):
                 s.director = ", ".join(info["directors"][:3])
                 stats["director"] = stats.get("director", 0) + 1

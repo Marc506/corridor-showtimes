@@ -25,6 +25,7 @@ class Screening:
     detail_url: str | None = None
     ticket_url: str | None = None
     imdb_id: str | None = None      # "tt0090605" when the cinema publishes it: an exact TMDB match
+    mainstream: bool | None = None  # a major-studio / big-budget new release (language.is_mainstream); None = unknown
     source: str = "primary"         # "primary" | the fallback adapter's name ("screenslate")
     scraped_at: str = ""            # ISO UTC
 

@@ -330,3 +330,40 @@ def test_imdb_id_from_the_cinema_is_an_exact_match():
     assert (rows[0].language, rows[0].director, rows[0].year, rows[0].runtime_min) == ("English", "John Landis", 1980, 133)
     assert "/search/movie" not in tmdb.calls                   # never fell back to a title search
     assert rows[1].language is None and rows[1].director is None
+
+
+def test_mainstream_rule():
+    from datetime import date
+    year = date.today().year
+    sure = lambda **kw: {"sure": True, "companies": [], "budget": 0, "pop": 0, **kw}          # noqa: E731
+    assert L.is_mainstream(sure(companies=["Warner Bros. Pictures", "Legendary Pictures"]), year)        # Digger
+    assert L.is_mainstream(sure(budget=40_000_000, pop=148.0), year)                                   # Verity
+    assert not L.is_mainstream(sure(budget=40_000_000, pop=5.0), year)                                 # Artificial
+    assert not L.is_mainstream(sure(companies=["Searchlight Pictures"], budget=36_000_000, pop=80), year)  # Behemoth!
+    assert not L.is_mainstream(sure(companies=["A24"], budget=14_500_000, pop=60.6), year)             # Primetime
+    assert L.is_mainstream(sure(pop=385.0), year)
+    assert L.is_mainstream(sure(companies=["20th Century Studios"]), year - 40) is False               # repertory: never
+    assert L.is_mainstream({"sure": False, "companies": ["Universal Pictures"]}, year) is None          # not identified
+    assert L.is_mainstream(sure(companies=["Universal Pictures"]), None) is None                       # no year
+
+
+def test_fill_marks_a_sure_recent_studio_film_and_leaves_old_ones():
+    class Studio(FakeTmdb):
+        def _get(self, path, **params):
+            if path.startswith("/movie/") and not path.endswith("/credits"):
+                self.calls.append(path)
+                return {"runtime": 128, "credits": {"crew": [{"job": "Director", "name": "X"}]},
+                        "production_companies": [{"name": "Warner Bros. Pictures"}], "budget": 0, "popularity": 9}
+            return super()._get(path, **params)
+    from datetime import date
+    year = date.today().year
+    tmdb = Studio([{"id": 7, "title": "Digger", "release_date": f"{year}-10-02", "original_language": "en"},
+                   {"id": 8, "title": "Old Studio Film", "release_date": "1984-06-01", "original_language": "en"}],
+                  credits={7: ["X"], 8: ["X"]})
+    rows = [_s("Digger", "English", year), _s("Old Studio Film", "English", 1984)]
+    rows[0].director = rows[1].director = "X"
+    rows[0].runtime_min = rows[1].runtime_min = 100
+    L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert rows[0].mainstream is True                 # complete site data, but a recent film: still looked up
+    assert rows[1].mainstream is None                 # an old film with everything known is not looked up at all
+
