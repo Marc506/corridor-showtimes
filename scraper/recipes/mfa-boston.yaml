@@ -1,0 +1,16 @@
+# Museum of Fine Arts, Boston — the film programme page, one card per screening (SOURCES.md §16).
+# "Friday, October 23, 2026 / 7:00 pm–8:45 pm": only the start of the range is a showtime.
+pages:
+  - url: "https://www.mfa.org/programs/film"
+date:
+  kind: attr
+  selector: ".date-display-range"
+  regex: "([A-Z][a-z]+ \\d{1,2}, \\d{4})"
+  format: "%B %d, %Y"
+item: "div.col-lg-8:has(> h3 a[href*='/event/film/'])"
+fields:
+  title:      {selector: "h3 a"}
+  times:      {selector: ".date-display-range", regex: "(\\d{1,2}:\\d{2}\\s*[ap]m)\\s*[–-]"}
+  detail_url: {selector: "h3 a", attr: href}
+  ticket_url: {selector: ".field--name-tnew-ticket-button a[href*='tnew.mfa.org']", attr: href}
+  note:       {selector: ".field--name-tnew-ticket-button a", regex: "^(Sold Out)$"}

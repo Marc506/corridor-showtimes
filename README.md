@@ -1,11 +1,11 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with nineteen art-house and repertory cinemas in Boston, New York and Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with twenty art-house and repertory cinemas in Boston, New York and Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows seventeen along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive and the Somerville Theatre around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+follows seventeen along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and the Museum of Fine Arts around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
 MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, and the Renew Theaters' Hiway, County and Ambler theaters. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
@@ -127,6 +127,7 @@ it said last. The assistant can write that text for you — ask it to.
 | Coolidge Corner Theatre (Brookline, Boston) | **A recipe** over the site's day pages (`/showtimes?date=…`) | No code: one page per day for three weeks. Every showing carries its auditorium and Agile ticket link; Coolidge Education classes are left out. Outdoor nights (the USS Salem, the Charles River Speedway) have no auditorium and are placed by their series or title |
 | Brattle Theatre (Cambridge, Boston) | **Filmbot** platform adapter | Found automatically by the add-a-cinema wizard; only parameters, no code. Partner festivals (IFF Boston, GlobeDocs) sell their own tickets, so those links go to the festival |
 | Harvard Film Archive (Cambridge) | **A recipe** over the calendar pages | Every event carries its exact start time, so no date guessing; print formats (new 35mm prints, on film) come from the event labels |
+| MFA Boston (Museum of Fine Arts) | **A recipe** over the film programme page | A handful of screenings, mostly partner festivals; each card's time range counts once, by its start |
 | Somerville Theatre | **The ticketing feed behind the site's schedule** (TAPOS XML) | One request holds every first-run and repertory showing. The feed's director field mixes in wrong names, so it is ignored; the IMDb id it carries gives TMDB the exact film instead |
 | Bryn Mawr Film Institute | Server-rendered HTML: the week page, plus each later programme's own page | **Times have no am/pm** except morning shows, which the site marks, so an unmarked time is afternoon; captioned and sensory-friendly showings are labelled per time. Its Agile ticketing exposes no usable public feed |
 | Hiway Theater (Jenkintown), County Theater (Doylestown), Ambler Theater | Server-rendered HTML: the home page (this week) and the special programmes page | One reader for the Renew Theaters site template, configured per site; again most times have no am/pm. The site already carries every showtime and ticket link, so the ticketing app is not read |

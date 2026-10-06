@@ -496,3 +496,19 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 - **`Directors` 不可信**：混进了别的片的人（"The Blues Brothers: Derek Drymon|John Landis"、1925 年 "The Phantom of the Opera: Johannes Roberts|Norman Jewison"），所以不用。改用 `IMDBCode`：`Screening.imdb_id` → TMDB `/find/{imdb_id}`，一部片一个确定的匹配，导演、年份、片长、语言都从那里来（`language.by_imdb`，缓存键 `imdb:<id>`）。没有 IMDb 号的片照常按片名查。
 - `/calendar`（重映日历）和 `/events`（音乐会、现场活动）不读：前者的场次都在 feed 里，后者不是电影。地址：55 Davis Square, Somerville。
 
+---
+
+## 16. MFA Boston（Museum of Fine Arts）— ★★ 服务端 HTML（配方）
+
+2026‑10‑06 实测。Drupal 站，售票是 Tessitura TNEW（`tnew.mfa.org`）。`/programs`（全馆活动日历）几乎都是导览和课程，电影只在 `/programs/film` 的 "Upcoming Films" 里，一卡一场：
+
+```
+<div class="col-lg-8">Film
+  <h3><a href="/event/film/chronicles-from-the-siege?event=179071">Chronicles from the Siege</a></h3>
+  <div class="p"><span class="date-display-range">Friday, October 23, 2026<br>7:00 pm–8:45 pm</span></div>
+  <div class="field--name-tnew-ticket-button"><a class="btn" href="https://tnew.mfa.org/0/120933">Tickets</a></div>
+```
+
+- 时间是区间，配方的 `times` 只取「–」前面的开始时间，否则结束时间会被当成第二场。按钮写 "Sold Out" 时记为备注。
+- 场次很少（多是合作影展：CineFest Latino、Boston Palestine Film Festival、Boston Jewish Film Festival），卡片上不写属于哪个影展。每次 1 个请求。地址：465 Huntington Ave。
+

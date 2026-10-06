@@ -294,3 +294,17 @@ venues:
     fallback: null
     horizon_days: 60
     rate_limit_s: 2
+
+  - id: mfa-boston
+    name: MFA Boston
+    short: MFA
+    region: BOS
+    timezone: America/New_York
+    color: '#e76f51'
+    website: https://www.mfa.org/programs/film
+    location: {name: Museum of Fine Arts Boston, address: "465 Huntington Ave, Boston, MA 02115", geo: [42.33946, -71.0939]}
+    source: {adapter: recipe, recipe: mfa-boston}   # 电影节目页，一卡一场（SOURCES.md §16）
+    fallback: null
+    horizon_days: 90
+    rate_limit_s: 2
+
