@@ -454,3 +454,24 @@ GET https://coolidge.org/showtimes?date=2026-10-08      # /films-events/now-play
 - 户外场（"… Aboard the Sea Witch" 在 Quincy 的 USS Salem 军舰上；"Coolidge at the Speedway" 在 Brighton 的 Charles River Speedway，525 Western Ave）没有影厅名：`venues.yaml` 的 `location.places` 对没有 `screen` 的场次按系列 / 片名匹配，加入日历时地址才对。
 - 片长 "2hrs 17mins" 配方算不了（不能把小时换成分钟），交给 TMDB；新片的周排期一般只排到一两周后，特别放映更远，21 天是请求数和覆盖面的折中。
 
+---
+
+## 14. Harvard Film Archive（波士顿 Cambridge）— ★★ 服务端 HTML（配方）
+
+2026‑10‑06 实测。`/calendar` 每页约四周，"View more" 是 `/calendar?page=2`、`?page=3`；季度节目一般排到两个半月后，三页覆盖全部（第 3 页没有下一页链接）。以后排得更远时在配方里加 `?page=4`。
+
+```
+<div class="m-calendar__spot--event event">
+  <a href="/calendar/the-third-man-2026-09" class="event__link">…</a>
+  <div class="event__series">The Cold Heart is More Precious than Diamonds. ...</div>
+  <div class="event__time"><time datetime="2026-10-19 19:00:00"><span>7:00 pm</span></time></div>
+  <h5 class="event__title">The Third Man</h5>
+  <div class="event__info">Directed by Carol Reed,  1949</div>
+  <div class="event__labels"><i class="label label--blue"><span class="tooltip">New 35mm print</span></i> …
+```
+
+- 每场自带完整的开始时间（`time[datetime]`），配方用 `date: {kind: attr}`，不用推断日期。
+- 蓝色标签是规格："New 35mm print" → 35mm，"Screening on Film" → Film（胶片、规格未知，计入「只看胶片」），"Screening on 35mm / DCP" 不确定，不填。其他标签（现场配乐、导演到场、票价）记为备注。
+- 系列名太长时网站截成 "…, ..."：配方去掉省略号和结尾的标点，保留能读的部分；完整名字在页面底部的 "Current Programs"，配方表达不了对照，就不取。
+- 没有在线购票链接（票在影院售票处卖），`detail_url` 是活动页。地址：Carpenter Center，24 Quincy St, Cambridge。
+

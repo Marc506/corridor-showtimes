@@ -1,0 +1,22 @@
+# Harvard Film Archive (Cambridge, MA): the calendar, about four weeks per page (SOURCES.md §14).
+# Every event carries its own start: <time datetime="2026-10-19 19:00:00">. "View more" is /calendar?page=N.
+pages:
+  - url: "https://harvardfilmarchive.org/calendar"
+  - url: "https://harvardfilmarchive.org/calendar?page=2"
+  - url: "https://harvardfilmarchive.org/calendar?page=3"
+date:
+  kind: attr
+  selector: ".event__time time"
+  attr: datetime
+  format: "%Y-%m-%d %H:%M:%S"
+item: "div.m-calendar__spot--event"
+fields:
+  title:      {selector: "h5.event__title"}
+  times:      {selector: ".event__time span"}
+  meta:       {selector: ".event__info", regex: "Directed by (?P<director>.+?),\\s*(?P<year>(?:18|19|20)\\d{2})\\b"}
+  # long series names are cut with "...": keep the readable part, not the ellipsis
+  series:     {selector: ".event__series", regex: "^(.+?)[\\s,.:;]*(?:\\.\\.\\.|…)?$"}
+  # "New 35mm print" -> 35mm; "Screening on Film" -> Film (gauge unknown); "Screening on 35mm / DCP" is not certain
+  format:     {selector: ".event__labels i.label--blue .tooltip", regex: "((?:35|16|70)mm(?!\\s*/)|(?<=on )Film\\b)"}
+  note:       {selector: ".event__labels i:not(.label--blue) .tooltip"}
+  detail_url: {selector: "a.event__link", attr: href}

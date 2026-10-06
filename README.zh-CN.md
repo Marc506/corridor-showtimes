@@ -1,8 +1,8 @@
-# Corridor Showtimes（按你关注的影院聚合排片，默认收录波士顿、纽约、费城的 17 家艺术影院）
+# Corridor Showtimes（按你关注的影院聚合排片，默认收录波士顿、纽约、费城的 18 家艺术影院）
 
 [English](README.md) · 在线版：**https://marc506.github.io/corridor-showtimes/**
 
-每天自动抓取 17 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
+每天自动抓取 18 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
 
 | 影院 | 数据来源 |
 |---|---|
@@ -19,6 +19,7 @@
 | Lightbox Film Center（费城） | Wix 网站页面里内嵌的活动数据（票在 Ticketleap 卖；放映地点不固定，每场记自己的场地） |
 | Coolidge Corner Theatre（波士顿 Brookline） | 配方：网站的每日排片页（三周，每天一页；Coolidge Education 课程不算放映；户外场按系列 / 片名对应地点） |
 | Brattle Theatre（波士顿 Cambridge） | Filmbot 平台适配器（向导自动识别，只填参数） |
+| Harvard Film Archive（波士顿 Cambridge） | 配方：日历页（每场自带完整开始时间；35mm / 胶片规格来自活动标签） |
 | Bryn Mawr Film Institute（费城郊区） | 网页（本周页 + 之后场次各自的影片页；时间不写上午 / 下午，没标的按下午） |
 | Hiway Theater（Jenkintown）、County Theater（Doylestown）、Ambler Theater（Ambler） | 网页（首页的本周正片 + 特别放映页；三家同属 Renew Theaters，共用一个网站模板和读取模块） |
 

@@ -266,3 +266,17 @@ venues:
     fallback: null
     horizon_days: 60
     rate_limit_s: 2
+
+  - id: harvard-film-archive
+    name: Harvard Film Archive
+    short: HFA
+    region: BOS
+    timezone: America/New_York
+    color: '#a51c30'
+    website: https://harvardfilmarchive.org/
+    location: {name: Harvard Film Archive, address: "24 Quincy St, Cambridge, MA 02138", geo: [42.3737, -71.11428]}
+    source: {adapter: recipe, recipe: harvard-film-archive}   # 日历页，每页约四周（SOURCES.md §14）
+    fallback: null
+    horizon_days: 75
+    rate_limit_s: 2
+
