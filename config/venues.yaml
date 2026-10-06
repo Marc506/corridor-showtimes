@@ -293,3 +293,16 @@ venues:
     fallback: null
     horizon_days: 60
     rate_limit_s: 2
+
+  - id: landmark-kendall-square-cinema
+    name: Landmark Kendall Square
+    short: Kendall
+    region: BOS
+    timezone: America/New_York
+    color: '#ef476f'
+    website: https://www.landmarktheatres.com/theaters/x019b-landmark-kendall-square-cinema-cambridge/
+    location: {name: Landmark Kendall Square Cinema, address: "355 Binney St, Cambridge, MA 02139", geo: [42.36832, -71.09007]}
+    source: {adapter: boxofficeapi, site: 'https://www.landmarktheatres.com', theater: X019B}
+    fallback: null
+    horizon_days: 45
+    rate_limit_s: 2

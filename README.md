@@ -1,11 +1,11 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with nineteen art-house and repertory cinemas in Boston, New York and Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with twenty art-house and repertory cinemas in Boston, New York and Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows nineteen along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive and the Somerville Theatre around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+follows twenty along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
 MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, and the Renew Theaters' Hiway, County and Ambler theaters. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
@@ -122,7 +122,7 @@ it said last. The assistant can write that text for you — ask it to.
 | L'Alliance New York | Event cards + detail pages | Cards carry no times; per-film notes are scoped to the date they mention |
 | MoMA | Headless browser (Playwright) | Cloudflare managed challenge. When it doesn't pass, the fallback source is used; the site's protection is never circumvented |
 | Philadelphia Film Society | **Agile Ticketing public event feed** | The website blocks all automated clients; their ticketing provider publishes an official JSON feed covering all three theaters |
-| Landmark Ritz Five (Philadelphia) | **The site's own JSON schedule** (Webedia platform) | The page renders showtimes in the browser; the same public endpoints the page calls are read directly. The chain lists ~26 US theaters, so one theater id is kept |
+| Landmark Ritz Five (Philadelphia), Landmark Kendall Square (Cambridge) | **The site's own JSON schedule** (Webedia platform) | The page renders showtimes in the browser; the same public endpoints the page calls are read directly. The chain lists ~26 US theaters; each cinema here is one theater id, found by the add-a-cinema wizard |
 | Lightbox Film Center (Philadelphia) | **Wix Events data embedded in the site's page** | A Wix site: the page ships its event list as JSON. Tickets are sold on Ticketleap, so Wix's own "sold out" flag is ignored; screenings move between venues, so each one keeps its own place |
 | Coolidge Corner Theatre (Brookline, Boston) | **A recipe** over the site's day pages (`/showtimes?date=…`) | No code: one page per day for three weeks. Every showing carries its auditorium and Agile ticket link; Coolidge Education classes are left out. Outdoor nights (the USS Salem, the Charles River Speedway) have no auditorium and are placed by their series or title |
 | Brattle Theatre (Cambridge, Boston) | **Filmbot** platform adapter | Found automatically by the add-a-cinema wizard; only parameters, no code. Partner festivals (IFF Boston, GlobeDocs) sell their own tickets, so those links go to the festival |
