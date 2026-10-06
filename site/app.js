@@ -49,9 +49,10 @@
       weekFilmT: (t, n) => `${t} — ${n} 场，点击看这天的时间轴`, notAnnounced: "未公布",
       minutes: (n) => `${n} 分钟`, close: "关闭", runtimeUnknown: "（时长未知）", tickets: "购票", details: "详情",
       showingN: (n) => `第 ${n} 场`,
-      addCal: "加入日历", addCalT: "加入 Apple 日历等日历应用（.ics 文件，含时间、片名和影院地址）",
+      addCal: "加入日历", appleCal: "Apple 日历", googleCal: "Google 日历",
+      addCalT: "加入 Apple 日历等日历应用（.ics 文件，含时间、片名和影院地址）",
       googleCalT: "在 Google 日历里新建这场（会打开 Google 日历网页，确认后点保存）",
-      calSaved: "已下载日历文件，打开它即可加入日历。", calSafari: "加入 Apple 日历要在 Safari 里打开本页再点；Google 在这里也能用。",
+      calSaved: "已下载日历文件，打开它即可加入日历。", calSafari: "加入 Apple 日历要在 Safari 里打开本页再点；Google 日历在这里也能用。",
       noData: ["还没有数据。在项目目录运行 ", " 然后刷新本页。"], noVenues: "没有选中任何影院。", selectAll: "全选",
       dayEmpty: "这一天所选影院没有符合条件的放映。", clearFilters: "清除筛选",
       searchSummary: (q, n, f) => `搜索「${q}」：${f} 部 · ${n} 场`, clearSearch: "清除搜索",
@@ -98,9 +99,9 @@
       weekFilmT: (t, n) => `${t} — ${n} show${n === 1 ? "" : "s"}; click for that day's timeline`, notAnnounced: "not yet listed",
       minutes: (n) => `${n} min`, close: "Close", runtimeUnknown: " (runtime unknown)", tickets: "Tickets", details: "Details",
       showingN: (n) => `Showing ${n}`,
-      addCal: "Add to calendar", addCalT: "Add to Apple Calendar or any calendar app (.ics file with the time, title and the cinema's address)",
+      addCal: "Add to calendar", appleCal: "Apple Calendar", googleCal: "Google Calendar", addCalT: "Add to Apple Calendar or any calendar app (.ics file with the time, title and the cinema's address)",
       googleCalT: "Create this screening in Google Calendar (opens Google Calendar; check it and press Save)",
-      calSaved: "Calendar file downloaded — open it to add the event.", calSafari: "For Apple Calendar, open this page in Safari and tap Apple there; Google works here too.",
+      calSaved: "Calendar file downloaded — open it to add the event.", calSafari: "For Apple Calendar, open this page in Safari and add it there; Google Calendar works here too.",
       noData: ["No data yet. Run ", " in the project folder, then reload."], noVenues: "No cinemas selected.", selectAll: "All",
       dayEmpty: "No matching screenings at the selected cinemas on this day.", clearFilters: "Clear filters",
       searchSummary: (q, n, f) => `“${q}”: ${f} film${f === 1 ? "" : "s"} · ${n} show${n === 1 ? "" : "s"}`, clearSearch: "Clear search",
@@ -836,12 +837,8 @@
       el("div", { class: "pop-links" },
         s.ticket_url ? el("a", { href: s.ticket_url, target: "_blank", rel: "noopener", class: "btn" }, t("tickets")) : null,
         s.detail_url ? el("a", { href: s.detail_url, target: "_blank", rel: "noopener", class: "btn ghost" }, t("details")) : null,
+        CAL ? calendarPicker(s, v) : null,
         viaBadge(s)),
-      CAL ? el("div", { class: "pop-cal" },
-        el("span", { class: "muted" }, t("addCal")),
-        el("button", { type: "button", class: "btn ghost", title: t("addCalT"), onclick: (e) => addToCalendar(s, e.currentTarget) }, "Apple"),
-        el("a", { class: "btn ghost", title: t("googleCalT"), target: "_blank", rel: "noopener",
-                  href: CAL.googleUrl(CAL.eventFor(s, v, LANG), CAL.isMobile()) }, "Google")) : null,
     ].filter(Boolean));
     pop.hidden = false;
     const r = anchor.getBoundingClientRect();
@@ -858,9 +855,34 @@
 
   // ---------- add to calendar (site/calendar.js) ----------
   const CAL = window.CinemaCalendar;
+  const closePickers = () => document.querySelectorAll(".cal-pick.open").forEach((x) => x.classList.remove("open"));
+
+  /** "Add to calendar ▾" beside Tickets / Details: hovering it (or tapping, on a phone) opens Apple / Google. */
+  function calendarPicker(s, v) {
+    const placeMenu = (pick) => {     // open upwards when there is no room below
+      const r = pick.getBoundingClientRect();
+      pick.classList.toggle("up", r.bottom + 90 > window.innerHeight);
+    };
+    const pick = el("span", { class: "cal-pick", onmouseenter: (e) => placeMenu(e.currentTarget) },
+      el("button", { type: "button", class: "btn ghost", "aria-haspopup": "true",
+        onclick: (e) => {
+          e.stopPropagation();
+          const open = !pick.classList.contains("open");
+          closePickers();
+          placeMenu(pick);
+          pick.classList.toggle("open", open);
+        } }, t("addCal"), el("span", { class: "caret" }, "▾")),
+      el("span", { class: "cal-menu", role: "menu" },
+        el("button", { type: "button", role: "menuitem", title: t("addCalT"),
+          onclick: (e) => { e.stopPropagation(); pick.classList.remove("open"); addToCalendar(s, pick); } }, t("appleCal")),
+        el("a", { role: "menuitem", title: t("googleCalT"), target: "_blank", rel: "noopener",
+          href: CAL.googleUrl(CAL.eventFor(s, v, LANG), CAL.isMobile()), onclick: () => pick.classList.remove("open") }, t("googleCal"))));
+    return pick;
+  }
+
   function addToCalendar(s, btn) {
     const note = (msg) => {
-      const links = btn.closest(".pop-cal");
+      const links = btn.closest(".pop-links");
       const old = links.nextElementSibling;
       if (old && old.classList.contains("pop-cal-note")) old.remove();
       links.after(el("div", { class: "pop-cal-note muted" }, msg));
@@ -980,6 +1002,7 @@
     document.addEventListener("click", (e) => {
       if (!e.target.closest("#popover")) hidePopover();
       if (!e.target.closest(".twin")) closeTwins();
+      if (!e.target.closest(".cal-pick")) closePickers();
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && e.target === $("#f-q") && state.q) { e.target.value = ""; e.target.blur(); return update({ q: "" }); }
