@@ -48,6 +48,7 @@
       weekEmpty: "这一周所选影院没有符合条件的放映。", openDayT: "打开这一天的时间轴",
       weekFilmT: (t, n) => `${t} — ${n} 场，点击看这天的时间轴`, notAnnounced: "未公布",
       minutes: (n) => `${n} 分钟`, close: "关闭", runtimeUnknown: "（时长未知）", tickets: "购票", details: "详情",
+      showingN: (n) => `第 ${n} 场`,
       addCal: "加入日历", addCalT: "加入 Apple 日历等日历应用（.ics 文件，含时间、片名和影院地址）",
       googleCalT: "在 Google 日历里新建这场（会打开 Google 日历网页，确认后点保存）",
       calSaved: "已下载日历文件，打开它即可加入日历。", calSafari: "加入 Apple 日历要在 Safari 里打开本页再点；Google 在这里也能用。",
@@ -96,6 +97,7 @@
       weekEmpty: "No matching screenings at the selected cinemas this week.", openDayT: "Open this day's timeline",
       weekFilmT: (t, n) => `${t} — ${n} show${n === 1 ? "" : "s"}; click for that day's timeline`, notAnnounced: "not yet listed",
       minutes: (n) => `${n} min`, close: "Close", runtimeUnknown: " (runtime unknown)", tickets: "Tickets", details: "Details",
+      showingN: (n) => `Showing ${n}`,
       addCal: "Add to calendar", addCalT: "Add to Apple Calendar or any calendar app (.ics file with the time, title and the cinema's address)",
       googleCalT: "Create this screening in Google Calendar (opens Google Calendar; check it and press Save)",
       calSaved: "Calendar file downloaded — open it to add the event.", calSafari: "For Apple Calendar, open this page in Safari and tap Apple there; Google works here too.",
@@ -184,6 +186,11 @@
   const REGIONS = [...new Set(activeVenues.map(regionOf))];
   const tzOf = (s) => (venueById[s.venue_id] || {}).timezone || DEFAULT_TZ;
   const isFallback = (src) => !!src && src !== "primary";
+  /** A film starting at the same time on two screens (or in two buildings) of one cinema: "twins". */
+  const twinKey = (s) => `${s.venue_id}|${s.start}|${fold(s.title)}`;
+  const twinCount = new Map();
+  for (const s of DATA.screenings) twinCount.set(twinKey(s), (twinCount.get(twinKey(s)) || 0) + 1);
+  const hasTwin = (s) => twinCount.get(twinKey(s)) > 1;
 
   // ---------- state <-> URL hash ----------
   const VIEWS = ["timeline", "list", "week"];
@@ -651,12 +658,7 @@
         el("h3", {}, v.website ? el("a", { href: v.website, target: "_blank", rel: "noopener", title: t("website") }, v.name) : v.name,
           el("span", { class: "meta" }, t("filmsShows", films.length, list.length)), statusBadge(v)),
         films.map((f) => el("div", { class: "film" + (hl && fold(f.title) === hl ? " hl" : "") },
-          el("div", { class: "times" }, f.showings.map((s) => {
-            const attrs = { class: new Date(s.start) < now ? "past" : null };
-            return s.ticket_url
-              ? el("a", { ...attrs, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
-              : el("span", attrs, timeLabel(s.start, tzOf(s)));
-          })),
+          el("div", { class: "times" }, timeLinks(f.showings, now)),
           el("div", { class: "info" },
             link(f.detail_url, "title", f.title),
             el("span", { class: "meta" }, filmMeta(f)),
@@ -665,6 +667,38 @@
             viaBadge(f)))));
     }));
   }
+
+  /** One link per start time. Twins (the same film starting together on two screens) share one time
+   *  marked "×2"; hovering it, or tapping it on a phone, opens one box per screen, each with its own link. */
+  function timeLinks(showings, now) {
+    const byStart = new Map();
+    for (const s of showings) {
+      if (!byStart.has(s.start)) byStart.set(s.start, []);
+      byStart.get(s.start).push(s);
+    }
+    return [...byStart.values()].map((group) => {
+      const s = group[0];
+      const label = timeLabel(s.start, tzOf(s));
+      const past = new Date(s.start) < now;
+      if (group.length === 1) {
+        return s.ticket_url
+          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener" }, label)
+          : el("span", { class: past ? "past" : null }, label);
+      }
+      group.sort((a, b) => (a.screen || "").localeCompare(b.screen || "", undefined, { numeric: true }));
+      const menu = el("span", { class: "twin-menu" }, group.map((x, i) =>
+        el("a", { href: x.ticket_url || x.detail_url, target: "_blank", rel: "noopener" }, x.screen || t("showingN", i + 1))));
+      return el("span", { class: "twin" + (past ? " past" : ""), role: "button", tabindex: "0", "aria-haspopup": "true",
+        onclick: (e) => {
+          if (e.target.closest(".twin-menu")) return;
+          e.stopPropagation();
+          const open = !e.currentTarget.classList.contains("open");
+          closeTwins();
+          e.currentTarget.classList.toggle("open", open);
+        } }, label, el("sup", {}, `×${group.length}`), menu);
+    });
+  }
+  const closeTwins = () => document.querySelectorAll(".twin.open").forEach((x) => x.classList.remove("open"));
 
   /** Days the counters (cinema buttons, "language unknown" hint) cover: every day from today while
    *  searching, else the week or the single day on screen. */
@@ -707,16 +741,21 @@
       }
       return main.replaceChildren(head, box);
     }
+    const twinRows = (list) => {
+      const rows = new Map();
+      for (const s of list) {
+        if (!rows.has(twinKey(s))) rows.set(twinKey(s), []);
+        rows.get(twinKey(s)).push(s);
+      }
+      return [...rows.values()];
+    };
     main.replaceChildren(head, ...groups.map(([d, list]) => el("section", { class: "search-day" },
       el("h3", {}, dayHeading(d), el("span", { class: "meta" }, ` ${list.length}`)),
-      list.map((s) => {
+      twinRows(list).map((row) => {
+        const s = row[0];
         const v = venueById[s.venue_id];
-        const past = new Date(s.start) < now;
-        const time = s.ticket_url
-          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
-          : el("span", { class: past ? "past" : null }, timeLabel(s.start, tzOf(s)));
         return el("div", { class: "film" },
-          el("div", { class: "times" }, time),
+          el("div", { class: "times" }, timeLinks(row, now)),
           el("div", { class: "info" },
             el("span", { class: "svenue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name),
             el("button", { class: "title as-link", onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); } }, s.title),
@@ -788,7 +827,7 @@
     const meta = [s.director, s.year, s.runtime_min ? t("minutes", s.runtime_min) : null, s.format, s.language].filter(Boolean).join(" · ");
     pop.replaceChildren(...[
       el("button", { class: "pop-close", "aria-label": t("close"), onclick: hidePopover }, "×"),
-      el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name),
+      el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name, hasTwin(s) && s.screen ? ` · ${s.screen}` : ""),
       el("h4", {}, s.title),
       el("div", { class: "pop-time" }, `${timeLabel(s.start, tz)}${endLabel}${zone}`, s.runtime_min || s.end ? "" : el("span", { class: "muted" }, t("runtimeUnknown"))),
       meta ? el("div", { class: "pop-meta" }, meta) : null,
@@ -938,7 +977,10 @@
       qTimer = setTimeout(() => update({ q: e.target.value.trim() }), 150);
     });
     window.addEventListener("hashchange", () => { readHash(); render(); });
-    document.addEventListener("click", (e) => { if (!e.target.closest("#popover")) hidePopover(); });
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#popover")) hidePopover();
+      if (!e.target.closest(".twin")) closeTwins();
+    });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && e.target === $("#f-q") && state.q) { e.target.value = ""; e.target.blur(); return update({ q: "" }); }
       if (e.key === "Escape") return hidePopover();

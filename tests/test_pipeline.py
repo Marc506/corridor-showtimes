@@ -78,3 +78,20 @@ def test_seed_from_export_keeps_data_through_a_failed_ci_run(tmp_path, monkeypat
     assert fresh.seed_from_export(payload) == 1 and len(fresh.screenings_since("2026-09-24")) == 1   # idempotent
     st = fresh.apply_failure("x", VenueStatus("x", "failed", error="HTTP 403"))
     assert (st.status, st.fetched_at, st.count) == ("stale", "T1", 1)
+
+
+def test_dedupe_keeps_one_film_starting_on_two_screens():
+    from scraper.base import dedupe
+    from scraper.models import Screening
+    from scraper.normalize import make_id
+    start = "2026-10-10T16:00:00-04:00"
+
+    def show(screen, url=None):
+        return Screening(id=make_id("ritz", start, "Hamnet"), venue_id="ritz", title="Hamnet", start=start,
+                         day=start[:10], screen=screen, ticket_url=url)
+    rows = dedupe([show("Screen 4", "t/4"), show("Screen 1", "t/1"), show("Screen 4", "dup")])
+    assert [(r.screen, r.ticket_url) for r in rows] == [("Screen 1", "t/1"), ("Screen 4", "t/4")]
+    assert rows[0].id == make_id("ritz", start, "Hamnet") and rows[1].id != rows[0].id     # stable, unique
+    again = dedupe([show("Screen 1", "t/1"), show("Screen 4", "t/4")])
+    assert [r.id for r in again] == [r.id for r in rows]                                    # order-independent
+    assert len(dedupe([show(None), show("Screen 2")])) == 1         # no screen named twice: the same screening

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import time
+from dataclasses import replace
 from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
@@ -10,7 +11,7 @@ from urllib.parse import urlparse
 import httpx
 
 from .models import RawPage, Screening, VenueConfig, VenueStatus
-from .normalize import TZ, now_utc_iso, today_local, zone
+from .normalize import TZ, make_id, now_utc_iso, today_local, zone
 
 log = logging.getLogger(__name__)
 
@@ -358,7 +359,24 @@ def ref_date(page: RawPage, tz=None):
 
 
 def dedupe(screenings: list[Screening]) -> list[Screening]:
-    seen: dict[str, Screening] = {}
+    """One row per screening. The id covers venue, start and title, so a film starting at the same time on
+    two screens (or in two buildings) shares one id: those are kept apart when their `screen` names differ.
+    The screen that sorts first keeps the plain id, the others get one that also covers the screen, so the
+    ids stay the same from run to run. Same id with the same (or no) screen is the same screening twice."""
+    groups: dict[str, list[Screening]] = {}
     for s in screenings:
-        seen.setdefault(s.id, s)
-    return sorted(seen.values(), key=lambda s: (s.start, s.title))
+        groups.setdefault(s.id, []).append(s)
+    out = []
+    for sid, group in groups.items():
+        rooms: dict[str, Screening] = {}
+        for s in group:
+            rooms.setdefault((s.screen or "").strip().lower(), s)
+        named = sorted(k for k in rooms if k)
+        if len(named) < 2:
+            out.append(group[0])
+            continue
+        out.append(rooms[named[0]])
+        for k in named[1:]:
+            s = rooms[k]
+            out.append(replace(s, id=make_id(s.venue_id, s.start, f"{s.title} @ {s.screen}")))
+    return sorted(out, key=lambda s: (s.start, s.title, s.screen or ""))
