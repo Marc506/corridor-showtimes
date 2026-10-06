@@ -114,3 +114,19 @@ def test_page_loads_calendar_script_and_publish_copies_it():
     assert '<script src="calendar.js"></script>' in (ROOT / "site" / "index.html").read_text()
     assert "site/calendar.js" in (ROOT / "scripts" / "publish.sh").read_text()
     assert "site/calendar.js" in (ROOT / ".github" / "workflows" / "refresh.yml").read_text()
+
+
+def test_google_calendar_link():
+    r = _node(f"""
+      const ev = C.eventFor({json.dumps(SHOW)}, {json.dumps(VENUE)}, "en");
+      console.log(JSON.stringify({{desk: C.googleUrl(ev), phone: C.googleUrl(ev, true)}}));""")
+    from urllib.parse import parse_qs, urlsplit
+    desk, phone = urlsplit(r["desk"]), urlsplit(r["phone"])
+    assert (desk.netloc, desk.path) == ("calendar.google.com", "/calendar/r/eventedit")
+    assert phone.path == "/calendar/render" and parse_qs(phone.query)["action"] == ["TEMPLATE"]
+    q = parse_qs(desk.query)
+    assert q["dates"] == ["20261006T230000Z/20261007T003600Z"]
+    assert q["text"] == ["Happy Together; Days of Being Wild, 35mm"]
+    assert q["location"] == ["Walter Reade Theater, 165 W 65th St, New York, NY 10023"]
+    assert q["details"][0].startswith("Film at Lincoln Center · Walter Reade Theater\nWong Kar-wai")
+    assert "Tickets: https://tickets.example.org/1" in q["details"][0]

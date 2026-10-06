@@ -267,7 +267,8 @@ body[data-view="list"] main { max-width: 1100px; }
 .info .tag { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
 .popover .tag { margin-left: 0; white-space: normal; overflow-wrap: anywhere; max-width: 100%; line-height: 1.35; padding-top: 1px; padding-bottom: 1px; }
 .pop-links { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
-.pop-links button.btn { cursor: pointer; font: inherit; font-size: 13px; line-height: inherit; }
+.pop-cal { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; font-size: 13px; }
+.pop-cal button.btn { cursor: pointer; font: inherit; font-size: 13px; line-height: inherit; }
 .pop-cal-note { margin-top: 6px; font-size: 12px; }
 .btn { display: inline-block; padding: 4px 12px; border-radius: 6px; background: var(--fg); color: var(--bg); text-decoration: none; font-size: 13px; }
 .btn.ghost { background: none; color: var(--fg); border: 1px solid var(--line); }

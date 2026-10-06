@@ -1,6 +1,7 @@
-/* Corridor Showtimes — "add to calendar" (iCalendar / .ics), no dependencies.
- * Pure functions (placeFor, eventFor, toICS, fileName) are also loaded by the offline tests under Node;
- * download() is the only part that touches the DOM.
+/* Corridor Showtimes — "add to calendar": an iCalendar (.ics) file for Apple Calendar and other calendar
+ * apps, or a Google Calendar link. No dependencies.
+ * Pure functions (placeFor, eventFor, toICS, googleUrl, fileName) are also loaded by the offline tests
+ * under Node; download() is the only part that touches the DOM.
  *
  * Apple Calendar shows a map for the event when it carries X-APPLE-STRUCTURED-LOCATION with coordinates
  * and that location's X-TITLE equals the LOCATION text; GEO and the plain LOCATION text ("Name, street
@@ -116,6 +117,21 @@
     return lines.map(fold).join("\r\n") + "\r\n";
   }
 
+  /** Google Calendar's pre-filled "new event" page (works in any browser; the viewer signs in to Google
+   *  there and presses Save). Google has no structured location, so the text "Name, street address" is
+   *  what it puts on the map. Phones get the mobile-friendly `render` form, computers the full editor. */
+  function googleUrl(ev, mobile = false) {
+    const base = mobile ? "https://calendar.google.com/calendar/render?action=TEMPLATE&"
+                        : "https://calendar.google.com/calendar/r/eventedit?";
+    const q = [
+      `dates=${utcStamp(ev.start)}%2F${utcStamp(ev.end)}`,
+      `text=${encodeURIComponent(ev.title)}`,
+      ev.location ? `location=${encodeURIComponent(ev.location)}` : null,
+      ev.description ? `details=${encodeURIComponent(ev.description)}` : null,
+    ].filter(Boolean);
+    return base + q.join("&");
+  }
+
   /** "Happy Together 2026-10-06.ics" — the screening's own date, characters file systems refuse removed. */
   function fileName(s) {
     const title = String(s.title || "screening").replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
@@ -124,6 +140,8 @@
 
   // ---------- delivery ----------
   const UA = (root.navigator && root.navigator.userAgent) || "";
+  const isMobile = () => /Android|iPhone|iPad|iPod|Mobile/i.test(UA) ||
+    (root.navigator && root.navigator.platform === "MacIntel" && root.navigator.maxTouchPoints > 1);
   const isIOS = () => /iPad|iPhone|iPod/.test(UA) ||
     (root.navigator && root.navigator.platform === "MacIntel" && root.navigator.maxTouchPoints > 1);
   /** iOS browsers other than Safari, and apps' built-in browsers (WeChat, Instagram …), don't hand
@@ -145,7 +163,7 @@
     a.remove();
   }
 
-  const api = { DEFAULT_MINUTES, placeFor, eventFor, toICS, fileName, fold, download, isIOS, iosNeedsSafari };
+  const api = { DEFAULT_MINUTES, placeFor, eventFor, toICS, googleUrl, fileName, fold, download, isMobile, isIOS, iosNeedsSafari };
   root.CinemaCalendar = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
