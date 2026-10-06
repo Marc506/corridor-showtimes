@@ -185,19 +185,6 @@
   const tzOf = (s) => (venueById[s.venue_id] || {}).timezone || DEFAULT_TZ;
   const isFallback = (src) => !!src && src !== "primary";
 
-  /** Which building a screening is in matters only when the same film plays in more than one building of
-   *  the same cinema on the same day (FLC's Walter Reade vs. Alice Tully Hall); then it is shown. Rooms
-   *  inside one building (Screen 3 / Screen 4) never are — the calendar event carries those. */
-  const buildingOf = (s) => (window.CinemaCalendar ? window.CinemaCalendar.placeFor(venueById[s.venue_id], s.screen).name : "");
-  const filmDayKey = (s) => `${s.venue_id}|${s.day}|${fold(s.title)}`;
-  const buildingsByFilmDay = new Map();
-  for (const s of DATA.screenings) {
-    const k = filmDayKey(s);
-    if (!buildingsByFilmDay.has(k)) buildingsByFilmDay.set(k, new Set());
-    buildingsByFilmDay.get(k).add(buildingOf(s));
-  }
-  const placeTag = (s) => (buildingsByFilmDay.get(filmDayKey(s)) || new Set()).size > 1 ? buildingOf(s) : null;
-
   // ---------- state <-> URL hash ----------
   const VIEWS = ["timeline", "list", "week"];
   const state = {
@@ -328,12 +315,12 @@
     return screeningsForDay(day).filter((s) => shown(s.venue_id) && passesFilters(s, now));
   }
 
-  /** Collapse screenings of the same programme at the same venue into one row — one row per building
-   *  when the film plays in more than one (see placeTag); rooms within a building are not distinguished. */
+  /** Collapse screenings of the same programme at the same venue into one row (whatever the screen or
+   *  building: those only matter once someone adds a screening to a calendar). */
   function groupFilms(list) {
     const rows = new Map();
     for (const s of list) {
-      const key = [s.title, s.series || "", s.note || "", placeTag(s) || ""].join("|");
+      const key = [s.title, s.series || "", s.note || ""].join("|");
       if (!rows.has(key)) rows.set(key, { ...s, showings: [] });
       rows.get(key).showings.push(s);
     }
@@ -665,7 +652,7 @@
           el("span", { class: "meta" }, t("filmsShows", films.length, list.length)), statusBadge(v)),
         films.map((f) => el("div", { class: "film" + (hl && fold(f.title) === hl ? " hl" : "") },
           el("div", { class: "times" }, f.showings.map((s) => {
-            const attrs = { class: new Date(s.start) < now ? "past" : null, title: placeTag(s) };
+            const attrs = { class: new Date(s.start) < now ? "past" : null };
             return s.ticket_url
               ? el("a", { ...attrs, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
               : el("span", attrs, timeLabel(s.start, tzOf(s)));
@@ -674,7 +661,6 @@
             link(f.detail_url, "title", f.title),
             el("span", { class: "meta" }, filmMeta(f)),
             f.series ? el("span", { class: "tag series" }, f.series) : null,
-            placeTag(f) ? el("span", { class: "tag place" }, placeTag(f)) : null,
             f.note ? el("span", { class: "tag note" }, f.note) : null,
             viaBadge(f)))));
     }));
@@ -727,8 +713,8 @@
         const v = venueById[s.venue_id];
         const past = new Date(s.start) < now;
         const time = s.ticket_url
-          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener", title: placeTag(s) }, timeLabel(s.start, tzOf(s)))
-          : el("span", { class: past ? "past" : null, title: placeTag(s) }, timeLabel(s.start, tzOf(s)));
+          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
+          : el("span", { class: past ? "past" : null }, timeLabel(s.start, tzOf(s)));
         return el("div", { class: "film" },
           el("div", { class: "times" }, time),
           el("div", { class: "info" },
@@ -736,7 +722,6 @@
             el("button", { class: "title as-link", onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); } }, s.title),
             el("span", { class: "meta" }, filmMeta(s)),
             s.series ? el("span", { class: "tag series" }, s.series) : null,
-            placeTag(s) ? el("span", { class: "tag place" }, placeTag(s)) : null,
             s.note ? el("span", { class: "tag note" }, s.note) : null,
             viaBadge(s)));
       }))));
@@ -803,7 +788,7 @@
     const meta = [s.director, s.year, s.runtime_min ? t("minutes", s.runtime_min) : null, s.format, s.language].filter(Boolean).join(" · ");
     pop.replaceChildren(...[
       el("button", { class: "pop-close", "aria-label": t("close"), onclick: hidePopover }, "×"),
-      el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name, placeTag(s) ? ` · ${placeTag(s)}` : ""),
+      el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name),
       el("h4", {}, s.title),
       el("div", { class: "pop-time" }, `${timeLabel(s.start, tz)}${endLabel}${zone}`, s.runtime_min || s.end ? "" : el("span", { class: "muted" }, t("runtimeUnknown"))),
       meta ? el("div", { class: "pop-meta" }, meta) : null,

@@ -26,7 +26,6 @@ venues:
     color: "#c1121f"
     website: https://www.filmlinc.org/
     location:                  # 大部分场次在 Elinor Bunin Munroe Film Center；按影厅名对应到其他楼（含纽约电影节外区场地）
-      name: Elinor Bunin Munroe Film Center
       address: "144 W 65th St, New York, NY 10023"
       geo: [40.77345, -73.98357]
       places:
