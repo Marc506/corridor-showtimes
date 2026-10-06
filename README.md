@@ -1,11 +1,11 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with sixteen art-house and repertory cinemas in Boston, New York and Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with seventeen art-house and repertory cinemas in Boston, New York and Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows sixteen along the Northeast Corridor: the Coolidge Corner Theatre in Brookline, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+follows seventeen along the Northeast Corridor: the Coolidge Corner Theatre and the Brattle Theatre around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
 MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, and the Renew Theaters' Hiway, County and Ambler theaters. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
@@ -125,6 +125,7 @@ it said last. The assistant can write that text for you — ask it to.
 | Landmark Ritz Five (Philadelphia) | **The site's own JSON schedule** (Webedia platform) | The page renders showtimes in the browser; the same public endpoints the page calls are read directly. The chain lists ~26 US theaters, so one theater id is kept |
 | Lightbox Film Center (Philadelphia) | **Wix Events data embedded in the site's page** | A Wix site: the page ships its event list as JSON. Tickets are sold on Ticketleap, so Wix's own "sold out" flag is ignored; screenings move between venues, so each one keeps its own place |
 | Coolidge Corner Theatre (Brookline, Boston) | **A recipe** over the site's day pages (`/showtimes?date=…`) | No code: one page per day for three weeks. Every showing carries its auditorium and Agile ticket link; Coolidge Education classes are left out. Outdoor nights (the USS Salem, the Charles River Speedway) have no auditorium and are placed by their series or title |
+| Brattle Theatre (Cambridge, Boston) | **Filmbot** platform adapter | Found automatically by the add-a-cinema wizard; only parameters, no code. Partner festivals (IFF Boston, GlobeDocs) sell their own tickets, so those links go to the festival |
 | Bryn Mawr Film Institute | Server-rendered HTML: the week page, plus each later programme's own page | **Times have no am/pm** except morning shows, which the site marks, so an unmarked time is afternoon; captioned and sensory-friendly showings are labelled per time. Its Agile ticketing exposes no usable public feed |
 | Hiway Theater (Jenkintown), County Theater (Doylestown), Ambler Theater | Server-rendered HTML: the home page (this week) and the special programmes page | One reader for the Renew Theaters site template, configured per site; again most times have no am/pm. The site already carries every showtime and ticket link, so the ticketing app is not read |
 

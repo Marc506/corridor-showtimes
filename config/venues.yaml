@@ -254,3 +254,15 @@ venues:
     rate_limit_s: 2
     max_requests_per_run: 22
 
+  - id: brattle-theatre
+    name: Brattle Theatre
+    short: Brattle
+    region: BOS
+    timezone: America/New_York
+    color: '#ffd166'
+    website: https://brattlefilm.org/
+    location: {address: "40 Brattle St, Cambridge, MA 02138", geo: [42.37353, -71.12148]}
+    source: {adapter: filmbot, base_url: 'https://brattlefilm.org'}
+    fallback: null
+    horizon_days: 60
+    rate_limit_s: 2

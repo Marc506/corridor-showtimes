@@ -1,0 +1,5 @@
+generated_by: scraper.add
+fetched_at: '2026-10-06T20:35:55Z'
+pages:
+- file: page_0.json
+  url: https://brattlefilm.org/wp-json/nj/v1/showtime/listings
