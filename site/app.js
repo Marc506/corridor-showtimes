@@ -65,8 +65,7 @@
       // static page text (index.html data-i18n keys)
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
       onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
-      upcoming: "隐藏已开场", specials: "只看重映和特别场",
-      specialsT: "隐藏正在常规上映的新片（今年和去年的片，同一家影院放了 3 场以上；属于影展、专题的放到 8 场以上才算）。老片重映不论放几场都保留；带映后谈、导演到场、首映、现场配乐的场次也保留；不知道年份的片保留。",
+      upcoming: "隐藏已开场", specials: "影展",
       fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {
@@ -115,8 +114,7 @@
       source: "Source code", switchTo: "中文", switchToT: "切换到中文",
       views: "Views", timeline: "Timeline", list: "List", week: "Week", dateNav: "Date", pickDate: "Pick a date", venues: "Cinemas",
       onFilm: "On film", subs: "Subtitled / captioned", subsT: "Only screenings you can follow by reading: non-English films (English subtitles), open-caption screenings and silent films",
-      upcoming: "Hide started", specials: "Repertory & specials",
-      specialsT: "Hides new films in their regular run (this year's or last year's, shown 3+ times at one cinema; 8+ inside a festival or series). Older films always stay however often they play, as do Q&As, director appearances, premieres and live-score screenings, and films without a known year.",
+      upcoming: "Hide started", specials: "Festivals",
       fromToday: "Start today", search: "Search title / director",
     },
   };
@@ -318,7 +316,7 @@
     if (state.film && !FILM_FORMATS.has(s.format)) return false;
     if (state.subs && !ignoreSubs && needsNoEnglish(s) !== true) return false;
     if (state.upcoming && s.day === todayKey() && new Date(s.start) < now) return false;
-    if (state.specials && s.run) return false;        // a new film's regular run (scraper/export.py)
+    if (state.specials && s.run) return false;        // "Festivals": hides new films in their regular run (scraper/export.py)
     if (state.q) {
       const q = fold(state.q);
       if (!fold(s.title).includes(q) && !fold(s.director).includes(q) && !fold(s.series).includes(q)) return false;

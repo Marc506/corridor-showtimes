@@ -20,7 +20,7 @@ JS_OUT = ROOT / "site" / "data.js"
 
 DROP_FIELDS = {"scraped_at", "first_seen", "last_seen"}
 
-# "Repertory & specials" hides new films in their regular run. A screening is in a regular run when the film is
+# The "Festivals" filter (影展) hides new films in their regular run. A screening is in a regular run when the film is
 # new (this year or last), it is not a special event, and the same cinema shows it often:
 #   * outside any series: 3+ times (a small single-screen house runs a new film once a day);
 #   * inside a series or festival: 8+ times at 2+ a day. A festival film plays a gala night and then once a day
