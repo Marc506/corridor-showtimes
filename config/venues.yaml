@@ -206,5 +206,31 @@ venues:
     # Renew Theaters 的网站模板：首页（本周正片）+ /specials（特别放映）（SOURCES.md §12）
     source: {adapter: custom, module: renew, base_url: https://www.hiwaytheater.org}
     fallback: null
-    horizon_days: 90
+    horizon_days: 120
+    rate_limit_s: 2
+
+  - id: county-theater
+    name: County Theater
+    short: County
+    region: PHL
+    timezone: America/New_York
+    color: '#118ab2'
+    website: https://www.countytheater.org/
+    location: {address: "20 E State St, Doylestown, PA 18901", geo: [40.31004, -75.12977]}
+    source: {adapter: custom, module: renew, base_url: https://www.countytheater.org}   # 同 Hiway：Renew Theaters 模板
+    fallback: null
+    horizon_days: 120
+    rate_limit_s: 2
+
+  - id: ambler-theater
+    name: Ambler Theater
+    short: Ambler
+    region: PHL
+    timezone: America/New_York
+    color: '#80b918'
+    website: https://www.amblertheater.org/
+    location: {address: "108 E Butler Ave, Ambler, PA 19002", geo: [40.15446, -75.22085]}
+    source: {adapter: custom, module: renew, base_url: https://www.amblertheater.org}   # 同 Hiway：Renew Theaters 模板
+    fallback: null
+    horizon_days: 120
     rate_limit_s: 2

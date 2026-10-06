@@ -1,8 +1,8 @@
-# Corridor Showtimes（按你关注的影院聚合排片，默认收录纽约到费城的 13 家艺术影院）
+# Corridor Showtimes（按你关注的影院聚合排片，默认收录纽约到费城的 15 家艺术影院）
 
 [English](README.md) · 在线版：**https://marc506.github.io/corridor-showtimes/**
 
-每天自动抓取 13 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
+每天自动抓取 15 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
 
 | 影院 | 数据来源 |
 |---|---|
@@ -18,7 +18,7 @@
 | Landmark Ritz Five（费城） | 网站自己的公开排片接口（Webedia 平台，全美连锁只取这一家） |
 | Lightbox Film Center（费城） | Wix 网站页面里内嵌的活动数据（票在 Ticketleap 卖；放映地点不固定，每场记自己的场地） |
 | Bryn Mawr Film Institute（费城郊区） | 网页（本周页 + 之后场次各自的影片页；时间不写上午 / 下午，没标的按下午） |
-| Hiway Theater（费城郊区 Jenkintown） | 网页（首页的本周正片 + 特别放映页；Renew Theaters 的网站模板） |
+| Hiway Theater（Jenkintown）、County Theater（Doylestown）、Ambler Theater（Ambler） | 网页（首页的本周正片 + 特别放映页；三家同属 Renew Theaters，共用一个网站模板和读取模块） |
 
 设计见 `ARCHITECTURE.md`，每家网站的抓取细节和坑见 `SOURCES.md`，各售票 / 建站平台的读取方式见 `PLATFORMS.md`。
 

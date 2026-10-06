@@ -408,7 +408,7 @@ GET https://brynmawrfilm.org/event/<slug>/      # 单个节目：片名 <h2>TITL
 
 ---
 
-## 12. Hiway Theater（Renew Theaters 的网站模板）— ★★ 服务端 HTML
+## 12. Hiway / County / Ambler Theater（Renew Theaters 的网站模板）— ★★ 服务端 HTML
 
 2026‑10‑06 实测。`hiwaytheater.org` 是 Renew Theaters（同一家非营利机构还经营 County Theater、Ambler Theater）的 PHP 模板，图片来自 `renewtheaters.org`；售票是 INDY（`tickets.hiwaytheater.org`，前端应用，数据走它自己的 GraphQL）。网站本身已经有全部场次和购票链接，不去读售票系统。
 
@@ -428,5 +428,5 @@ GET https://www.hiwaytheater.org/specials    # 全部特别放映，排到两三
 - "OC" = 开放字幕场（记为备注 "Open caption"，计入「有字幕」）。`tag-bar` 是系列（"Ends Thu Oct 8" 这类排期提示除外），`subheader` 记为备注（"A Christmas Carol (1951)"），`.format` 是规格。
 - 首页日期 "Tue 6" 没有月份：在抓取日附近找「6 号且是星期二」的那天；/specials 的 "Sat Oct 10" 按 `nearest_date`。
 - 正片每周一 / 二才排下一周，所以首页就是正片的全部；Coming Attractions 页只有片名、没有时间，不读。
-- 模块 `renew` 带 `base_url` 参数；同模板的其他 Renew 影院可以直接复用（未逐一验证）。每次 2 个请求。地址取自网站页脚的 Apple 地图链接：212 Old York Rd, Jenkintown, PA 19046。
+- 模块 `renew` 带 `base_url` 参数，三家共用，每家每次 2 个请求：Hiway（`hiwaytheater.org`，212 Old York Rd, Jenkintown）、County Theater（`countytheater.org`，20 E State St, Doylestown）、Ambler Theater（`amblertheater.org`，108 E Butler Ave, Ambler）；地址取自各站页脚的 Apple 地图链接。2026‑10‑06 三站所有未标上午 / 下午的时间都在 12:50–8:30 之间，规则没有歧义。
 
