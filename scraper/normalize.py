@@ -118,7 +118,7 @@ def smart_title(s: str | None) -> str | None:
         if w in (" ", "…", ""):
             out.append(w)
             continue
-        m = re.match(r"^([^A-Za-z0-9À-ÿ]*)(.*?)([^A-Za-z0-9À-ÿ&]*)$", w)
+        m = re.match(r"^([\W_]*)(.*?)([^\w&]*)$", w)    # letters in any script: KANAŁ, KATYŃ, ŁÓDŹ
         lead, core, trail = m.groups() if m else ("", w, "")
         bare = core.replace(".", "")
         if not core:
@@ -141,14 +141,39 @@ _SUBS = re.compile(r"\bin\s+(.+?)\s+with\s+(?:English\s+)?(?:subtitles|subs)\b",
 _SILENT = re.compile(r"\bsilent\b|\bintertitles\b", re.I)
 
 
+def title_case_runs(s: str | None) -> str | None:
+    """smart_title for titles that are only partly in capitals: 'MY UNDESIRABLE FRIENDS: PART II – EXILE:
+    Chapters 1-3' -> 'My Undesirable Friends: Part II – Exile: Chapters 1-3'. Runs of upper-case words (two or
+    more, or one word of five letters or more) are title-cased; mixed-case words and short acronyms stay."""
+    s = clean_text(s)
+    if not s or not any(c.islower() for c in s):
+        return smart_title(s)
+    words = s.split(" ")
+    is_caps = [bool(re.search(r"[A-Z]", w)) and not re.search(r"[a-z]", w) for w in words]
+    out, i = [], 0
+    while i < len(words):
+        if not is_caps[i]:
+            out.append(words[i])
+            i += 1
+            continue
+        j = i
+        while j < len(words) and is_caps[j]:
+            j += 1
+        run = " ".join(words[i:j])
+        out.append(smart_title(run) if j - i >= 2 or len(re.sub(r"\W", "", run)) >= 5 else run)
+        i = j
+    return " ".join(out)
+
+
 def language_from_text(text: str | None) -> str | None:
     """'In French, Wolof, and Portuguese Creole with English subtitles' -> 'French, Wolof, Portuguese Creole';
     'silent' / 'with English intertitles' -> 'Silent'. Otherwise None (unknown, not 'English')."""
     if not text:
         return None
     if m := _SUBS.search(text):
-        parts = re.split(r",\s*(?:and\s+)?|\s+and\s+", m.group(1))
-        langs = [p.strip().title() if p.strip().islower() else p.strip() for p in parts if p.strip()]
+        parts = re.split(r",\s*(?:and\s+)?|\s+and\s+", m.group(1), flags=re.I)
+        # sites that print credits in capitals ("IN RUSSIAN WITH ENGLISH SUBTITLES") get the same casing
+        langs = [p.strip().title() if p.strip().islower() or p.strip().isupper() else p.strip() for p in parts if p.strip()]
         return ", ".join(dict.fromkeys(langs)) or None
     if _SILENT.search(text):
         return "Silent"

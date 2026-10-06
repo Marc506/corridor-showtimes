@@ -23,7 +23,8 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 
 from ..base import BaseScraper
 from ..models import RawPage, Screening
-from ..normalize import clean_text, end_from_runtime, iso, make_id, nearest_date, normalize_format, smart_title, to_local
+from ..normalize import (clean_text, end_from_runtime, iso, make_id, nearest_date, normalize_format, smart_title,
+                         title_case_runs, to_local)
 from ..registry import register
 
 SITE = "https://brynmawrfilm.org"
@@ -39,27 +40,7 @@ CREDIT = re.compile(r"\b((?:18|19|20)\d{2})\s*·\s*d\.\s*(.+)$")              # 
 LABELS = {"open caption": "Open caption", "sf": "Sensory friendly"}
 
 
-def title_case(s: str | None) -> str | None:
-    """'THE HEIRESS with Karina Longworth' -> 'The Heiress with Karina Longworth': runs of upper-case words
-    (two or more, or one long word) are title-cased; mixed-case text and short acronyms stay as written."""
-    s = clean_text(s)
-    if not s or not any(c.islower() for c in s):
-        return smart_title(s)
-    words = s.split(" ")
-    is_caps = [bool(re.search(r"[A-Z]", w)) and not re.search(r"[a-z]", w) for w in words]
-    out, i = [], 0
-    while i < len(words):
-        if not is_caps[i]:
-            out.append(words[i])
-            i += 1
-            continue
-        j = i
-        while j < len(words) and is_caps[j]:
-            j += 1
-        run = " ".join(words[i:j])
-        out.append(smart_title(run) if j - i >= 2 or len(re.sub(r"\W", "", run)) >= 5 else run)
-        i = j
-    return " ".join(out)
+title_case = title_case_runs
 
 
 def runtime_min(text: str) -> int | None:

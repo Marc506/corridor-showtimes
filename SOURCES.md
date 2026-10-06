@@ -180,6 +180,8 @@ GET https://filmforum.org/coming_soon     # 未来开画日期，无场次
 
 **实测补充**：同一部片在不同天的标题可能一个被截断成 `…` 一个没有（"YOU HAD TO BE THERE: HOW THE TORONTO GODSPELL…" vs "YOU HAD TO BE THERE"），按 `detail_url` 统一成未截断的那个。首轮片详情页没有 "Japan, 1964" 这类行，只有 `DIRECTED BY NICK DAVIS`，所以首轮片通常只有导演。月份推断改为「取离抓取日最近的那个日期」，跨月 / 跨年都成立。
 
+**实测补充（2026‑10‑06）**：首轮片详情页其实有一行大写的片目：`2026     355 MIN.     USA     IN RUSSIAN WITH ENGLISH SUBTITLES`（或 `… USA     GREENWICH ENTERTAINMENT`，即发行方）。年份取这一行开头的年份；片长匹配不分大小写（以前只认小写 `min`，首轮片的 `98 MIN.` 都漏了）；语言从「评论（Reviews）之前、160 字以内」的一行里用 `language_from_text` 读——以前完全没读，首轮的非英语片只能靠 TMDB，而《My Undesirable Friends: Part II – Exile: Chapters 1-3》这类分段放映的片名 TMDB 查不到。`language_from_text` 同时修了对全大写文字的处理（"RUSSIAN" → "Russian"，"…, AND ILOKANO" 拆开）。片名只有一部分大写时（"MY UNDESIRABLE FRIENDS: PART II – EXILE: Chapters 1-3"）按 `title_case_runs` 只转大写的那几段；`smart_title` 改为认任何文字的字母，"KANAŁ" / "KATYŃ" 不再变成 "KanaŁ"。
+
 ---
 
 ## 6. Metrograph — ★★ 服务端 HTML，单页含全部日期，**有 IP 限速**

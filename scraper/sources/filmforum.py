@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup, Comment
 
 from ..base import BaseScraper, ref_date
 from ..models import RawPage, Screening
-from ..normalize import clean_text, iso, make_id, smart_title, to_local
+from ..normalize import clean_text, iso, language_from_text, make_id, smart_title, title_case_runs, to_local
 from ..registry import register
 
 URL = "https://filmforum.org/now_playing"
@@ -41,20 +41,30 @@ def infer_date(day_of_month: int, ref: date) -> date:
 
 
 def parse_detail(html: str) -> dict:
-    """Detail page: 'Japan, 1964 / Directed by Masaki Kobayashi / … / Approx. 183 min.'"""
+    """Detail page. Two layouts:
+      repertory  'Japan, 1964 / Directed by Masaki Kobayashi / … / Approx. 183 min.'
+      first run  'DIRECTED BY JULIA LOKTEV' … '2026     355 MIN.     USA     IN RUSSIAN WITH ENGLISH SUBTITLES'
+    The language comes from a short credit line ("In Polish with English subtitles"), never from reviews."""
     text = BeautifulSoup(html, "lxml").get_text("\n", strip=True)
     start = text.find("SHOWTIMES & TICKETS")
     text = text[start:] if start >= 0 else text
+    end = text.find("\nReviews\n")
+    credits = text[:end] if end >= 0 else text
     out: dict = {}
     m = re.search(r"Directed by ([^\n]+)", text, re.I)
     if m:
-        out["director"] = smart_title(clean_text(m.group(1)).rstrip(".")) 
-    m = re.search(r"^[^\n]{0,80}?,?\s*\b((?:19|20)\d{2})$", text, re.M)
+        out["director"] = smart_title(clean_text(m.group(1)).rstrip("."))
+    m = (re.search(r"^((?:19|20)\d{2})\s+\d{2,3}\s*MIN\b", text, re.M | re.I)              # first-run credit line
+         or re.search(r"^[^\n]{0,80}?,?\s*\b((?:19|20)\d{2})$", text, re.M))
     if m:
         out["year"] = int(m.group(1))
-    m = re.search(r"(?:Approx\.\s*)?\b(\d{2,3})\s*min\b", text)
+    m = re.search(r"(?:Approx\.\s*)?\b(\d{2,3})\s*min\b", text, re.I)
     if m:
         out["runtime_min"] = int(m.group(1))
+    for line in credits.split("\n"):
+        if len(line) <= 160 and (lang := language_from_text(line)):
+            out["language"] = lang
+            break
     return out
 
 
@@ -98,7 +108,7 @@ class FilmForumScraper(BaseScraper):
                     a = p.select_one("strong a")
                     if not a:
                         continue
-                    title = smart_title(clean_text(a.get_text(" ")))
+                    title = title_case_runs(a.get_text(" "))
                     alert = p.select_one("span.alert")
                     note = clean_text(alert.get_text(" ")) if alert else None
                     for span in p.find_all("span"):
@@ -120,4 +130,4 @@ class FilmForumScraper(BaseScraper):
         return unify_titles(self.venue.id, out)
 
     def enrich(self, screenings: list[Screening]) -> None:
-        self.enrich_by_url(screenings, parse_detail)
+        self.enrich_by_url(screenings, parse_detail, fields=("director", "year", "runtime_min", "language"))

@@ -495,10 +495,18 @@
       return el("button", {
         class: "chip region" + (on ? " on" : ""), "aria-pressed": String(on),
         onclick: (e) => {
-          if (e.target.classList.contains("only")) return update({ regions: new Set([r]) });
+          // a region switched on shows all of its cinemas, even ones switched off earlier; the other
+          // regions' cinemas keep their own on / off for when those regions come back
+          const withVenuesOf = (regions) => new Set([...state.venues,
+            ...activeVenues.filter((v) => regions.has(regionOf(v))).map((v) => v.id)]);
+          if (e.target.classList.contains("only")) {
+            const only = new Set([r]);
+            return update({ regions: only, venues: withVenuesOf(only) });
+          }
           const next = new Set(state.regions);
-          next.has(r) ? next.delete(r) : next.add(r);
-          update({ regions: next.size ? next : new Set(REGIONS) });
+          if (next.has(r)) return update({ regions: next.size > 1 ? (next.delete(r), next) : new Set(REGIONS) });
+          next.add(r);
+          update({ regions: next, venues: withVenuesOf(new Set([r])) });
         },
       }, r, el("span", { class: "only", title: t("onlyT") }, t("only")));
     }));

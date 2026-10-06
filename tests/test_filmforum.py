@@ -44,3 +44,19 @@ def test_filmforum_detail_pages():
     assert rep == {"director": "Masaki Kobayashi", "year": 1964, "runtime_min": 183}
     first_run = parse_detail((FIXTURES / "filmforum" / "detail_first_run.html").read_text())
     assert first_run["director"] == "Nick Davis"            # "DIRECTED BY NICK DAVIS"
+    assert (first_run["year"], first_run["runtime_min"]) == (2025, 98)     # "2025     98 MIN.     USA …"
+
+
+def test_filmforum_detail_language_from_the_credit_line():
+    d = parse_detail((FIXTURES / "filmforum" / "detail_my_undesirable_friends.html").read_text())
+    # "2026     355 MIN.     USA     IN RUSSIAN WITH ENGLISH SUBTITLES"; the first runtime is the section's
+    assert d == {"director": "Julia Loktev", "year": 2026, "runtime_min": 192, "language": "Russian"}
+
+
+def test_partly_capitalised_titles():
+    from scraper.normalize import language_from_text, title_case_runs
+    assert title_case_runs("MY UNDESIRABLE FRIENDS: PART II – EXILE: Chapters 1-3") == \
+        "My Undesirable Friends: Part II – Exile: Chapters 1-3"
+    assert title_case_runs("UNZIPPED") == "Unzipped" and title_case_runs("NYFF Trivia Night") == "NYFF Trivia Night"
+    assert language_from_text("IN FILIPINO, ENGLISH, AND ILOKANO WITH ENGLISH SUBTITLES") == "Filipino, English, Ilokano"
+
