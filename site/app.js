@@ -315,11 +315,12 @@
     return screeningsForDay(day).filter((s) => shown(s.venue_id) && passesFilters(s, now));
   }
 
-  /** Collapse screenings of the same programme at the same venue into one row. */
+  /** Collapse screenings of the same programme at the same venue into one row (whatever the screen or
+   *  building: those only matter once someone adds a screening to a calendar). */
   function groupFilms(list) {
     const rows = new Map();
     for (const s of list) {
-      const key = [s.title, s.series || "", s.screen || "", s.note || ""].join("|");
+      const key = [s.title, s.series || "", s.note || ""].join("|");
       if (!rows.has(key)) rows.set(key, { ...s, showings: [] });
       rows.get(key).showings.push(s);
     }
@@ -651,7 +652,7 @@
           el("span", { class: "meta" }, t("filmsShows", films.length, list.length)), statusBadge(v)),
         films.map((f) => el("div", { class: "film" + (hl && fold(f.title) === hl ? " hl" : "") },
           el("div", { class: "times" }, f.showings.map((s) => {
-            const attrs = { class: new Date(s.start) < now ? "past" : null, title: s.screen || null };
+            const attrs = { class: new Date(s.start) < now ? "past" : null };
             return s.ticket_url
               ? el("a", { ...attrs, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
               : el("span", attrs, timeLabel(s.start, tzOf(s)));
@@ -660,7 +661,6 @@
             link(f.detail_url, "title", f.title),
             el("span", { class: "meta" }, filmMeta(f)),
             f.series ? el("span", { class: "tag series" }, f.series) : null,
-            f.screen && f.screen !== v.name ? el("span", { class: "tag screen" }, f.screen) : null,
             f.note ? el("span", { class: "tag note" }, f.note) : null,
             viaBadge(f)))));
     }));
@@ -713,8 +713,8 @@
         const v = venueById[s.venue_id];
         const past = new Date(s.start) < now;
         const time = s.ticket_url
-          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener", title: s.screen || null }, timeLabel(s.start, tzOf(s)))
-          : el("span", { class: past ? "past" : null, title: s.screen || null }, timeLabel(s.start, tzOf(s)));
+          ? el("a", { class: past ? "past" : null, href: s.ticket_url, target: "_blank", rel: "noopener" }, timeLabel(s.start, tzOf(s)))
+          : el("span", { class: past ? "past" : null }, timeLabel(s.start, tzOf(s)));
         return el("div", { class: "film" },
           el("div", { class: "times" }, time),
           el("div", { class: "info" },
@@ -788,7 +788,7 @@
     const meta = [s.director, s.year, s.runtime_min ? t("minutes", s.runtime_min) : null, s.format, s.language].filter(Boolean).join(" · ");
     pop.replaceChildren(...[
       el("button", { class: "pop-close", "aria-label": t("close"), onclick: hidePopover }, "×"),
-      el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name, s.screen && s.screen !== v.name ? ` · ${s.screen}` : ""),
+      el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name),
       el("h4", {}, s.title),
       el("div", { class: "pop-time" }, `${timeLabel(s.start, tz)}${endLabel}${zone}`, s.runtime_min || s.end ? "" : el("span", { class: "muted" }, t("runtimeUnknown"))),
       meta ? el("div", { class: "pop-meta" }, meta) : null,
