@@ -59,7 +59,8 @@
                 "type": "object",
                 "required": ["match"],
                 "properties": {
-                  "match": {"type": ["string", "array"], "items": {"type": "string", "minLength": 1}, "minLength": 1},
+                  "match": {"type": ["string", "array"], "items": {"type": "string", "minLength": 1}, "minLength": 1,
+                            "description": "text in the screen name; for screenings without one, in the series or title"},
                   "name": {"type": "string", "minLength": 1},
                   "address": {"type": "string", "minLength": 1},
                   "geo": {"$ref": "#/$defs/geo"}

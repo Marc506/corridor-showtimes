@@ -22,10 +22,11 @@
   const lower = (x) => String(x || "").toLowerCase();
 
   /** The building a screening is in: a `places` entry whose `match` text appears in the screen name
-   *  (case-insensitive), else the venue's own location. {name, address, geo} — address / geo may be null. */
-  function placeFor(venue, screen) {
+   *  (case-insensitive) — or, for a screening with no screen (an off-site night), in its series or title —
+   *  else the venue's own location. {name, address, geo} — address / geo may be null. */
+  function placeFor(venue, screen, s = null) {
     const loc = (venue && venue.location) || {};
-    const scr = lower(screen);
+    const scr = lower(screen || (s ? `${s.series || ""} | ${s.title || ""}` : ""));
     const hit = scr && (loc.places || []).find((p) =>
       [].concat(p.match || []).some((m) => m && scr.includes(lower(m))));
     const src = hit || loc;
@@ -45,7 +46,7 @@
     const endKnown = !!end;
     if (!end) end = new Date(start.getTime() + DEFAULT_MINUTES * 60e3);
 
-    const place = placeFor(venue, s.screen);
+    const place = placeFor(venue, s.screen, s);
     const location = place.address ? `${place.name}, ${place.address}` : place.name;
     const where = [venue && venue.name, s.screen && s.screen !== (venue && venue.name) ? s.screen : null].filter(Boolean).join(" · ");
     const meta = [s.director, s.year, s.runtime_min ? L.minutes(s.runtime_min) : null, s.format, s.language].filter(Boolean).join(" · ");

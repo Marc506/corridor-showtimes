@@ -430,3 +430,25 @@ GET https://www.hiwaytheater.org/specials    # 全部特别放映，排到两三
 - 正片每周一 / 二才排下一周，所以首页就是正片的全部；Coming Attractions 页只有片名、没有时间，不读。
 - 模块 `renew` 带 `base_url` 参数，三家共用，每家每次 2 个请求：Hiway（`hiwaytheater.org`，212 Old York Rd, Jenkintown）、County Theater（`countytheater.org`，20 E State St, Doylestown）、Ambler Theater（`amblertheater.org`，108 E Butler Ave, Ambler）；地址取自各站页脚的 Apple 地图链接。2026‑10‑06 三站所有未标上午 / 下午的时间都在 12:50–8:30 之间，规则没有歧义。
 
+---
+
+## 13. Coolidge Corner Theatre（波士顿 Brookline）— ★★ 服务端 HTML，每天一页（配方）
+
+2026‑10‑06 实测。Drupal 站；售票是 Agile（`store.coolidge.org`），网页里可见的 GUID 喂 feed 只返回空壳（PLATFORMS.md §3），所以读网站。
+
+```
+GET https://coolidge.org/showtimes?date=2026-10-08      # /films-events/now-playing?date=… 302 到这里
+<div class="now-playing-page-1"> … <div class="film-card">
+  <a class="film-program__link …" href="/programs/prints-darkness"><span class="film-program__title">Prints of Darkness</span></a>
+  <a class="film-program__link film-type__link--35mm" href="/type/35mm-screenings"><span class="film-program__title">35mm</span></a>
+  <h2><a class="film-card__link" href="/films/rosemarys-baby">Rosemary’s Baby</a></h2>
+  <div class="film-card__runtime">2hrs 17mins</div>
+  <a href="https://store.coolidge.org/websales/pages/ticketsearchcriteria.aspx?evtinfo=…" class="showtime-ticket__button">
+    <span class="showtime-ticket__time">7:30pm</span><span class="showtime-ticket__venue">MH2</span></a>
+```
+
+- 时间带 am / pm，日期来自网址，所以是配方（`scraper/recipes/coolidge-corner-theatre.yaml`）：`daily` 翻 21 天，每天一个请求。午夜场写成 11:59pm，照写。
+- `film-program__link` 是系列（`film-type__link--*` 是类型标签，只取 35mm / 70mm / 16mm 作规格）；`MH1`–`MH6` 是影厅，`ECEC` 是教育中心。带 `/programs/coolidge-education` 标签的是课程 / 研讨课 / Open Screen，不是放映，item 选择器里用 `:not(:has(…))` 排除。
+- 户外场（"… Aboard the Sea Witch" 在 Quincy 的 USS Salem 军舰上；"Coolidge at the Speedway" 在 Brighton 的 Charles River Speedway，525 Western Ave）没有影厅名：`venues.yaml` 的 `location.places` 对没有 `screen` 的场次按系列 / 片名匹配，加入日历时地址才对。
+- 片长 "2hrs 17mins" 配方算不了（不能把小时换成分钟），交给 TMDB；新片的周排期一般只排到一两周后，特别放映更远，21 天是请求数和覆盖面的折中。
+

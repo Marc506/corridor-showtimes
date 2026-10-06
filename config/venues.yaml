@@ -234,3 +234,23 @@ venues:
     fallback: null
     horizon_days: 120
     rate_limit_s: 2
+
+  - id: coolidge-corner-theatre
+    name: Coolidge Corner Theatre
+    short: Coolidge
+    region: BOS
+    timezone: America/New_York
+    color: '#76608a'
+    website: https://coolidge.org/
+    location:                  # 户外场在别处，网页上不写影厅，按系列 / 片名对应
+      address: "290 Harvard St, Brookline, MA 02446"
+      geo: [42.34244, -71.1227]
+      places:
+        - {match: Aboard the Sea Witch, name: USS Salem, address: "549 South St, Quincy, MA 02169", geo: [42.24231, -70.971]}
+        - {match: Coolidge at the Speedway, name: Charles River Speedway, address: "525 Western Ave, Brighton, MA 02135", geo: [42.3616, -71.14469]}
+    source: {adapter: recipe, recipe: coolidge-corner-theatre}   # 每天一页（SOURCES.md §13）
+    fallback: null
+    horizon_days: 21
+    rate_limit_s: 2
+    max_requests_per_run: 22
+

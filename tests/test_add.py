@@ -143,15 +143,17 @@ def test_coolidge_agile_without_guid_hands_off_recipe(sandbox):
         "https://coolidge.org/": "agile/coolidge_home.html"}, lang="zh")
     assert res["status"] == "needs_agent" and "agile_no_feed_guid" in res["hints"]
     assert "GUID" in res["message"] and res["timezone"] == "America/New_York"
-    out = sandbox / "handoff" / "coolidge-corner-theatre"
+    vid = Path(res["handoff"]).name             # coolidge-corner-theatre-2: the real Coolidge is in venues.yaml
+    assert vid.startswith("coolidge-corner-theatre")
+    out = sandbox / "handoff" / vid
     brief = (out / "BRIEF.md").read_text()
-    for must in ("coolidge-corner-theatre", "scraper/recipes/coolidge-corner-theatre.yaml", "\"date\"",
+    for must in (vid, f"scraper/recipes/{vid}.yaml", "\"date\"",
                  "kind: heading", "kind: container", "class BaseScraper", "@register(\"japansociety\")",
-                 "pytest tests/test_contract.py -k coolidge-corner-theatre", "Do not work around CAPTCHAs",
-                 "delete `handoff/coolidge-corner-theatre/`"):
+                 f"pytest tests/test_contract.py -k {vid}", "Do not work around CAPTCHAs",
+                 f"delete `handoff/{vid}/`"):
         assert must in brief, must
     draft = yaml.safe_load((out / "venue.yaml").read_text())[0]
-    assert draft["source"] == {"adapter": "recipe", "recipe": "coolidge-corner-theatre"}
+    assert draft["source"] == {"adapter": "recipe", "recipe": vid}
     assert list((out / "pages").glob("*.html"))
 
 

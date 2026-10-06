@@ -1,0 +1,17 @@
+# Coolidge Corner Theatre (Brookline, MA): one page per day (SOURCES.md §13).
+# Tickets are sold through Agile, whose public feed needs a GUID the site does not show; the day pages
+# carry every showing with its auditorium and ticket link. Coolidge Education classes are not screenings.
+pages:
+  - url: "https://coolidge.org/showtimes?date={date:%Y-%m-%d}"
+    paging: {kind: daily, days: 21}
+date:
+  kind: page
+item: ":is(div.now-playing-page-1, div.now-playing-block-2) div.film-card:has(.showtime-ticket):not(:has(a[href='/programs/coolidge-education']))"
+fields:
+  title:      {selector: "h2 a.film-card__link"}
+  times:      {selector: "a.showtime-ticket__button"}          # "7:30pm MH2"
+  screen:     {per_time: true, regex: "[ap]m\\s+(\\S+)$"}
+  ticket_url: {per_time: true, attr: href}
+  detail_url: {selector: "h2 a.film-card__link", attr: href}
+  series:     {selector: "a.film-program__link:not([class*='film-type__link']) .film-program__title"}
+  format:     {selector: "a.film-type__link--35mm .film-program__title, a.film-type__link--70mm .film-program__title, a.film-type__link--16mm .film-program__title"}

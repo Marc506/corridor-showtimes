@@ -130,3 +130,19 @@ def test_google_calendar_link():
     assert q["location"] == ["Walter Reade Theater, 165 W 65th St, New York, NY 10023"]
     assert q["details"][0].startswith("Film at Lincoln Center · Walter Reade Theater\nWong Kar-wai")
     assert "Tickets: https://tickets.example.org/1" in q["details"][0]
+
+
+def test_offsite_screening_without_a_screen_matches_its_series_or_title():
+    venue = {"id": "c", "name": "Coolidge Corner Theatre", "location": {
+        "address": "290 Harvard St, Brookline, MA 02446",
+        "places": [{"match": "Coolidge at the Speedway", "name": "Charles River Speedway", "address": "525 Western Ave, Brighton, MA 02135"},
+                   {"match": "Aboard the Sea Witch", "name": "USS Salem", "address": "549 South St, Quincy, MA 02169"}]}}
+    r = _node(f"""
+      const v = {json.dumps(venue)};
+      console.log(JSON.stringify([
+        C.placeFor(v, null, {{title: "Final Destination 3", series: "Coolidge at the Speedway"}}).name,
+        C.placeFor(v, null, {{title: "Jaws and Deep Blue Sea Aboard the Sea Witch", series: "After Midnite"}}).name,
+        C.placeFor(v, "MH2", {{title: "Jaws Aboard the Sea Witch"}}).name,
+        C.placeFor(v, null, {{title: "Alien"}}).address]));""")
+    assert r == ["Charles River Speedway", "USS Salem", "Coolidge Corner Theatre", "290 Harvard St, Brookline, MA 02446"]
+

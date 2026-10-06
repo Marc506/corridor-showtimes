@@ -1,0 +1,15 @@
+generated_by: scraper.add
+fetched_at: '2026-10-06T20:09:56Z'
+pages:
+- file: page_0.html
+  url: https://coolidge.org/showtimes?date=2026-10-06
+- file: page_2.html
+  url: https://coolidge.org/showtimes?date=2026-10-08
+- file: page_3.html
+  url: https://coolidge.org/showtimes?date=2026-10-09
+- file: page_8.html
+  url: https://coolidge.org/showtimes?date=2026-10-14
+- file: page_10.html
+  url: https://coolidge.org/showtimes?date=2026-10-16
+- file: page_20.html
+  url: https://coolidge.org/showtimes?date=2026-10-26

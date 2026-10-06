@@ -1,6 +1,6 @@
 # Corridor Showtimes — 架构
 
-艺术 / 重映影院的排片聚合器：每天抓取两次，合并成统一数据，以时间轴 / 列表 / 周三种视图展示，并发布到 GitHub Pages。公开实例覆盖纽约 + 费城十五家影院；任何人 fork 后给出「影院名 + 网址」就能加入自己的影院。每家影院网站的抓取细节见 [`SOURCES.md`](SOURCES.md)，各类平台（售票系统 / 建站系统）的读取方式见 [`PLATFORMS.md`](PLATFORMS.md)。
+艺术 / 重映影院的排片聚合器：每天抓取两次，合并成统一数据，以时间轴 / 列表 / 周三种视图展示，并发布到 GitHub Pages。公开实例覆盖波士顿、纽约、费城十六家影院；任何人 fork 后给出「影院名 + 网址」就能加入自己的影院。每家影院网站的抓取细节见 [`SOURCES.md`](SOURCES.md)，各类平台（售票系统 / 建站系统）的读取方式见 [`PLATFORMS.md`](PLATFORMS.md)。
 
 **目标**：不懂编程的人给出「影院名 + 网址」，就能把一家美国影院加进自己的排片日历。程序按网站所用的系统自动工作；做不到的，给出一份可以直接交给 AI Agent 的任务包，或者明确说「这家做不了、为什么」。
 **非目标**：托管服务（网页里直接加影院需要常驻服务器与运营方代付 LLM 费用，本项目不承担；每人在自己电脑上一份）；绕过任何反爬 / 验证码；美国以外的影院（时区是按影院配置的，留了口子）。
@@ -124,7 +124,7 @@ venues:
 * **兼容 v1**：没有 `version`、顶层是列表的旧文件照样加载；每条在内存里转换成 `source: {adapter: custom, module: <scraper>}`、`fallback: {adapter: screenslate, nid: <screenslate_nid>}`、`region: <city>`。`VenueConfig` 保留 `scraper` / `screenslate_nid` / `city` 作为别名，`extra` 继续兜住未知字段。
 * **校验**：`config/venues.schema.json`（JSON Schema）加语义检查（id 重复、时区名无效、适配器不存在、适配器缺必填参数、自定义模块文件不存在）。错误是一句一行的人话——「第 3 家影院（c）缺少 name」——不出现校验器的堆栈；语言跟随 `--lang` / `CINEMA_LANG` / `LANG`。
 
-公开实例的十五家：
+公开实例的十六家：
 
 | 影院 | 数据源 |
 |---|---|
@@ -139,6 +139,7 @@ venues:
 | Philadelphia Film Society | custom `filmadelphia`：`agile` 适配器的薄壳，固定 PFS 的 GUID 与集群 |
 | Landmark Ritz Five | `boxofficeapi`：Webedia 平台的公开排片接口 |
 | Lightbox Film Center | `wix`：Wix Events 页面内嵌的 JSON |
+| Coolidge Corner Theatre | `recipe`：每日排片页（`/showtimes?date=`），三周 |
 | Bryn Mawr Film Institute | custom `brynmawr`：本周页 + 之后场次的影片页（时间无上午 / 下午，配方表达不了） |
 | Hiway Theater、County Theater、Ambler Theater | custom `renew`（参数 `base_url`）：Renew Theaters 模板的首页 + 特别放映页（同样没有上午 / 下午） |
 
@@ -312,7 +313,7 @@ window.CINEMA_DATA = {
 * **状态**：放在 URL hash（`#/2026-10-03?view=list&v=bam,filmlinc&sub=1`），刷新和分享都保留。影院选择另存 `localStorage`；新加入的影院自动选中。
 * **默认今天**：看今天时 URL 里不写日期（`#/?view=list`），所以收藏、主屏幕启动、恢复的标签页都从今天开始；URL 里已经过去的日期在打开时改为今天，未来的日期保留。页面一直开着时，原本在看「今天」的会在跨过午夜或从后台切回时翻到新的一天；在后台超过一小时再切回会重新加载，拿到最新数据。
 * **搜索**：搜索框有内容时离开当天 / 当周视图，列出从今天起所有匹配片名、导演或系列的场次，按日期分组；影院、区域和其他筛选照常生效，影院按钮上的数字变成命中数，日期导航隐藏。清空搜索框或按 Esc 回到原视图；搜索词写进 URL（`?q=godard`），可以分享。
-* **加入日历**（`site/calendar.js`，纯函数，测试里用 Node 直接加载）：详情弹窗里的按钮在浏览器里生成 RFC 5545 的 .ics（`DTSTART` / `DTEND` 用 UTC；没有结束时间时用片长，片长也没有就按 2 小时并在备注里说明；`UID` = 场次 id，重复导入不会多出一条）。地点按场次的 `screen` 匹配 `location.places`，否则用影院的 `location`；`LOCATION` 是「名称, 地址」，另写 `GEO` 和 `X-APPLE-STRUCTURED-LOCATION`（`X-TITLE` 必须与 `LOCATION` 相同，Apple 日历才显示地图）。文件以 `data:text/calendar` 链接交出：iOS Safari 直接弹出日历的「添加」，桌面浏览器下载后打开即导入；iOS 上的其他浏览器和微信等内置浏览器不把 .ics 交给日历，改为提示用 Safari 打开。没有 `location` 的影院只写影院名。同一事件对象另生成 Google 日历链接（`googleUrl`）：手机用 `calendar.google.com/calendar/render?action=TEMPLATE`，电脑用 `/calendar/r/eventedit`，参数 `dates`（UTC）/ `text` / `location`（「名称, 地址」文本，Google 没有结构化地点）/ `details`；用户在 Google 的页面里确认并保存，本站不接触任何 Google 账号。弹窗里是「购票 · 详情 · 加入日历 ▾」一行：有鼠标的设备悬停「加入日历」弹出 Apple / Google 两项，手机上点按展开、再点或点别处收起（悬停只在 `(hover: hover)` 的设备上生效，避免手机点按后残留的 :hover 让菜单关不掉；「×2」的影厅框同理）。
+* **加入日历**（`site/calendar.js`，纯函数，测试里用 Node 直接加载）：详情弹窗里的按钮在浏览器里生成 RFC 5545 的 .ics（`DTSTART` / `DTEND` 用 UTC；没有结束时间时用片长，片长也没有就按 2 小时并在备注里说明；`UID` = 场次 id，重复导入不会多出一条）。地点按场次的 `screen` 匹配 `location.places`（没有 `screen` 的场外场次——Coolidge 的户外放映——改用系列和片名匹配），否则用影院的 `location`；`LOCATION` 是「名称, 地址」，另写 `GEO` 和 `X-APPLE-STRUCTURED-LOCATION`（`X-TITLE` 必须与 `LOCATION` 相同，Apple 日历才显示地图）。文件以 `data:text/calendar` 链接交出：iOS Safari 直接弹出日历的「添加」，桌面浏览器下载后打开即导入；iOS 上的其他浏览器和微信等内置浏览器不把 .ics 交给日历，改为提示用 Safari 打开。没有 `location` 的影院只写影院名。同一事件对象另生成 Google 日历链接（`googleUrl`）：手机用 `calendar.google.com/calendar/render?action=TEMPLATE`，电脑用 `/calendar/r/eventedit`，参数 `dates`（UTC）/ `text` / `location`（「名称, 地址」文本，Google 没有结构化地点）/ `details`；用户在 Google 的页面里确认并保存，本站不接触任何 Google 账号。弹窗里是「购票 · 详情 · 加入日历 ▾」一行：有鼠标的设备悬停「加入日历」弹出 Apple / Google 两项，手机上点按展开、再点或点别处收起（悬停只在 `(hover: hover)` 的设备上生效，避免手机点按后残留的 :hover 让菜单关不掉；「×2」的影厅框同理）。
 * **数据状态提示**：影院按钮上的黄点表示旧数据，红点表示失败，蓝点表示来自兜底源；兜底来的场次带 "via <兜底源>" 标记。列表视图里影院名链接到 `website`。
 * **界面语言**：中 / 英切换（`I18N` 词典 + `t()`；静态文本用 `data-i18n*` 属性）。默认跟随浏览器语言，也可用 `lang=en` 参数指定，选择会被记住。
 * **时区**：每家影院按自己的 `timezone` 建 `Intl.DateTimeFormat`，时间轴每行的刻度是该影院的本地时钟；所有行同一时区时画一条「现在」线，否则每行各画一个标记。「今天」按浏览者本地日期取，各影院的场次按各自的 `day` 归组，不会错位。弹窗里对与浏览者不同时区的影院注明时区缩写（如 `7:00pm PDT`）。
