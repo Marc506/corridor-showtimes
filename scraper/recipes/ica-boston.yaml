@@ -1,0 +1,14 @@
+# Institute of Contemporary Art, Boston — the film calendar, every upcoming film event on one page
+# (SOURCES.md §17). "Fri, Oct 9, 7 PM": the year comes from the fetch date.
+pages:
+  - url: "https://www.icaboston.org/calendar/film/"
+date:
+  kind: attr
+  selector: ".event-date-display"
+  regex: "([A-Z][a-z]{2}, [A-Z][a-z]{2} \\d{1,2})"
+  format: "%a, %b %d"
+item: "div.view-calendar div.node-event:has(.event-date-display)"
+fields:
+  title:      {selector: "h3.teaser-title"}
+  times:      {selector: ".event-date-display"}
+  detail_url: {selector: "h3.teaser-title a", attr: href}

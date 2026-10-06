@@ -512,3 +512,18 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 - 时间是区间，配方的 `times` 只取「–」前面的开始时间，否则结束时间会被当成第二场。按钮写 "Sold Out" 时记为备注。
 - 场次很少（多是合作影展：CineFest Latino、Boston Palestine Film Festival、Boston Jewish Film Festival），卡片上不写属于哪个影展。每次 1 个请求。地址：465 Huntington Ave。
 
+---
+
+## 17. ICA Boston（Institute of Contemporary Art）— ★★ 服务端 HTML（配方）
+
+2026‑10‑06 实测。WordPress 站，售票是 Tessitura（`my.icaboston.org`）。`/film/` 只是介绍页，场次在 `/calendar/film/`（"From 今天 Through Forever"，所有未来的电影活动在一页，没有翻页）：
+
+```
+<div class="view-calendar"> … <div class="ds-1col node node-event view-mode-related">
+  <h3 class="teaser-title"><a href="https://www.icaboston.org/events/tcb-the-toni-cade-bambara-school-of-organizing/"><em>TCB: …</em></a></h3>
+  <div class="event-date-display">Fri, Oct 9, 7 PM</div>
+```
+
+- 日期不带年份，按抓取日推断。电影场次很少（实测时只有一场），所以 `allow_empty: true`：几周没有电影是常态，不当作抓取失败。代价是网页改版时也会显示成「没有场次」，要靠 `--verify` / 契约测试发现。
+- 每次 1 个请求。地址：25 Harbor Shore Dr（Seaport）。
+

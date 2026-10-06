@@ -308,3 +308,17 @@ venues:
     horizon_days: 90
     rate_limit_s: 2
 
+  - id: ica-boston
+    name: ICA Boston
+    short: ICA
+    region: BOS
+    timezone: America/New_York
+    color: '#9b5de5'
+    website: https://www.icaboston.org/calendar/film/
+    location: {name: Institute of Contemporary Art, address: "25 Harbor Shore Dr, Boston, MA 02210", geo: [42.35287, -71.04296]}
+    source: {adapter: recipe, recipe: ica-boston}   # 电影日历（SOURCES.md §17）
+    fallback: null
+    horizon_days: 120
+    rate_limit_s: 2
+    allow_empty: true          # 电影场次很少，几周没有一场是常态，不算抓取失败
+
