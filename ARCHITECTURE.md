@@ -45,7 +45,7 @@
 │   ├── store.py                SQLite 读写；seed_from_export 供无状态 CI 回灌
 │   ├── export.py               SQLite → data/showtimes.json + site/data.js
 │   └── run.py                  命令行入口：抓取、校验、兜底、冷却、写库、导出
-├── site/                       index.html / app.js / styles.css / 图标与 manifest（data.js 为生成物）
+├── site/                       index.html / app.js / calendar.js（.ics 生成）/ styles.css / 图标与 manifest（data.js 为生成物）
 ├── templates/BRIEF.md.j2       Agent 任务书模板
 ├── handoff/<id>/               （不入库）向导生成的任务包
 ├── AGENTS.md                   写给 AI 助手的说明：帮非技术用户加影院的固定流程 + 开发规则
@@ -108,6 +108,10 @@ venues:
       adapter: filmbot
       base_url: https://nitehawkcinema.com/williamsburg
     fallback: {adapter: screenslate, nid: 6}   # 可选；也可以是另一个适配器
+    location:                        # 「加入日历」的地址；geo 可选（[纬度, 经度]，Apple 日历据此显示地图）
+      address: "136 Metropolitan Ave, Brooklyn, NY 11249"
+      geo: [40.71609, -73.9625]
+      # places: [{match: <影厅名片段>, name, address, geo}]  影院分几栋楼时按场次的 screen 选地址
     horizon_days: 45                 # 只保留今天起多少天
     rate_limit_s: 2                  # 同一域名两次请求的最小间隔
     max_requests_per_run: 20         # 每次运行对该站的请求上限（适配器和配方遵守）
@@ -281,7 +285,7 @@ python -m scraper.store --seed <showtimes.json 路径或 URL>   # 从上次发�
 ```js
 window.CINEMA_DATA = {
   generated_at: "2026-09-28T05:08:56Z",
-  venues: [ { id, name, short, color, region, city, timezone, website, adapter,
+  venues: [ { id, name, short, color, region, city, timezone, website, adapter, location,
               status, fetched_at, count, horizon_end, error, source } ],
   screenings: [ { ...Screening（不含 scraped_at） } ],   // 只导出昨天及以后
   days: { "2026-09-28": [screening_id, ...], ... }     // 按天索引（影院本地日期）
@@ -303,6 +307,7 @@ window.CINEMA_DATA = {
 * **状态**：放在 URL hash（`#/2026-10-03?view=list&v=bam,filmlinc&sub=1`），刷新和分享都保留。影院选择另存 `localStorage`；新加入的影院自动选中。
 * **默认今天**：看今天时 URL 里不写日期（`#/?view=list`），所以收藏、主屏幕启动、恢复的标签页都从今天开始；URL 里已经过去的日期在打开时改为今天，未来的日期保留。页面一直开着时，原本在看「今天」的会在跨过午夜或从后台切回时翻到新的一天；在后台超过一小时再切回会重新加载，拿到最新数据。
 * **搜索**：搜索框有内容时离开当天 / 当周视图，列出从今天起所有匹配片名、导演或系列的场次，按日期分组；影院、区域和其他筛选照常生效，影院按钮上的数字变成命中数，日期导航隐藏。清空搜索框或按 Esc 回到原视图；搜索词写进 URL（`?q=godard`），可以分享。
+* **加入日历**（`site/calendar.js`，纯函数，测试里用 Node 直接加载）：详情弹窗里的按钮在浏览器里生成 RFC 5545 的 .ics（`DTSTART` / `DTEND` 用 UTC；没有结束时间时用片长，片长也没有就按 2 小时并在备注里说明；`UID` = 场次 id，重复导入不会多出一条）。地点按场次的 `screen` 匹配 `location.places`，否则用影院的 `location`；`LOCATION` 是「名称, 地址」，另写 `GEO` 和 `X-APPLE-STRUCTURED-LOCATION`（`X-TITLE` 必须与 `LOCATION` 相同，Apple 日历才显示地图）。文件以 `data:text/calendar` 链接交出：iOS Safari 直接弹出日历的「添加」，桌面浏览器下载后打开即导入；iOS 上的其他浏览器和微信等内置浏览器不把 .ics 交给日历，改为提示用 Safari 打开。没有 `location` 的影院只写影院名。Google 日历可在同一事件对象上生成 `calendar.google.com/calendar/render?action=TEMPLATE…` 链接。
 * **数据状态提示**：影院按钮上的黄点表示旧数据，红点表示失败，蓝点表示来自兜底源；兜底来的场次带 "via <兜底源>" 标记。列表视图里影院名链接到 `website`。
 * **界面语言**：中 / 英切换（`I18N` 词典 + `t()`；静态文本用 `data-i18n*` 属性）。默认跟随浏览器语言，也可用 `lang=en` 参数指定，选择会被记住。
 * **时区**：每家影院按自己的 `timezone` 建 `Intl.DateTimeFormat`，时间轴每行的刻度是该影院的本地时钟；所有行同一时区时画一条「现在」线，否则每行各画一个标记。「今天」按浏览者本地日期取，各影院的场次按各自的 `day` 归组，不会错位。弹窗里对与浏览者不同时区的影院注明时区缩写（如 `7:00pm PDT`）。

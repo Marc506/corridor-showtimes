@@ -75,13 +75,19 @@ Answers to questions the wizard may print:
 
 ### Step 4 — Show the result
 
-1. The first time, fetch the rest of the default cinemas too: `.venv/bin/python -m scraper.run`
-   (a few minutes; one of them, MoMA, falls back to another source — that's expected).
-2. Open the page: `open site/index.html` (macOS), `start site\index.html` (Windows),
+1. Find the cinema's street address yourself (its website's footer or "Visit" / "Contact" page) and
+   add it to the cinema's entry in `config/venues.yaml`: `location: {address: "123 Main St, City, ST 12345"}`
+   (copy the shape of an existing entry; `geo: [latitude, longitude]` is optional and pins the exact
+   spot). The page's "Add to Calendar" button puts this address in the event, so the calendar can open
+   it in Maps. Don't ask them for it unless the site doesn't show one.
+2. The first time, fetch the rest of the default cinemas too: `.venv/bin/python -m scraper.run`
+   (a few minutes; one of them, MoMA, falls back to another source — that's expected). Otherwise run
+   `.venv/bin/python -m scraper.export` so the address reaches the page.
+3. Open the page: `open site/index.html` (macOS), `start site\index.html` (Windows),
    `xdg-open site/index.html` (Linux).
-3. Tell them in two or three sentences: how many showtimes were found and for which dates, that the new
+4. Tell them in two or three sentences: how many showtimes were found and for which dates, that the new
    cinema has its own button at the top, and that they can switch view (timeline / list / week).
-4. Tell them three things they should know:
+5. Tell them three things they should know:
    - Everything lives on **their computer**; it doesn't change the public website.
    - Showtimes update **by themselves twice a day** once Step 5 is done (only while the computer is on).
    - To hide the author's default cinemas, click a cinema's button at the top of the page (it remembers),
@@ -115,6 +121,9 @@ is on) — OK?"* On yes:
   those entries, then `.venv/bin/python -m scraper.export`.
 - **"Update every day by itself" / "stop updating" / "is it updating?"** →
   `.venv/bin/python -m scraper.schedule on` / `off` / `status` (see Step 5).
+- **"Add to Calendar" has no address / the map opens the wrong place** → set or fix that cinema's
+  `location:` in `config/venues.yaml` (see Step 4), then `.venv/bin/python -m scraper.export`. A cinema
+  with several buildings lists them under `location.places` (see `filmadelphia` / `filmlinc`).
 - **"The page says it hasn't updated in days"** → `.venv/bin/python -m scraper.schedule status`; if it
   isn't on, do Step 5; if it is, show them the last lines of `logs/refresh.log`.
 

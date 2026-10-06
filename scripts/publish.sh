@@ -15,7 +15,7 @@ fi
 STAGE=$(mktemp -d)
 INDEX=$(mktemp)
 trap 'rm -rf "$STAGE" "$INDEX"' EXIT
-cp site/index.html site/app.js site/styles.css site/data.js site/manifest.webmanifest site/*.png "$STAGE"/
+cp site/index.html site/app.js site/calendar.js site/styles.css site/data.js site/manifest.webmanifest site/*.png "$STAGE"/
 touch "$STAGE/.nojekyll"                      # serve files as-is, no Jekyll processing
 
 rm -f "$INDEX"

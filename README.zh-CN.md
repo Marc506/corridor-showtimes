@@ -84,6 +84,7 @@
 - 「只看胶片」= 16mm / 35mm / 70mm（`35mm-to-DCP` 不算）。
 - 「非英语（有字幕）」= 已知主要语言不是英语的场次，加上默片 / 无对白片。语言未知的场次会被隐藏，旁边会显示隐藏了多少场。语言来源：影院网站自己写的 > TMDB 查询 > `venues.yaml` 里的 `default_language`（Japan Society = 日语，L'Alliance = 法语）。
 - 时间轴里点色块看详情和购票链接；虚线框表示时长未知（按 100 分钟画）。
+- 详情里的「加入日历」生成一个日历事件（.ics）：开场到散场的时间、片名、影院地址。iPhone 上在 Safari 里点它会弹出系统日历的「添加」；Mac 上会下载文件，打开即加入「日历」。地址带坐标，Apple 日历里点地址能直接在地图里打开；片长未知时按 2 小时记。地址来自 `venues.yaml` 的 `location`。
 - 影院按钮上的小圆点：🟡 旧数据（这次抓取失败，显示上次的）· 🔴 从未成功 · 🔵 这次用的是 screenslate 兜底。悬停可看原因。
 - 网址里保存了当前状态（日期、视图、筛选），可以收藏或发给别人。
 
@@ -198,6 +199,7 @@ Metrograph、FLC、Film Forum、MoMA 的网站不写语言，要靠 [TMDB](https
 | `primary_cooldown_h` | 主源失败后多少小时内直接用兜底（MoMA 用它避免每次都开浏览器） |
 | `browser.headless` / `browser.challenge_timeout_s` | 需要浏览器的影院（MoMA） |
 | `default_language` | 网站和 TMDB 都没有语言时的默认值 |
+| `location` | 「加入日历」用的地址：`{address: "7 Ludlow St, New York, NY 10002", geo: [纬度, 经度]}`（`geo` 可选，有它地图定位最准）。影院分几栋楼时在 `places` 里按影厅名对应：`{match: Bourse, name: PFS Bourse Theater, address: …, geo: …}`（影厅名里包含 `match` 的场次用这个地址） |
 
 screenslate 的 nid 查法：`curl -s 'https://www.screenslate.com/jsonapi/node/venue?filter[title]=<影院名>'`
 

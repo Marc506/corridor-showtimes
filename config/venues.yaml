@@ -12,6 +12,7 @@ venues:
     timezone: America/New_York
     color: "#3a86ff"
     website: https://www.bam.org/film
+    location: {address: "30 Lafayette Ave, Brooklyn, NY 11217", geo: [40.6867, -73.97751]}
     source: {adapter: custom, module: bam}
     fallback: {adapter: screenslate, nid: 244}
     horizon_days: 60
@@ -24,6 +25,16 @@ venues:
     timezone: America/New_York
     color: "#c1121f"
     website: https://www.filmlinc.org/
+    location:                  # 大部分场次在 Elinor Bunin Munroe Film Center；按影厅名对应到其他楼（含纽约电影节外区场地）
+      address: "144 W 65th St, New York, NY 10023"
+      geo: [40.77345, -73.98357]
+      places:
+        - {match: Walter Reade, name: Walter Reade Theater, address: "165 W 65th St, New York, NY 10023", geo: [40.77409, -73.98431]}
+        - {match: Alice Tully, name: Alice Tully Hall, address: "1941 Broadway, New York, NY 10023", geo: [40.7735, -73.98258]}
+        - {match: MOMI, name: Museum of the Moving Image, address: "36-01 35th Ave, Astoria, NY 11106", geo: [40.75619, -73.92401]}
+        - {match: BAM, name: BAM Rose Cinemas, address: "30 Lafayette Ave, Brooklyn, NY 11217", geo: [40.6867, -73.97751]}
+        - {match: AMC Bay Plaza, name: AMC Bay Plaza Cinema 13, address: "2210 Bartow Ave, Bronx, NY 10475", geo: [40.86704, -73.82517]}
+        - {match: Alamo Staten Island, name: Alamo Drafthouse Staten Island, address: "2636 Hylan Blvd, Staten Island, NY 10306", geo: [40.56625, -74.10941]}
     source: {adapter: custom, module: filmlinc}
     fallback: {adapter: screenslate, nid: 355}
     horizon_days: 60
@@ -36,6 +47,7 @@ venues:
     timezone: America/New_York
     color: "#e9b949"
     website: https://japansociety.org/film/
+    location: {address: "333 E 47th St, New York, NY 10017", geo: [40.75256, -73.96825]}
     source: {adapter: custom, module: japansociety}
     fallback: {adapter: screenslate, nid: 339}
     horizon_days: 90
@@ -50,6 +62,7 @@ venues:
     timezone: America/New_York
     color: "#6a4c93"
     website: https://www.anthologyfilmarchives.org/
+    location: {address: "32 2nd Ave, New York, NY 10003", geo: [40.72475, -73.99026]}
     source: {adapter: custom, module: anthology}
     fallback: {adapter: screenslate, nid: 327}
     horizon_days: 60
@@ -62,6 +75,7 @@ venues:
     timezone: America/New_York
     color: "#2a9d8f"
     website: https://filmforum.org/
+    location: {address: "209 W Houston St, New York, NY 10014", geo: [40.72839, -74.00439]}
     source: {adapter: custom, module: filmforum}
     fallback: {adapter: screenslate, nid: 13}
     horizon_days: 30
@@ -74,6 +88,7 @@ venues:
     timezone: America/New_York
     color: "#e63946"
     website: https://metrograph.com/
+    location: {address: "7 Ludlow St, New York, NY 10002", geo: [40.7151, -73.99102]}
     source: {adapter: custom, module: metrograph}
     fallback: {adapter: screenslate, nid: 6}
     horizon_days: 30
@@ -87,6 +102,7 @@ venues:
     timezone: America/New_York
     color: "#457b9d"
     website: https://lallianceny.org/
+    location: {address: "55 E 59th St, New York, NY 10022", geo: [40.76352, -73.97065]}
     source: {adapter: custom, module: lalliance}
     fallback: {adapter: screenslate, nid: 7}
     default_language: French   # 法国文化中心，几乎都是法语片；TMDB 查到的优先
@@ -101,6 +117,7 @@ venues:
     timezone: America/New_York
     color: "#f4a261"
     website: https://www.moma.org/calendar/film
+    location: {address: "11 W 53rd St, New York, NY 10019", geo: [40.76161, -73.9775]}
     source: {adapter: custom, module: moma}
     fallback: {adapter: screenslate, nid: 81}
     horizon_days: 45
@@ -117,6 +134,13 @@ venues:
     timezone: America/New_York
     color: "#8d99ae"
     website: https://filmadelphia.org/
+    location:                  # 三家影院；影厅名以 PFC / Bourse / East 区分
+      address: "1412 Chestnut St, Philadelphia, PA 19102"
+      geo: [39.95082, -75.16469]
+      places:
+        - {match: PFC, name: Philadelphia Film Center, address: "1412 Chestnut St, Philadelphia, PA 19102", geo: [39.95082, -75.16469]}
+        - {match: Bourse, name: PFS Bourse Theater, address: "400 Ranstead St, Philadelphia, PA 19106", geo: [39.94933, -75.14765]}
+        - {match: East, name: PFS East Theater, address: "125 S 2nd St, Philadelphia, PA 19106", geo: [39.9475, -75.14346]}
     # 网站被 WAF 挡住，改用售票系统 Agile Ticketing 的公开 feed（SOURCES.md §9）；screenslate 不收录费城
     source: {adapter: custom, module: filmadelphia}
     fallback: null
@@ -131,6 +155,7 @@ venues:
     timezone: America/New_York
     color: '#06d6a0'
     website: https://www.landmarktheatres.com/theaters/x081d-landmark-ritz-five-philadelphia/
+    location: {address: "214 Walnut St, Philadelphia, PA 19106", geo: [39.94683, -75.14549]}
     source: {adapter: boxofficeapi, site: 'https://www.landmarktheatres.com', theater: X081D}
     fallback: null
     horizon_days: 45

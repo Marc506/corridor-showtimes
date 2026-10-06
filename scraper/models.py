@@ -66,6 +66,7 @@ class VenueConfig:
     max_requests_per_run: int = 20
     allow_empty: bool = False
     default_language: str | None = None    # last resort when neither the site nor TMDB says
+    location: dict | None = None           # {name?, address?, geo: [lat, lon]?, places: [...]} for calendar events
     city: str | None = None                # v1 alias of region
     extra: dict = field(default_factory=dict)
 
