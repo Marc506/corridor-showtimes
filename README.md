@@ -1,12 +1,12 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with twelve art-house and repertory cinemas from New York to Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with thirteen art-house and repertory cinemas from New York to Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows twelve along the Northeast Corridor: Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
-MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center and the Bryn Mawr Film Institute. It refreshes twice a
+follows thirteen along the Northeast Corridor: Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute and the Hiway Theater. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
 often lag behind the cinemas' own schedules.
@@ -125,6 +125,7 @@ it said last. The assistant can write that text for you — ask it to.
 | Landmark Ritz Five (Philadelphia) | **The site's own JSON schedule** (Webedia platform) | The page renders showtimes in the browser; the same public endpoints the page calls are read directly. The chain lists ~26 US theaters, so one theater id is kept |
 | Lightbox Film Center (Philadelphia) | **Wix Events data embedded in the site's page** | A Wix site: the page ships its event list as JSON. Tickets are sold on Ticketleap, so Wix's own "sold out" flag is ignored; screenings move between venues, so each one keeps its own place |
 | Bryn Mawr Film Institute | Server-rendered HTML: the week page, plus each later programme's own page | **Times have no am/pm** except morning shows, which the site marks, so an unmarked time is afternoon; captioned and sensory-friendly showings are labelled per time. Its Agile ticketing exposes no usable public feed |
+| Hiway Theater (Jenkintown) | Server-rendered HTML: the home page (this week) and the special programmes page | The Renew Theaters site template; again most times have no am/pm. The site already carries every showtime and ticket link, so the ticketing app is not read |
 
 **Fallback.** [screenslate](https://www.screenslate.com)'s open JSON:API covers the NYC venues and
 is used automatically when a primary source fails. A per-venue cooldown avoids hammering a site

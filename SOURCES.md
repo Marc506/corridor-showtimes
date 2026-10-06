@@ -406,3 +406,27 @@ GET https://brynmawrfilm.org/event/<slug>/      # 单个节目：片名 <h2>TITL
 - **抓取**：本周页 + 列表页，再对「本周页之后还有场次、且在 `horizon_days` 内」的节目各取一次影片页（按日期由近到远，最多 30 页，每次实时取，因为要读的是时间）；本周页已覆盖的日期不再从影片页取。只在本周页出现的片，导演 / 年份用影片页补（`enrich`，按 7 天缓存）。每次运行约 32 个请求、间隔 2 秒。
 - 4 个影厅不在网页上写，`screen` 为空。地址：824 W Lancaster Ave, Bryn Mawr, PA 19010。
 
+---
+
+## 12. Hiway Theater（Renew Theaters 的网站模板）— ★★ 服务端 HTML
+
+2026‑10‑06 实测。`hiwaytheater.org` 是 Renew Theaters（同一家非营利机构还经营 County Theater、Ambler Theater）的 PHP 模板，图片来自 `renewtheaters.org`；售票是 INDY（`tickets.hiwaytheater.org`，前端应用，数据走它自己的 GraphQL）。网站本身已经有全部场次和购票链接，不去读售票系统。
+
+```
+GET https://www.hiwaytheater.org/            # Now Playing：本周正片的全部场次（另含几场特别放映）
+GET https://www.hiwaytheater.org/specials    # 全部特别放映，排到两三个月后（/events 302 到这里）
+<div id="box-times">
+  <div class="details"><div class="year">1981</div><div class="format">35mm</div></div>
+  <div class="header"><span class="tag-bar cult">Cult Cinema Club</span><div class="subheader">…</div>
+    <a href="films/halloween-ii" class="title">Halloween II</a>
+    <div class="date-container" data-date="Fri Oct 23">           # 首页是 "Tue 6"（只有星期和日）
+      <ul class="session-times"><li><a href="https://tickets.hiwaytheater.org/checkout/showing/halloween-ii/3821019">
+        9:45 PM <span class="screen-attribute">OC</span></a>
+```
+
+- 正片时间不写上午 / 下午（"7:00"），特别放映多数写（"10:00 AM"）；没写的按 Film Forum 的规则：11 点 = 上午，12 = 中午，1–10 = 下午。
+- "OC" = 开放字幕场（记为备注 "Open caption"，计入「有字幕」）。`tag-bar` 是系列（"Ends Thu Oct 8" 这类排期提示除外），`subheader` 记为备注（"A Christmas Carol (1951)"），`.format` 是规格。
+- 首页日期 "Tue 6" 没有月份：在抓取日附近找「6 号且是星期二」的那天；/specials 的 "Sat Oct 10" 按 `nearest_date`。
+- 正片每周一 / 二才排下一周，所以首页就是正片的全部；Coming Attractions 页只有片名、没有时间，不读。
+- 模块 `renew` 带 `base_url` 参数；同模板的其他 Renew 影院可以直接复用（未逐一验证）。每次 2 个请求。地址取自网站页脚的 Apple 地图链接：212 Old York Rd, Jenkintown, PA 19046。
+

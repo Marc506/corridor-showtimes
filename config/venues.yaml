@@ -194,3 +194,17 @@ venues:
     horizon_days: 45
     rate_limit_s: 2
     max_requests_per_run: 32   # 本周页 + 列表页 + 最多 30 个影片页
+
+  - id: hiway-theater
+    name: Hiway Theater
+    short: Hiway
+    region: PHL
+    timezone: America/New_York
+    color: '#c77f39'
+    website: https://www.hiwaytheater.org/
+    location: {address: "212 Old York Rd, Jenkintown, PA 19046", geo: [40.094668, -75.125425]}
+    # Renew Theaters 的网站模板：首页（本周正片）+ /specials（特别放映）（SOURCES.md §12）
+    source: {adapter: custom, module: renew, base_url: https://www.hiwaytheater.org}
+    fallback: null
+    horizon_days: 90
+    rate_limit_s: 2
