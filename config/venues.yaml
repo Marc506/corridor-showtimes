@@ -179,3 +179,18 @@ venues:
     fallback: null
     horizon_days: 45
     rate_limit_s: 2
+
+  - id: bryn-mawr-film-institute
+    name: Bryn Mawr Film Institute
+    short: BMFI
+    region: PHL
+    timezone: America/New_York
+    color: '#4ecdc4'
+    website: https://brynmawrfilm.org/
+    location: {address: "824 W Lancaster Ave, Bryn Mawr, PA 19010", geo: [40.02157, -75.31904]}
+    # 售票是 Agile Ticketing，但没有可用的公开 feed；读网站本身：本周页 + 之后场次各自的影片页（SOURCES.md §11）
+    source: {adapter: custom, module: brynmawr}
+    fallback: null
+    horizon_days: 45
+    rate_limit_s: 2
+    max_requests_per_run: 32   # 本周页 + 列表页 + 最多 30 个影片页

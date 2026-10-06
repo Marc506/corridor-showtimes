@@ -1,0 +1,23 @@
+generated_by: scraper.add
+fetched_at: '2026-10-06T17:38:36Z'
+pages:
+- file: page_0.html
+  url: https://brynmawrfilm.org/films/week/
+- file: page_1.html
+  url: https://brynmawrfilm.org/films/?view=list
+- file: page_5.html
+  url: https://brynmawrfilm.org/event/the-social-reckoning/
+- file: page_6.html
+  url: https://brynmawrfilm.org/event/ha-chan-shake-your-booty/
+- file: page_9.html
+  url: https://brynmawrfilm.org/event/the-life-aquatic-with-steve-zissou-2/
+- file: page_10.html
+  url: https://brynmawrfilm.org/event/fitzcarraldo/
+- file: page_12.html
+  url: https://brynmawrfilm.org/event/a-chinese-ghost-story-presented-by-viva-video/
+- file: page_13.html
+  url: https://brynmawrfilm.org/event/the-heiress-with-karina-longworth/
+- file: page_18.html
+  url: https://brynmawrfilm.org/event/possession/
+- file: page_25.html
+  url: https://brynmawrfilm.org/event/talk-cinema-47/

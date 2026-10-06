@@ -380,3 +380,29 @@ GET https://www.screenslate.com/jsonapi/node/venue?fields[node--venue]=title,pat
 - `field_on_film` 是 `"true"` / `"false"`，不是 `"1"`。胶片但格式未知时 `format = "Film"`（前端「只看胶片」认它）。
 - 标题：优先 `field_display_title`（"New York No Story"）；否则 1 部用片名，2–3 部用 ` + ` 连接，更多用 "A + B + N more"（短片合集常有 8–17 部）。内部 `title` 字段是编辑的备注（"matrix moma"），只作最后兜底。
 - 覆盖明显不如主源：同一天 Metrograph 主源 149 场，screenslate 只有 71 场。
+
+---
+
+## 11. Bryn Mawr Film Institute — ★★ 服务端 HTML（本周页 + 影片页）
+
+2026‑10‑06 实测。WordPress 站（`brynmawrfilm.org`），售票是 Agile Ticketing（`shop.brynmawrfilm.org`）。网页里能看到的 GUID `4ce679c9-…` 只出现在购物车 / 登录链接里，喂给 feed 只返回空壳（和 IFC 等一样，PLATFORMS.md §3），所以读网站本身。
+
+```
+GET https://brynmawrfilm.org/films/week/        # 今天起约 8 天
+<h5>Today · Tuesday, October 6</h5>
+<b><a href="https://brynmawrfilm.org/event/primetime/">PRIMETIME</a></b>  (R) USA – 1 hr 50 min  <span class="icon icon-4k"></span><br>
+<span class="showtime-past">1.00 Open Caption</span> <a href="https://shop.brynmawrfilm.org/websales/pages/ticketsearchcriteria.aspx?evtinfo=582090~…" class="showtime">4.15</a> …
+
+GET https://brynmawrfilm.org/films/?view=list   # 全部节目，只有日期：<td><nobr>Oct 6 – 15</nobr></td><td><b><a href="/event/…">TITLE</a></b> (R) · USA – 1 hr 50 min</td>
+GET https://brynmawrfilm.org/event/<slug>/      # 单个节目：片名 <h2>TITLE<div class="subtitle">On 35mm</div></h2>，
+                                                # "1961 · d. John Huston"、系列链接 /series/…、标签 div.tags，
+                                                # div.buy-tickets 里 <b>Tuesday, October 13</b> 加当天的 a.showtime
+```
+
+- **时间没有上午 / 下午**："1.00"、"4.15"、"7.30"；上午场网站自己会写 "11.00am"。所以没写的一律按下午（12 点 = 中午）。时间后面的字是那一场的备注："Open Caption"（开放字幕，计入「有字幕」）、"SF"（Sensory Friendly 感官友好场）。
+- "– with subtitles" 记为备注 "Subtitled"（计入「有字幕」）；副标题 / 标签里的 35mm、16mm、70mm 记为规格。片名全大写，按「连续两个以上全大写词或一个长词」转换大小写，"THE HEIRESS with Karina Longworth" → "The Heiress with Karina Longworth"。
+- 日期都不带年份，按页面抓取日推断（`nearest_date`）。
+- 列表里带 "Instructor:" 的是课程 / 研讨课（Cinema Classics Seminar 等），不是放映，跳过；对应影片另有自己的条目。
+- **抓取**：本周页 + 列表页，再对「本周页之后还有场次、且在 `horizon_days` 内」的节目各取一次影片页（按日期由近到远，最多 30 页，每次实时取，因为要读的是时间）；本周页已覆盖的日期不再从影片页取。只在本周页出现的片，导演 / 年份用影片页补（`enrich`，按 7 天缓存）。每次运行约 32 个请求、间隔 2 秒。
+- 4 个影厅不在网页上写，`screen` 为空。地址：824 W Lancaster Ave, Bryn Mawr, PA 19010。
+
