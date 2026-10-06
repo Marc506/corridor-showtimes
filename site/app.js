@@ -225,7 +225,7 @@
       const raw = JSON.parse(localStorage.getItem(LS_REGIONS) || "null");
       if (Array.isArray(raw)) {
         const on = REGIONS.filter((r) => raw.includes(r));
-        if (on.length) return new Set(on);
+        if (on.length || !raw.length) return new Set(on);     // [] = every region switched off on purpose
       }
     } catch (_) { /* storage unavailable or corrupt */ }
     return null;
@@ -255,8 +255,9 @@
       state.venues = loadStoredVenues() || new Set(activeVenues.map((v) => v.id));
     }
     if (p.has("r")) {
-      const rs = p.get("r").split(",").filter((r) => REGIONS.includes(r));
-      state.regions = new Set(rs.length ? rs : REGIONS);
+      const raw = p.get("r");
+      const rs = raw.split(",").filter((r) => REGIONS.includes(r));
+      state.regions = new Set(rs.length || !raw ? rs : REGIONS);           // "r=" = none on; unknown names = all
     } else {
       state.regions = loadStoredRegions() || new Set(REGIONS);
     }
@@ -504,7 +505,7 @@
             return update({ regions: only, venues: withVenuesOf(only) });
           }
           const next = new Set(state.regions);
-          if (next.has(r)) return update({ regions: next.size > 1 ? (next.delete(r), next) : new Set(REGIONS) });
+          if (next.has(r)) return next.delete(r), update({ regions: next });   // the last one off leaves none on
           next.add(r);
           update({ regions: next, venues: withVenuesOf(new Set([r])) });
         },
@@ -907,7 +908,7 @@
       box.append(t("noData")[0], el("code", {}, "python -m scraper.run"), t("noData")[1]);
       return box;
     }
-    if (!state.venues.size) {
+    if (!state.venues.size || !state.regions.size) {
       box.append(t("noVenues"), el("button", { onclick: selectAll }, t("selectAll")));
       return box;
     }
