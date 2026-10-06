@@ -161,6 +161,25 @@ class TmdbLanguage:
             hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
         return hit if hit.get("lang") else None
 
+    def by_imdb(self, imdb_id: str) -> dict | None:
+        """The film a cinema identifies by its IMDb id ("tt0090605"): /find gives exactly one TMDB film, so the
+        match is always sure. Same shape as details(); cached under "imdb:<id>", misses retried after MISS_TTL."""
+        key = f"imdb:{imdb_id}"
+        hit = self.cache["films"].get(key)
+        now = datetime.now(timezone.utc)
+        if hit and not hit.get("lang") and now - datetime.fromisoformat(hit["at"]) < MISS_TTL:
+            return None
+        if not hit or not hit.get("lang"):
+            found = (self._get(f"/find/{imdb_id}", external_source="imdb_id").get("movie_results") or [])[:1]
+            m = found[0] if found else {}
+            code, year = m.get("original_language"), (m.get("release_date") or "")[:4]
+            hit = {"lang": self.language_name(code) if code else None, "id": m.get("id"), "sure": bool(m),
+                   "year": int(year) if year.isdigit() else None, "at": now.isoformat()}
+            self.cache["films"][key] = hit
+        if hit.get("id") and ("directors" not in hit or "runtime" not in hit):
+            hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
+        return hit if hit.get("lang") else None
+
     def _film_facts(self, movie_id: int) -> tuple[list[str], int | None]:
         """Directors and runtime (minutes) in one request: /movie/{id}?append_to_response=credits."""
         try:
@@ -253,7 +272,8 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                    hints: dict | None = None) -> None:
     """Fill missing film info in place.
 
-    Language: the site's own text > opera rule > TMDB > venue.default_language.
+    Language: the site's own text > opera rule > TMDB (by the cinema's IMDb id when it gives one, else by
+    title) > venue.default_language.
     Director (and a missing year): only from a TMDB match that is sure to be the same film, and never
     overwriting what the cinema's site says.
     """
@@ -273,10 +293,10 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                 q = search_title(s.title)
                 year, director = hints.get(title_norm(q), (None, director)) if q else (None, director)
                 director = s.director or director
-            k = (s.title, year, director)
+            k = ("imdb", s.imdb_id) if s.imdb_id else (s.title, year, director)
             if k not in memo:
                 try:
-                    memo[k] = tmdb.details(s.title, year, director)
+                    memo[k] = tmdb.by_imdb(s.imdb_id) if s.imdb_id else tmdb.details(s.title, year, director)
                 except Exception as e:  # noqa: BLE001 — best effort
                     log.warning("[%s] TMDB lookup failed for %r: %s", venue.id, s.title, e)
                     memo[k] = None

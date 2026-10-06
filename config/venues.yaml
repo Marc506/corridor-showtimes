@@ -280,3 +280,17 @@ venues:
     horizon_days: 75
     rate_limit_s: 2
 
+
+  - id: somerville-theatre
+    name: Somerville Theatre
+    short: Somerville
+    region: BOS
+    timezone: America/New_York
+    color: '#2ec4b6'
+    website: https://www.somervilletheatre.com/
+    location: {address: "55 Davis Square, Somerville, MA 02144", geo: [42.39665, -71.12303]}
+    # 网站排片页背后的 TAPOS 售票 feed（同站公开 XML，一次请求全部场次；SOURCES.md §15）
+    source: {adapter: custom, module: tapos, feed: "https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed"}
+    fallback: null
+    horizon_days: 60
+    rate_limit_s: 2

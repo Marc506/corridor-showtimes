@@ -308,3 +308,25 @@ def test_prominent_one_of_several_same_title_films_this_year():
     row2 = _s("Artificial")
     L.fill_languages([row2], VenueConfig(id="v", name="V", scraper="x"), close)
     assert row2.director is None                                        # 2.0 vs 1.75: too close to call
+
+
+def test_imdb_id_from_the_cinema_is_an_exact_match():
+    """A cinema that publishes IMDb ids (Somerville's TAPOS feed) gets the film by /find, not by title search."""
+    class FindTmdb(FakeTmdb):
+        def _get(self, path, **params):
+            if path == "/find/tt0080455":
+                self.calls.append(path)
+                return {"movie_results": [{"id": 525, "original_language": "en", "release_date": "1980-06-16"}]}
+            if path == "/find/tt9999999":
+                self.calls.append(path)
+                return {"movie_results": []}
+            return super()._get(path, **params)
+
+    tmdb = FindTmdb([{"id": 1, "title": "The Blues Brothers", "release_date": "2026-01-01", "original_language": "fr"}],
+                    credits={525: ["John Landis"]}, runtimes={525: 133})
+    rows = [_s("The Blues Brothers"), _s("Unknown Short")]
+    rows[0].imdb_id, rows[1].imdb_id = "tt0080455", "tt9999999"
+    L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x"), tmdb)
+    assert (rows[0].language, rows[0].director, rows[0].year, rows[0].runtime_min) == ("English", "John Landis", 1980, 133)
+    assert "/search/movie" not in tmdb.calls                   # never fell back to a title search
+    assert rows[1].language is None and rows[1].director is None

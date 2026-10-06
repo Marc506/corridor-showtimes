@@ -475,3 +475,24 @@ GET https://coolidge.org/showtimes?date=2026-10-08      # /films-events/now-play
 - 系列名太长时网站截成 "…, ..."：配方去掉省略号和结尾的标点，保留能读的部分；完整名字在页面底部的 "Current Programs"，配方表达不了对照，就不取。
 - 没有在线购票链接（票在影院售票处卖），`detail_url` 是活动页。地址：Carpenter Center，24 Quincy St, Cambridge。
 
+---
+
+## 15. Somerville Theatre（波士顿 Somerville）— ★ 同站公开 XML（TAPOS 售票 feed）
+
+2026‑10‑06 实测。WordPress 站。`/calendar` 是服务端渲染的重映日历，`/schedule`（正片）没有场次 HTML，由 `showtime-select.min.js` 在浏览器里取：
+
+```
+GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed      # application/xml，约 340 KB
+<Feed><Films><Film><Code>163</Code><FilmTitle>Aliens 70mm</FilmTitle><ShortFilmTitle>Aliens</ShortFilmTitle>
+      <RunningTime>137</RunningTime><IMDBCode>tt0090605</IMDBCode><Directors>James Cameron</Directors>…</Film>…
+<Performance><FilmCode>163</FilmCode><PerformDate>2026-11-18</PerformDate><StartTime>19:00:00</StartTime>
+      <Screen>Main Theatre - Somerville</Screen><PerfFlagsDescription>70mm</PerfFlagsDescription>
+      <BookingURL>https://internet-ticketing.com/websales/sales/CSBSOM/book?perfcode=1186</BookingURL>
+      <SoldOutLevel>N</SoldOutLevel><PerformancesHidden>N</PerformancesHidden>…</Performance>
+```
+
+- 一次请求就是全部：正片和重映（35mm / 70mm）都在，排到一个多月后。这是影院自己网站给浏览器的公开接口，和 Landmark 读 Webedia 接口同理。
+- 片名用 `FilmTitle`（`ShortFilmTitle` 截到 20 个字），去掉结尾的规格（"Aliens 70mm" → "Aliens"，规格 70mm）。场次标记 `PerfFlagsDescription`：35mm / 70mm / 4K 是规格，"Open Captions" 是开放字幕备注。`SoldOutLevel` 不是 N 时记 Sold out；`PerformancesHidden` / `Virtual` 为 Y 的跳过。影片页按网站脚本的规则拼：`/production/<FilmTitle 的 slug>/`。
+- **`Directors` 不可信**：混进了别的片的人（"The Blues Brothers: Derek Drymon|John Landis"、1925 年 "The Phantom of the Opera: Johannes Roberts|Norman Jewison"），所以不用。改用 `IMDBCode`：`Screening.imdb_id` → TMDB `/find/{imdb_id}`，一部片一个确定的匹配，导演、年份、片长、语言都从那里来（`language.by_imdb`，缓存键 `imdb:<id>`）。没有 IMDb 号的片照常按片名查。
+- `/calendar`（重映日历）和 `/events`（音乐会、现场活动）不读：前者的场次都在 feed 里，后者不是电影。地址：55 Davis Square, Somerville。
+
