@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS screenings (
   id TEXT PRIMARY KEY, venue_id TEXT NOT NULL, title TEXT NOT NULL,
   start TEXT NOT NULL, "end" TEXT, day TEXT NOT NULL,
   director TEXT, year INTEGER, runtime_min INTEGER, format TEXT, language TEXT,
-  series TEXT, screen TEXT, note TEXT, detail_url TEXT, ticket_url TEXT, imdb_id TEXT, mainstream INTEGER,
+  series TEXT, screen TEXT, note TEXT, detail_url TEXT, ticket_url TEXT, imdb_id TEXT,
   source TEXT NOT NULL, scraped_at TEXT NOT NULL,
   first_seen TEXT NOT NULL, last_seen TEXT NOT NULL
 );
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS venue_status (
 
 SCREENING_COLS = ["id", "venue_id", "title", "start", "end", "day", "director", "year",
                   "runtime_min", "format", "language", "series", "screen", "note", "detail_url",
-                  "ticket_url", "imdb_id", "mainstream", "source", "scraped_at"]
+                  "ticket_url", "imdb_id", "source", "scraped_at"]
 
 
 class Store:
@@ -40,9 +40,9 @@ class Store:
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
         have = {r[1] for r in self.conn.execute("PRAGMA table_info(screenings)")}
-        for col, kind in (("language", "TEXT"), ("imdb_id", "TEXT"), ("mainstream", "INTEGER")):
-            if col not in have:                      # migrate databases created before these columns existed
-                self.conn.execute(f"ALTER TABLE screenings ADD COLUMN {col} {kind}")
+        for col in ("language", "imdb_id"):          # migrate databases created before these columns existed
+            if col not in have:
+                self.conn.execute(f"ALTER TABLE screenings ADD COLUMN {col} TEXT")
         cols = {r[1] for r in self.conn.execute("PRAGMA table_info(venue_status)")}
         if "primary_failed_at" not in cols:          # migrate databases created before this column existed
             self.conn.execute("ALTER TABLE venue_status ADD COLUMN primary_failed_at TEXT")

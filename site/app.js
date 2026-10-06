@@ -65,8 +65,8 @@
       // static page text (index.html data-i18n keys)
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
       onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
-      upcoming: "隐藏已开场", noStudio: "隐藏商业片",
-      noStudioT: "隐藏今年和去年的商业新片（据 TMDB）：大制片厂出品的（华纳、环球、迪士尼、派拉蒙、索尼哥伦比亚等，但它们的艺术片子品牌如 Searchlight、Focus 除外），特别热门的，或预算 3000 万美元以上且相当热门的。老片重映永远保留；认不出是哪部片的也保留。",
+      upcoming: "隐藏已开场", specials: "只看重映和特别场",
+      specialsT: "隐藏正在常规上映的新片（今年和去年的片，同一家影院放了 3 场以上；属于影展、专题的放到 8 场以上才算）。老片重映不论放几场都保留；带映后谈、导演到场、首映、现场配乐的场次也保留；不知道年份的片保留。",
       fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {
@@ -115,8 +115,8 @@
       source: "Source code", switchTo: "中文", switchToT: "切换到中文",
       views: "Views", timeline: "Timeline", list: "List", week: "Week", dateNav: "Date", pickDate: "Pick a date", venues: "Cinemas",
       onFilm: "On film", subs: "Subtitled / captioned", subsT: "Only screenings you can follow by reading: non-English films (English subtitles), open-caption screenings and silent films",
-      upcoming: "Hide started", noStudio: "Hide studio films",
-      noStudioT: "Hides this year's and last year's studio releases (per TMDB): from a major studio (Warner, Universal, Disney, Paramount, Sony/Columbia … but not their art-house arms such as Searchlight or Focus), very popular, or with a budget of $30M+ and fairly popular. Repertory screenings of older films always stay, and so does anything that can't be identified.",
+      upcoming: "Hide started", specials: "Repertory & specials",
+      specialsT: "Hides new films in their regular run (this year's or last year's, shown 3+ times at one cinema; 8+ inside a festival or series). Older films always stay however often they play, as do Q&As, director appearances, premieres and live-score screenings, and films without a known year.",
       fromToday: "Start today", search: "Search title / director",
     },
   };
@@ -201,7 +201,7 @@
   const VIEWS = ["timeline", "list", "week"];
   const state = {
     day: todayKey(), view: "timeline", venues: new Set(activeVenues.map((v) => v.id)), regions: new Set(REGIONS),
-    film: false, subs: false, upcoming: false, noStudio: false, q: "", weekFromToday: false, hl: "",
+    film: false, subs: false, upcoming: false, specials: false, q: "", weekFromToday: false, hl: "",
   };
 
   /** Stored as {on: [...], known: [...]} — venues added to the site later start selected. */
@@ -268,7 +268,7 @@
     state.film = p.get("film") === "1";
     state.subs = p.get("sub") === "1";
     state.upcoming = p.get("up") === "1";
-    state.noStudio = p.get("art") === "1";
+    state.specials = p.get("sp") === "1";
     state.q = p.get("q") || "";
     state.weekFromToday = p.get("ws") === "today";
     state.hl = p.get("hl") || "";
@@ -283,7 +283,7 @@
     if (state.film) p.set("film", "1");
     if (state.subs) p.set("sub", "1");
     if (state.upcoming) p.set("up", "1");
-    if (state.noStudio) p.set("art", "1");
+    if (state.specials) p.set("sp", "1");
     if (state.q) p.set("q", state.q);
     if (state.weekFromToday) p.set("ws", "today");
     if (state.hl) p.set("hl", state.hl);
@@ -318,7 +318,7 @@
     if (state.film && !FILM_FORMATS.has(s.format)) return false;
     if (state.subs && !ignoreSubs && needsNoEnglish(s) !== true) return false;
     if (state.upcoming && s.day === todayKey() && new Date(s.start) < now) return false;
-    if (state.noStudio && s.mainstream) return false;
+    if (state.specials && s.run) return false;        // a new film's regular run (scraper/export.py)
     if (state.q) {
       const q = fold(state.q);
       if (!fold(s.title).includes(q) && !fold(s.director).includes(q) && !fold(s.series).includes(q)) return false;
@@ -468,7 +468,7 @@
     $("#f-subs").checked = state.subs;
     renderSubsHint();
     $("#f-upcoming").checked = state.upcoming;
-    $("#f-nostudio").checked = state.noStudio;
+    $("#f-specials").checked = state.specials;
     $("#f-upcoming-wrap").hidden = week;
     $("#f-weekstart").checked = state.weekFromToday;
     $("#f-weekstart-wrap").hidden = !week;
@@ -754,8 +754,8 @@
       el("button", { class: "link-btn", onclick: () => update({ q: "" }) }, t("clearSearch")));
     if (!total) {
       const box = el("div", { class: "empty" }, t("searchNone", state.q));
-      if (state.film || state.subs || state.upcoming || state.noStudio) {
-        box.append(el("br"), el("button", { onclick: () => update({ film: false, subs: false, upcoming: false, noStudio: false }) }, t("clearFilters")));
+      if (state.film || state.subs || state.upcoming || state.specials) {
+        box.append(el("br"), el("button", { onclick: () => update({ film: false, subs: false, upcoming: false, specials: false }) }, t("clearFilters")));
       }
       return main.replaceChildren(head, box);
     }
@@ -921,8 +921,8 @@
       return box;
     }
     box.append(msg || t("dayEmpty"));
-    if (state.film || state.subs || state.q || state.upcoming || state.noStudio) {
-      box.append(el("br"), el("button", { onclick: () => update({ film: false, subs: false, q: "", upcoming: false, noStudio: false }) }, t("clearFilters")));
+    if (state.film || state.subs || state.q || state.upcoming || state.specials) {
+      box.append(el("br"), el("button", { onclick: () => update({ film: false, subs: false, q: "", upcoming: false, specials: false }) }, t("clearFilters")));
     }
     if (state.view !== "week") {
       const hasSel = (d) => screeningsForDay(d).some((s) => shown(s.venue_id) && passesFilters(s));
@@ -1009,7 +1009,7 @@
     $("#f-film").addEventListener("change", (e) => update({ film: e.target.checked }));
     $("#f-subs").addEventListener("change", (e) => update({ subs: e.target.checked }));
     $("#f-upcoming").addEventListener("change", (e) => update({ upcoming: e.target.checked }));
-    $("#f-nostudio").addEventListener("change", (e) => update({ noStudio: e.target.checked }));
+    $("#f-specials").addEventListener("change", (e) => update({ specials: e.target.checked }));
     $("#f-weekstart").addEventListener("change", (e) => update({ weekFromToday: e.target.checked }));
     let qTimer;
     $("#f-q").addEventListener("input", (e) => {

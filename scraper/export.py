@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import json
 import logging
+import re
+from collections import Counter
 from datetime import timedelta
 from pathlib import Path
 
-from .normalize import now_utc_iso, today_local
+from .normalize import now_utc_iso, title_norm, today_local
 from .registry import load_venues
 from .store import Store
 
@@ -17,6 +19,44 @@ JSON_OUT = ROOT / "data" / "showtimes.json"
 JS_OUT = ROOT / "site" / "data.js"
 
 DROP_FIELDS = {"scraped_at", "first_seen", "last_seen"}
+
+# "Repertory & specials" hides new films in their regular run. A screening is in a regular run when the film is
+# new (this year or last), it is not a special event, and the same cinema shows it often:
+#   * outside any series: 3+ times (a small single-screen house runs a new film once a day);
+#   * inside a series or festival: 8+ times at 2+ a day. A festival film plays a gala night and then once a day
+#     around town (Behemoth! at NYFF: 8 shows, 1.6 a day); a festival label on a theatrical run does not change
+#     what it is (Fatherland at FLC: 38 shows, 3.8 a day).
+# Old films are never hidden however often they play, and a film without a year is kept.
+RUN_WINDOW_DAYS = 14                  # counts include the last two weeks, so a run's last shows stay hidden
+RUN_SHOWS = 3
+RUN_SHOWS_IN_SERIES = 8
+RUN_DAILY_IN_SERIES = 2.0
+SPECIAL_NOTE = re.compile(r"Q\s*&\s*A|in[- ]person|introduc|conversation|discussion|premiere|preview|"
+                          r"live (?:score|music|musical)|panel|\bwith (?:director|filmmaker)", re.I)
+
+
+def regular_runs(rows: list[dict], recent: list[dict], this_year: int) -> set[str]:
+    """Ids of `rows` that are new films in their regular run (see RUN_SHOWS). `recent` is every stored
+    screening from RUN_WINDOW_DAYS ago on, used to count how often each cinema shows each film."""
+    shows: Counter = Counter()
+    days: dict[tuple, set] = {}
+    for r in recent:
+        k = (r["venue_id"], title_norm(r["title"]))
+        shows[k] += 1
+        days.setdefault(k, set()).add(r["day"])
+    out = set()
+    for r in rows:
+        if not r.get("year") or r["year"] < this_year - 1 or SPECIAL_NOTE.search(r.get("note") or ""):
+            continue
+        k = (r["venue_id"], title_norm(r["title"]))
+        n = shows[k]
+        if r.get("series"):
+            in_run = n >= RUN_SHOWS_IN_SERIES and n / len(days.get(k) or {1}) >= RUN_DAILY_IN_SERIES
+        else:
+            in_run = n >= RUN_SHOWS
+        if in_run:
+            out.add(r["id"])
+    return out
 
 
 def build_payload(store: Store) -> dict:
@@ -39,11 +79,13 @@ def build_payload(store: Store) -> dict:
     known = {v["id"] for v in venues}
 
     since = (today_local() - timedelta(days=1)).isoformat()
+    rows = [r for r in store.screenings_since(since) if r["venue_id"] in known]
+    recent = store.screenings_since((today_local() - timedelta(days=RUN_WINDOW_DAYS)).isoformat())
+    runs = regular_runs(rows, recent, today_local().year)
     screenings, days = [], {}
-    for row in store.screenings_since(since):
-        if row["venue_id"] not in known:
-            continue
+    for row in rows:
         s = {k: v for k, v in row.items() if k not in DROP_FIELDS}
+        s["run"] = row["id"] in runs
         screenings.append(s)
         days.setdefault(s["day"], []).append(s["id"])
 

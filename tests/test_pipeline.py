@@ -95,3 +95,27 @@ def test_dedupe_keeps_one_film_starting_on_two_screens():
     again = dedupe([show("Screen 1", "t/1"), show("Screen 4", "t/4")])
     assert [r.id for r in again] == [r.id for r in rows]                                    # order-independent
     assert len(dedupe([show(None), show("Screen 2")])) == 1         # no screen named twice: the same screening
+
+
+def test_regular_runs_hide_new_films_in_their_run_only():
+    from scraper.export import regular_runs
+
+    def show(i, venue, title, day, year, series=None, note=None):
+        return {"id": f"{venue}-{title}-{i}", "venue_id": venue, "title": title, "day": day, "year": year,
+                "series": series, "note": note}
+    rows = (
+        [show(i, "ff", "Primetime", f"2026-10-{6 + i // 3:02d}", 2026) for i in range(9)]          # first run, no series
+        + [show(i, "county", "Bad Apples", f"2026-10-{6 + i:02d}", 2026) for i in range(3)]       # small house, 1 a day
+        + [show(i, "flc", "Behemoth!", f"2026-10-{2 + i:02d}", 2026, "NYFF") for i in range(8)]   # festival: 1 a day
+        + [show(i, "flc", "Fatherland", f"2026-10-{6 + i // 4:02d}", 2026, "NYFF") for i in range(12)]   # run under a festival label
+        + [show(i, "ff", "Kwaidan", f"2026-10-{6 + i // 4:02d}", 1964) for i in range(12)]          # repertory: never
+        + [show(0, "bam", "Possible Love", "2026-10-07", 2026), show(1, "bam", "Possible Love", "2026-10-08", 2026)]
+        + [show(i, "ff", "Mystery", f"2026-10-{6 + i:02d}", None) for i in range(5)]               # no year: kept
+        + [show(99, "ff", "Primetime", "2026-10-09", 2026, note="Q&A with Lance Oppenheim")]      # special event: kept
+    )
+    hidden = regular_runs(rows, rows, 2026)
+    by = lambda t: {r["id"] in hidden for r in rows if r["title"] == t and not r.get("note")}  # noqa: E731
+    assert by("Primetime") == {True} and by("Bad Apples") == {True} and by("Fatherland") == {True}
+    assert by("Behemoth!") == {False} and by("Kwaidan") == {False} and by("Possible Love") == {False}
+    assert by("Mystery") == {False}
+    assert "ff-Primetime-99" not in hidden
