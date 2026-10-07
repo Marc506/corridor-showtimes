@@ -34,6 +34,10 @@
       <h2 id="day-title" class="day-title"></h2>
     </nav>
 
+    <button id="controls-toggle" class="controls-toggle" type="button" aria-expanded="false" aria-controls="controls"></button>
+
+    <!-- regions, cinemas and filters: always shown on wide screens, folded behind #controls-toggle on phones -->
+    <div id="controls" class="controls">
     <div id="regions" class="regions" role="group" data-i18n-aria="regions" aria-label="区域" hidden></div>
 
     <div class="venue-bar">
@@ -49,6 +53,7 @@
       <label id="f-upcoming-wrap"><input type="checkbox" id="f-upcoming"> <span data-i18n="upcoming">隐藏已开场</span></label>
       <label id="f-weekstart-wrap" hidden><input type="checkbox" id="f-weekstart"> <span data-i18n="fromToday">从今天起</span></label>
       <input id="f-q" type="search" data-i18n-placeholder="search" placeholder="搜索片名 / 导演" autocomplete="off">
+    </div>
     </div>
   </header>
 

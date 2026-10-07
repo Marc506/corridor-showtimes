@@ -241,6 +241,32 @@ body[data-view="list"] main { max-width: 1100px; }
 .timeline.vertical .tl-now-wrap { left: 0; top: 64px; }
 .timeline.vertical .tl-now { top: auto; left: -44px; right: 0; width: auto; height: 2px; }
 .timeline.vertical .tl-now.in-row { left: 0; }
+/* phone: the timeline is its own window that scrolls both ways (cinema names stay on top, hours on the left),
+   fills the screen under the header, and zooms (pinch or −/+; --tlz is the zoom) */
+.timeline.vertical {
+  height: calc(100vh - var(--header-h, 0px) - 20px); height: calc(100dvh - var(--header-h, 0px) - 20px); min-height: 260px;
+  overflow: auto; overscroll-behavior: contain; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch;
+}
+.timeline.vertical .tl-corner { position: sticky; top: 0; z-index: 4; background: var(--card); border-bottom: 1px solid var(--line); }
+/* a wide column (several overlapping films): its name sits at the column's left and stays in view while
+   scrolling sideways, instead of centred somewhere off screen */
+.timeline.vertical .tl-label { justify-content: flex-start; }
+.timeline.vertical .tl-label .vwrap { position: sticky; left: calc(var(--label-w) + 6px); align-items: flex-start; text-align: left; max-width: 150px; }
+.timeline.vertical .tl-block { font-size: calc(12px * clamp(0.8, var(--tlz, 1), 1.25)); }
+.timeline.vertical .tl-time { font-size: calc(10.5px * clamp(0.85, var(--tlz, 1), 1.2)); }
+.timeline.vertical.z-small .tl-block { padding: 2px 3px; }
+.timeline.vertical.z-tiny .tl-block { padding: 1px 2px; font-size: 9.5px; }
+.timeline.vertical.z-tiny .tl-time { display: none; }
+.timeline.vertical.z-tiny .tl-title { -webkit-line-clamp: 6; font-weight: 600; }
+.tl-zoom {
+  position: fixed; right: 14px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20;
+  display: flex; gap: 8px;
+}
+.tl-zoom button {
+  width: 42px; height: 42px; border-radius: 50%; padding: 0; font-size: 22px; line-height: 1;
+  background: var(--card); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+.tl-zoom button:disabled { opacity: 0.35; }
 
 /* ---------- Week ---------- */
 .week { margin-top: 12px; }
@@ -316,8 +342,15 @@ body[data-view="list"] main { max-width: 1100px; }
   .week { overflow-x: auto; }
 }
 
+.controls-toggle { display: none; }
 @media (max-width: 640px) {
   .top { padding: 10px 12px 8px; position: static; }
+  /* regions, cinemas and filters fold behind one button; the date row stays */
+  .controls { display: none; }
+  .top.open .controls { display: block; }
+  .controls-toggle { display: block; width: 100%; text-align: left; font-size: 13px; padding: 6px 10px; color: var(--muted); }
+  .top.open .controls-toggle { margin-bottom: 8px; }
+  .top.open .controls-toggle { border-color: var(--fg); }
   .wk-head { top: 0; }
   .views { margin-left: 0; }
   .filters input[type="search"] { min-width: 0; flex: 1; }

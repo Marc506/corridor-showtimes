@@ -16,6 +16,13 @@
   const DEFAULT_RUNTIME = 100;           // minutes, for blocks without a runtime (dashed border)
   const NARROW = window.matchMedia("(max-width: 640px)");
   const LS_LANG = "cinema.lang";
+  const LS_ZOOM = "cinema.tlzoom";
+  // phone timeline (vertical): pinch or −/+ scales hours and columns; the axis column and the cinema-name
+  // row keep their size so names and times stay readable
+  const ZOOM_MIN = 0.4, ZOOM_MAX = 2, AXIS_W = 44, LABEL_H = 64;
+  const clampZoom = (z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+  let tlZoom = (() => { try { return clampZoom(parseFloat(localStorage.getItem(LS_ZOOM)) || 1); } catch (_) { return 1; } })();
+  let pendingScroll = null;          // where the zoomed timeline should scroll to after its re-render
 
   // ---------- i18n ----------
   const I18N = {
@@ -66,6 +73,7 @@
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
       onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
       upcoming: "隐藏已开场", specials: "非院线电影",
+      controls: (n, total, k) => `筛选 · ${n}/${total} 家影院${k ? ` · ${k} 项` : ""}`, zoomIn: "放大", zoomOut: "缩小",
       fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {
@@ -115,6 +123,7 @@
       views: "Views", timeline: "Timeline", list: "List", week: "Week", dateNav: "Date", pickDate: "Pick a date", venues: "Cinemas",
       onFilm: "On film", subs: "Subtitled / captioned", subsT: "Only screenings you can follow by reading: non-English films (English subtitles), open-caption screenings and silent films",
       upcoming: "Hide started", specials: "Not in wide release",
+      controls: (n, total, k) => `Filters · ${n}/${total} cinemas${k ? ` · ${k} on` : ""}`, zoomIn: "Zoom in", zoomOut: "Zoom out",
       fromToday: "Start today", search: "Search title / director",
     },
   };
@@ -471,6 +480,11 @@
     $("#f-weekstart").checked = state.weekFromToday;
     $("#f-weekstart-wrap").hidden = !week;
     if (document.activeElement !== $("#f-q")) $("#f-q").value = state.q;
+    const inRegions = venuesInRegions();
+    const on = inRegions.filter((v) => state.venues.has(v.id)).length;
+    const k = [state.film, state.subs, state.specials, state.upcoming && !week, !!state.q].filter(Boolean).length;
+    $("#controls-toggle").textContent = t("controls", on, activeVenues.length, k) + " ▾";
+    $("#controls-toggle").setAttribute("aria-expanded", String($(".top").classList.contains("open")));
   }
 
   /** With the subtitle filter on, say how many otherwise-visible screenings were hidden as "language unknown". */
@@ -585,10 +599,11 @@
     const span = t1 - t0;
 
     const vertical = NARROW.matches;
-    const labelW = vertical ? 44 : 160;          // full venue names (wrap to two lines if needed)
+    const z = vertical ? tlZoom : 1;
+    const labelW = vertical ? AXIS_W : 160;      // full venue names (wrap to two lines if needed)
     const avail = Math.max(main.clientWidth - labelW - 8, 400);
-    const ppm = vertical ? 1.15 : Math.max(1.25, avail / span);       // pixels per minute
-    const laneH = vertical ? 78 : 50;                                   // lane thickness
+    const ppm = vertical ? 1.15 * z : Math.max(1.25, avail / span);   // pixels per minute
+    const laneH = vertical ? Math.max(30, Math.round(78 * z)) : 50;     // lane thickness
 
     const byVenue = groupByVenue(list);
     const rows = byVenue.map(([vid]) => {
@@ -638,26 +653,77 @@
       const rowNow = oneZone ? null : nowFor(v.timezone || DEFAULT_TZ);
       const rowNowEl = rowNow != null && rowNow >= t0 && rowNow <= t1
         ? el("div", { class: "tl-now in-row", style: vertical ? `top:${(rowNow - t0) * ppm}px` : `left:${(rowNow - t0) * ppm}px` }) : null;
+      const name = vertical && size < 64 ? (v.short || v.name) : v.name;      // narrow column: the short name
       return el("div", { class: "tl-row", style: `--c:${v.color};` + (vertical ? `width:${size}px` : `height:${size}px`) },
         el("div", { class: "tl-label", title: v.name }, el("span", { class: "sw" }),
-          el("div", { class: "vwrap" }, el("span", { class: "vname" }, v.name), statusBadge(v))),
+          el("div", { class: "vwrap" }, el("span", { class: "vname" }, name), statusBadge(v))),
         el("div", { class: "tl-track", style: vertical ? `height:${span * ppm}px` : `width:${span * ppm}px` }, grid, blocks, rowNowEl));
     });
 
-    const wrap = el("div", { class: "timeline" + (vertical ? " vertical" : ""), style: `--label-w:${labelW}px` },
-      el("div", { class: "tl-inner", style: vertical ? "" : `width:${labelW + span * ppm + 8}px` },
-        el("div", { class: "tl-head" }, el("div", { class: "tl-corner" }), axis),
-        el("div", { class: "tl-body" }, rowEls, nowLine ? el("div", { class: "tl-now-wrap" }, nowLine) : null)));
-    main.replaceChildren(wrap);
+    const zoomCls = !vertical ? "" : z < 0.55 ? " z-tiny" : z < 0.8 ? " z-small" : "";
+    const inner = el("div", { class: "tl-inner", style: vertical ? "" : `width:${labelW + span * ppm + 8}px` },
+      el("div", { class: "tl-head" }, el("div", { class: "tl-corner" }), axis),
+      el("div", { class: "tl-body" }, rowEls, nowLine ? el("div", { class: "tl-now-wrap" }, nowLine) : null));
+    const wrap = el("div", { class: "timeline" + (vertical ? " vertical" : "") + zoomCls, style: `--label-w:${labelW}px;--tlz:${z}` }, inner);
+    const zoomBar = vertical ? el("div", { class: "tl-zoom" },
+      el("button", { type: "button", "aria-label": t("zoomOut"), title: t("zoomOut"), disabled: z <= ZOOM_MIN || null,
+        onclick: () => zoomTimeline(wrap, tlZoom / 1.35) }, "−"),
+      el("button", { type: "button", "aria-label": t("zoomIn"), title: t("zoomIn"), disabled: z >= ZOOM_MAX || null,
+        onclick: () => zoomTimeline(wrap, tlZoom * 1.35) }, "+")) : null;
+    main.replaceChildren(...[wrap, zoomBar].filter(Boolean));
 
-    // start scrolled near "now" (today) or the first screening
-    const focus = (nowMin ?? Math.min(...items.map((i) => i.from))) - 60;
-    if (vertical) {
-      const y = wrap.getBoundingClientRect().top + window.scrollY + (focus - t0) * ppm - 120;
-      if (nowMin != null && window.scrollY === 0) window.scrollTo({ top: Math.max(0, y) });
-    } else {
-      wrap.scrollLeft = Math.max(0, (focus - t0) * ppm);
+    if (vertical && pendingScroll) {                 // re-rendered by a zoom: keep the same spot under the fingers
+      wrap.scrollLeft = pendingScroll.x;
+      wrap.scrollTop = pendingScroll.y;
+      pendingScroll = null;
+    } else {                                         // start near "now" (today) or the first screening
+      const focus = (nowMin ?? Math.min(...items.map((i) => i.from))) - 60;
+      if (vertical) wrap.scrollTop = Math.max(0, (focus - t0) * ppm);
+      else wrap.scrollLeft = Math.max(0, (focus - t0) * ppm);
     }
+    if (vertical) pinchToZoom(wrap, inner);
+  }
+
+  /** Re-render the phone timeline at zoom `z`, keeping the content point `at` (default: the middle of the
+   *  view) where it is on screen. The axis column and the name row don't scale. */
+  function zoomTimeline(box, z, at) {
+    const old = tlZoom;
+    tlZoom = clampZoom(z);
+    try { localStorage.setItem(LS_ZOOM, String(tlZoom)); } catch (_) { /* ignore */ }
+    const k = tlZoom / old;
+    const a = at || { cx: box.clientWidth / 2, cy: box.clientHeight / 2 };
+    const x = box.scrollLeft + a.cx, y = box.scrollTop + a.cy;
+    pendingScroll = { x: Math.max(0, AXIS_W + (x - AXIS_W) * k - a.cx), y: Math.max(0, LABEL_H + (y - LABEL_H) * k - a.cy) };
+    render();
+  }
+
+  /** Two-finger pinch on the phone timeline: scale the drawing live, then re-render at the new zoom. */
+  function pinchToZoom(box, inner) {
+    let g = null;
+    const span = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) || 1;
+    box.addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 2) return;
+      const r = box.getBoundingClientRect();
+      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
+      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+      g = { d: span(e.touches), cx, cy, f: 1 };
+      inner.style.transformOrigin = `${box.scrollLeft + cx}px ${box.scrollTop + cy}px`;
+    }, { passive: true });
+    box.addEventListener("touchmove", (e) => {
+      if (!g || e.touches.length !== 2) return;
+      e.preventDefault();
+      g.f = clampZoom(tlZoom * span(e.touches) / g.d) / tlZoom;
+      inner.style.transform = `scale(${g.f})`;
+    }, { passive: false });
+    const end = (e) => {
+      if (!g || e.touches.length >= 2) return;
+      const done = g;
+      g = null;
+      if (Math.abs(done.f - 1) < 0.03) { inner.style.transform = ""; return; }
+      zoomTimeline(box, tlZoom * done.f, done);
+    };
+    box.addEventListener("touchend", end);
+    box.addEventListener("touchcancel", end);
   }
 
   // ---------- List ----------
@@ -1000,6 +1066,7 @@
     $("#date-input").addEventListener("change", (e) => validDay(e.target.value) && update({ day: e.target.value, hl: "" }));
     $("#select-all").addEventListener("click", selectAll);
     $("#customize").addEventListener("click", openGuide);
+    $("#controls-toggle").addEventListener("click", () => { $(".top").classList.toggle("open"); renderHeader(); });
     $("#customize-dialog").addEventListener("click", (e) => { if (e.target.id === "customize-dialog") e.target.close(); });
     $("#lang-toggle").addEventListener("click", () => setLang(LANG === "zh" ? "en" : "zh"));
     document.querySelectorAll("#views button").forEach((b) =>
