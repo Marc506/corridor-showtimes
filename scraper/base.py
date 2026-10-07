@@ -223,15 +223,15 @@ class BaseScraper:
         """Optional: fill director/year/runtime from detail pages (see detail_info). Never fatal."""
 
     # --- detail-page cache ------------------------------------------------------------
-    def detail_info(self, url: str, parse_detail) -> dict | None:
-        """Return parse_detail(html) for a detail page, GETting it at most once per DETAIL_TTL.
+    def detail_info(self, url: str, parse_detail, ttl: timedelta = DETAIL_TTL) -> dict | None:
+        """Return parse_detail(html) for a detail page, GETting it at most once per `ttl` (default DETAIL_TTL).
 
         Raw HTML is cached under data/cache/<venue>/ (not the parsed dict), so parser fixes
         apply to cached pages immediately. Raises RateLimited so the caller can stop enriching.
         """
         import hashlib
         path = CACHE_DIR / self.venue.id / (hashlib.sha1(url.encode()).hexdigest()[:16] + ".html")
-        fresh = path.exists() and time.time() - path.stat().st_mtime < DETAIL_TTL.total_seconds()
+        fresh = path.exists() and time.time() - path.stat().st_mtime < ttl.total_seconds()
         if fresh:
             html = path.read_text(encoding="utf-8")
         else:
@@ -253,14 +253,16 @@ class BaseScraper:
             log.exception("[%s] could not parse detail page %s", self.venue.id, url)
             return None
 
-    def enrich_by_url(self, screenings: list[Screening], parse_detail, fields=("director", "year", "runtime_min")) -> None:
-        """Common enrich(): one detail GET per distinct detail_url, copy missing fields, derive `end`."""
+    def enrich_by_url(self, screenings: list[Screening], parse_detail, fields=("director", "year", "runtime_min"),
+                      ttl=None) -> dict[str, dict]:
+        """Common enrich(): one detail GET per distinct detail_url, copy missing fields, derive `end`.
+        `ttl(url)` may give a page a shorter cache life than DETAIL_TTL. Returns {detail_url: parsed info}."""
         from .normalize import end_from_runtime, parse_iso
         urls = list(dict.fromkeys(s.detail_url for s in screenings if s.detail_url))
         info: dict[str, dict] = {}
         for url in urls:
             try:
-                data = self.detail_info(url, parse_detail)
+                data = self.detail_info(url, parse_detail, ttl(url) if ttl else DETAIL_TTL)
             except RateLimited as e:
                 log.warning("[%s] %s — stop enriching", self.venue.id, e)
                 break
@@ -273,6 +275,7 @@ class BaseScraper:
                     setattr(s, f, data[f])
             if s.end is None and s.runtime_min:
                 s.end = end_from_runtime(parse_iso(s.start, self.tz), s.runtime_min)
+        return info
 
     # --- helpers --------------------------------------------------------------------
     transport: str = "httpx"             # "curl" for WAFs that reject Python's TLS (see HttpClient)

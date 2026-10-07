@@ -34,7 +34,9 @@ GET https://www.bam.org/api/BAMApi/GetCalendarEventsByDayWithOnGoing?start=9/24/
 - `detail_url = "https://www.bam.org" + moreLink`，`ticket_url = buyLink`。
 - 导演 / 年份 / 时长不在 API 里。可选增强：GET `moreLink` 详情页，页面里有 JSON‑LD `{"graph":[{"@type":"Event","startDate","endDate","location":{"name":"BAM Rose Cinemas at BAM KBH"}}]}`，`runtime = endDate - startDate`；`<h2>RUNNING TIME</h2>` 后面是 "126min"。每部片只请求一次并按 `moreLink` 缓存。
 
-**实测补充（2026‑09‑24）**：详情页纯文本里 `Directed by X\n(2026)`、`Part of\nSeries`、`RUNNING TIME\n106min`、`FORMAT\nDCP` 都能取到，已在 `enrich()` 里接入；"BAM Film 2026" 这种泛化系列名丢弃。详情页 HTML 缓存在 `data/cache/bam/`，7 天内不重复请求。
+**实测补充（2026‑09‑24）**：详情页纯文本里 `Directed by X\n(2026)`、`Part of\nSeries`、`RUNNING TIME\n106min`、`FORMAT\nDCP` 都能取到，已在 `enrich()` 里接入；"BAM Film 2026" 这种泛化系列名丢弃。详情页 HTML 缓存在 `data/cache/bam/`，7 天内不重复请求；三天内开场的片每天重新取一次，因为日程和嘉宾常在最后几天才补上。
+
+**实测补充（2026‑10‑07，一整天的活动）**：日历 API 里一场「12:01pm」的 Black Women's Film Conference，详情页简介里才有 `Schedule:` 日程——时间一行（`12pm`、`12:15 pm`、`1:45pm`），下面是这一段的内容，电影段和开场致辞、对谈、休息、Town Hall 交替。活动只有一场（`performances` 只有一个）、日程第一段离这场开场不超过 90 分钟、时间往后排时，拆成每个电影段一条：电影行带导演（`Heat dir. Aicha Cherif`、`dir` 也可能不带点）或年份（`Boyant (2008)`），没有这两样的段（致辞、对谈、休息）不收。一段只有一部片时用片名；多部片（短片合集）用活动名去掉主办方（「New Negress Film Society presents」），每部片和段名（`The Works of Akosua Adoma Owusu`，同时据此填导演）写进备注。每段到下一段开始时结束，系列是原活动名。
 
 ---
 
