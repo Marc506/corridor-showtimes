@@ -1,0 +1,37 @@
+generated_by: scraper.add
+fetched_at: '2026-10-07T13:56:03Z'
+pages:
+- file: page_0.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261007&field_venue_target_id=43542
+- file: page_1.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261008&field_venue_target_id=43542
+- file: page_2.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261009&field_venue_target_id=43542
+- file: page_3.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261010&field_venue_target_id=43542
+- file: page_4.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261011&field_venue_target_id=43542
+- file: page_5.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261012&field_venue_target_id=43542
+- file: page_6.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261013&field_venue_target_id=43542
+- file: page_7.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261014&field_venue_target_id=43542
+- file: page_8.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261015&field_venue_target_id=43542
+- file: page_9.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261016&field_venue_target_id=43542
+- file: page_10.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261017&field_venue_target_id=43542
+- file: page_11.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261018&field_venue_target_id=43542
+- file: page_12.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261019&field_venue_target_id=43542
+- file: page_13.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261020&field_venue_target_id=43542
+- file: page_14.json
+  url: https://www.screenslate.com/api/screenings/date?_format=json&date=20261021&field_venue_target_id=43542
+- file: page_15.json
+  url: https://www.screenslate.com/api/screenings/id/109655+109654+109650+109646+109647+109656+109649+109400?_format=json
+- file: page_16.html
+  url: https://www.paristheaternyc.com/

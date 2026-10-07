@@ -1,8 +1,8 @@
-# Corridor Showtimes（按你关注的影院聚合排片，默认收录波士顿、纽约、费城的 20 家艺术影院）
+# Corridor Showtimes（按你关注的影院聚合排片，默认收录波士顿、纽约、费城的 21 家艺术影院）
 
 [English](README.md) · 在线版：**https://marc506.github.io/corridor-showtimes/**
 
-每天自动抓取 20 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
+每天自动抓取 21 家影院的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
 
 | 影院 | 数据来源 |
 |---|---|
@@ -14,6 +14,7 @@
 | Metrograph | 网页（每次只请求一次，站点按 IP 限速） |
 | L'Alliance New York | 网页（列表 + 每场详情页） |
 | MoMA | 浏览器（Cloudflare），通常回退到 screenslate |
+| Paris Theater | screenslate（售票站被 Cloudflare 挡住）+ 官网首页里的特别活动（映后谈、导读） |
 | Philadelphia Film Society | 售票系统 Agile Ticketing 的公开 feed |
 | Landmark Ritz Five（费城）、Landmark Kendall Square（波士顿 Cambridge） | 网站自己的公开排片接口（Webedia 平台，全美连锁按影院编号各取一家；向导自动识别） |
 | Lightbox Film Center（费城） | Wix 网站页面里内嵌的活动数据（票在 Ticketleap 卖；放映地点不固定，每场记自己的场地） |

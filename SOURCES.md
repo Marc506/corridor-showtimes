@@ -495,3 +495,14 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 - 片名用 `FilmTitle`（`ShortFilmTitle` 截到 20 个字），去掉结尾的规格（"Aliens 70mm" → "Aliens"，规格 70mm）。场次标记 `PerfFlagsDescription`：35mm / 70mm / 4K 是规格，"Open Captions" 是开放字幕备注。`SoldOutLevel` 不是 N 时记 Sold out；`PerformancesHidden` / `Virtual` 为 Y 的跳过。影片页按网站脚本的规则拼：`/production/<FilmTitle 的 slug>/`。
 - **`Directors` 不可信**：混进了别的片的人（"The Blues Brothers: Derek Drymon|John Landis"、1925 年 "The Phantom of the Opera: Johannes Roberts|Norman Jewison"），所以不用。改用 `IMDBCode`：`Screening.imdb_id` → TMDB `/find/{imdb_id}`，一部片一个确定的匹配，导演、年份、片长、语言都从那里来（`language.by_imdb`，缓存键 `imdb:<id>`）。没有 IMDb 号的片照常按片名查。
 - `/calendar`（重映日历）和 `/events`（音乐会、现场活动）不读：前者的场次都在 feed 里，后者不是电影。地址：55 Davis Square, Somerville。
+
+---
+
+## 16. Paris Theater（纽约）— screenslate + 官网首页的特别活动
+
+2026‑10‑07 实测。Netflix 经营的单厅影院。官网（`paristheaternyc.com`，Next.js）只有影片介绍和特别活动；常规场次在售票站 `tickets.paristheaternyc.com`，对程序返回 Cloudflare 拦截页（403），**不绕过**。
+
+- 常规场次读 screenslate（nid 43542），它只排到几天之后。
+- 官网首页的 RSC 数据（`self.__next_f.push([1,"…"])` 里的 JSON 字符串）带着几周后的特别活动：`{"EventName":"LA BOLA NEGRA | Sneak Preview + Q&A …","EventDate":"2026-10-15","TicketLink":"https://tickets.paristheaternyc.com/order/showtimes/2001-3093/seats","EventTime":"7:05 PM"}`。活动名是大写、不带年份；同一份数据里有影片记录 `{"FilmName":"A Place in the Sun","Slug":"a-place-in-the-sun-paris","Director":"George Stevens",…,"Year":"1951"}`，用它补片名写法、导演、年份和影片页（`/film/<slug>`）——没有年份时 TMDB 会配成 2024 年的同名丹麦片。
+- 合并：screenslate 也列出的活动（开场相差 10 分钟内、同一部片）只补备注和购票链接，其余追加。所有场次算这家影院的主源（不显示 "via screenslate"）。模块 `scraper/sources/paris.py`，每次约 30 个 screenslate 请求加 1 个首页请求。地址：4 W 58th St。
+

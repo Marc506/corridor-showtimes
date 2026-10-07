@@ -1,12 +1,12 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with twenty art-house and repertory cinemas in Boston, New York and Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with twenty-one art-house and repertory cinemas in Boston, New York and Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows twenty along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
-MoMA, Japan Society, L'Alliance New York, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, and the Renew Theaters' Hiway, County and Ambler theaters. It refreshes twice a
+follows twenty-one along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+MoMA, Japan Society, L'Alliance New York, the Paris Theater, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, and the Renew Theaters' Hiway, County and Ambler theaters. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
 often lag behind the cinemas' own schedules.
@@ -121,6 +121,7 @@ it said last. The assistant can write that text for you — ask it to.
 | Metrograph | One HTML page, ~4 weeks | **Rate-limits by IP**: exactly one request per run, stop on 429/403, cooldown before retrying |
 | L'Alliance New York | Event cards + detail pages | Cards carry no times; per-film notes are scoped to the date they mention |
 | MoMA | Headless browser (Playwright) | Cloudflare managed challenge. When it doesn't pass, the fallback source is used; the site's protection is never circumvented |
+| Paris Theater | screenslate, plus the special events embedded in the theatre's own home page | Its ticketing site blocks programs (Cloudflare), so the schedule comes from screenslate; Q&As and introductions weeks ahead come from the site, completed with each film's year and director |
 | Philadelphia Film Society | **Agile Ticketing public event feed** | The website blocks all automated clients; their ticketing provider publishes an official JSON feed covering all three theaters |
 | Landmark Ritz Five (Philadelphia), Landmark Kendall Square (Cambridge) | **The site's own JSON schedule** (Webedia platform) | The page renders showtimes in the browser; the same public endpoints the page calls are read directly. The chain lists ~26 US theaters; each cinema here is one theater id, found by the add-a-cinema wizard |
 | Lightbox Film Center (Philadelphia) | **Wix Events data embedded in the site's page** | A Wix site: the page ships its event list as JSON. Tickets are sold on Ticketleap, so Wix's own "sold out" flag is ignored; screenings move between venues, so each one keeps its own place |
