@@ -306,3 +306,24 @@ venues:
     fallback: null
     horizon_days: 45
     rate_limit_s: 2
+
+  # ---- Reference only: scraped and stored, never shown on the page. A commercial chain's schedule tells which new
+  # films are in wide release, for the "Limited screenings" filter (scraper/export.py, regular_runs). One request
+  # per city covers every Alamo there.
+  - id: ref-alamo-nyc
+    name: Alamo Drafthouse NYC (reference)
+    region: NYC
+    reference: true
+    source: {adapter: alamo, market: nyc}
+    fallback: null
+    horizon_days: 21
+    rate_limit_s: 2
+
+  - id: ref-alamo-boston
+    name: Alamo Drafthouse Boston (reference)
+    region: BOS
+    reference: true
+    source: {adapter: alamo, market: boston}
+    fallback: null
+    horizon_days: 21
+    rate_limit_s: 2

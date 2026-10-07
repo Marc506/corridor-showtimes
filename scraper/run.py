@@ -114,7 +114,7 @@ def run_venue(venue: VenueConfig, store: Store | None, client: HttpClient, dry_r
     elif status.status != "ok" and primary_result == "skipped":
         status.error = why
 
-    if screenings:
+    if screenings and not venue.reference:          # a reference chain is only counted, never shown
         fill_languages(screenings, venue, tmdb, hints)
         # directors TMDB couldn't give (FLC lists none; multi-film programmes): screenslate's editors list
         # them; a director found there then lets TMDB confirm the film and add its runtime / language

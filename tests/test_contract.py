@@ -41,5 +41,6 @@ def test_contract(venue, directory, manifest):
 
 
 def test_every_enabled_venue_has_a_fixture():
-    missing = [v.id for v in load_venues(VENUES_FILE) if v.enabled and not has_fixture(FIXTURES / v.id)]
+    # reference chains are never shown; their adapter is covered by tests/fixtures/platforms (alamo)
+    missing = [v.id for v in load_venues(VENUES_FILE) if v.enabled and not v.reference and not has_fixture(FIXTURES / v.id)]
     assert not missing, f"no tests/fixtures/<id>/fixture.yaml for: {missing}"

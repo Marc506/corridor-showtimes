@@ -72,8 +72,8 @@
       // static page text (index.html data-i18n keys)
       views: "视图", timeline: "时间轴", list: "列表", week: "周", dateNav: "日期", pickDate: "选择日期", venues: "影院",
       onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
-      upcoming: "隐藏已开场", specials: "非院线电影",
-      controls: (n, total, k) => `筛选 · ${n}/${total} 家影院${k ? ` · ${k} 项` : ""}`, zoomIn: "放大", zoomOut: "缩小",
+      upcoming: "隐藏已开场", specials: "限定放映",
+      controls: (n, total, k) => `筛选 · ${n}/${total} 家影院${k ? ` · ${k} 项` : ""}`, wkNotYet: (l) => `未公布：${l}`, wkNothing: "所选影院这天没有场次", zoomIn: "放大", zoomOut: "缩小",
       fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {
@@ -122,8 +122,8 @@
       source: "Source code", switchTo: "中文", switchToT: "切换到中文",
       views: "Views", timeline: "Timeline", list: "List", week: "Week", dateNav: "Date", pickDate: "Pick a date", venues: "Cinemas",
       onFilm: "On film", subs: "Subtitled / captioned", subsT: "Only screenings you can follow by reading: non-English films (English subtitles), open-caption screenings and silent films",
-      upcoming: "Hide started", specials: "Not in wide release",
-      controls: (n, total, k) => `Filters · ${n}/${total} cinemas${k ? ` · ${k} on` : ""}`, zoomIn: "Zoom in", zoomOut: "Zoom out",
+      upcoming: "Hide started", specials: "Limited screenings",
+      controls: (n, total, k) => `Filters · ${n}/${total} cinemas${k ? ` · ${k} on` : ""}`, wkNotYet: (l) => `Not yet listed: ${l}`, wkNothing: "Nothing at the selected cinemas", zoomIn: "Zoom in", zoomOut: "Zoom out",
       fromToday: "Start today", search: "Search title / director",
     },
   };
@@ -325,7 +325,7 @@
     if (state.film && !FILM_FORMATS.has(s.format)) return false;
     if (state.subs && !ignoreSubs && needsNoEnglish(s) !== true) return false;
     if (state.upcoming && s.day === todayKey() && new Date(s.start) < now) return false;
-    if (state.specials && s.run) return false;        // "Not in wide release": hides new films that opened widely (scraper/export.py)
+    if (state.specials && s.run) return false;        // "Limited screenings": hides new films that opened widely (scraper/export.py)
     if (state.q) {
       const q = fold(state.q);
       if (!fold(s.title).includes(q) && !fold(s.director).includes(q) && !fold(s.series).includes(q)) return false;
@@ -871,6 +871,28 @@
       }
     }
     if (!total) return main.replaceChildren(renderEmpty(t("weekEmpty")));
+    const filmButton = (d, title, e) => el("button", {
+      class: "wk-film" + (e.onfilm ? " onfilm" : ""),
+      title: t("weekFilmT", title, e.count),
+      onclick: () => update({ view: "timeline", day: d, hl: title }),
+    }, title, e.count > 1 ? el("span", { class: "n" }, ` ×${e.count}`) : null);
+    const byStart = (m) => [...m.entries()].sort((a, b) => Date.parse(a[1].first) - Date.parse(b[1].first));
+
+    if (NARROW.matches) {
+      // phone: one block per day, a line per cinema (short name, then its films) — scrolls only downwards
+      return main.replaceChildren(el("div", { class: "week wkm" }, days.filter((d) => d >= today || venues.some((v) => cells[v.id]?.[d])).map((d) => {
+        const lines = venues.filter((v) => cells[v.id]?.[d]).map((v) =>
+          el("div", { class: "wkm-venue", style: `--c:${v.color}` },
+            el("span", { class: "wkm-name", title: v.name }, el("span", { class: "sw" }), v.short || v.name),
+            el("div", { class: "wkm-films" }, byStart(cells[v.id][d]).map(([title, e]) => filmButton(d, title, e)))));
+        const notYet = venues.filter((v) => !cells[v.id]?.[d] && (!v.horizon_end || d > v.horizon_end)).map((v) => v.short || v.name);
+        return el("section", { class: "wkm-day" + (d === today ? " today" : "") },
+          el("button", { class: "wkm-head", title: t("openDayT"), onclick: () => update({ view: "timeline", day: d, hl: "" }) },
+            fmtWeekHead.format(dayDate(d)), d === today ? t("todaySuffix") : ""),
+          lines.length ? lines : el("div", { class: "wk-none" }, t("wkNothing")),
+          notYet.length ? el("div", { class: "wkm-notyet" }, t("wkNotYet", notYet.join(" · "))) : null);
+      })));
+    }
 
     const head = el("div", { class: "wk-row wk-head" }, el("div", { class: "wk-venue" }),
       days.map((d) => el("button", {
@@ -887,12 +909,7 @@
           const m = cells[v.id]?.[d];
           const beyond = v.horizon_end && d > v.horizon_end;
           return el("div", { class: "wk-cell" + (d === today ? " today" : "") + (beyond ? " beyond" : "") },
-            m ? [...m.entries()].sort((a, b) => Date.parse(a[1].first) - Date.parse(b[1].first)).map(([title, e]) =>
-              el("button", {
-                class: "wk-film" + (e.onfilm ? " onfilm" : ""),
-                title: t("weekFilmT", title, e.count),
-                onclick: () => update({ view: "timeline", day: d, hl: title }),
-              }, title, e.count > 1 ? el("span", { class: "n" }, ` ×${e.count}`) : null))
+            m ? byStart(m).map(([title, e]) => filmButton(d, title, e))
               : el("span", { class: "wk-none" }, beyond || !hasData ? t("notAnnounced") : "—"));
         }));
     });
@@ -1095,7 +1112,7 @@
       if (e.key === "ArrowRight") step(1);
     });
     let resizeTimer;
-    const rerender = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => state.view === "timeline" && render(), 150); };
+    const rerender = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => (state.view === "timeline" || state.view === "week") && render(), 150); };
     window.addEventListener("resize", rerender);
     NARROW.addEventListener("change", rerender);
     // sticky sub-headers (week day row) sit just below the sticky page header

@@ -25,6 +25,7 @@ class Screening:
     detail_url: str | None = None
     ticket_url: str | None = None
     imdb_id: str | None = None      # "tt0090605" when the cinema publishes it: an exact TMDB match
+    streaming: bool | None = None   # a new film that reaches streaming within two weeks of opening (TMDB release dates)
     source: str = "primary"         # "primary" | the fallback adapter's name ("screenslate")
     scraped_at: str = ""            # ISO UTC
 
@@ -67,6 +68,8 @@ class VenueConfig:
     max_requests_per_run: int = 20
     allow_empty: bool = False
     default_language: str | None = None    # last resort when neither the site nor TMDB says
+    reference: bool = False                # scraped and stored, never shown: a commercial chain that tells which
+                                           # new films are in wide release (export.regular_runs)
     location: dict | None = None           # {name?, address?, geo: [lat, lon]?, places: [...]} for calendar events
     city: str | None = None                # v1 alias of region
     extra: dict = field(default_factory=dict)

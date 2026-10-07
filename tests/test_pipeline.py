@@ -127,3 +127,35 @@ def test_regular_runs_hide_new_films_in_their_run_only():
     assert by("Tony (2026)") == {True} and by("Tony") == {True}
     assert by("My Undesirable Friends") == {False}             # a run at a single cinema: an exclusive, kept
     assert "ff-Primetime-99" not in hidden
+
+
+def test_regular_runs_reference_chain_and_streaming():
+    from scraper.export import regular_runs
+
+    def show(i, venue, title, day, year=2026, **kw):
+        return {"id": f"{venue}-{title}-{i}", "venue_id": venue, "title": title, "day": day, "year": year, **kw}
+    days = [f"2026-10-{d:02d}" for d in range(6, 13)]
+    rows = (
+        [show(i, "bam", "Naza", days[i % 7]) for i in range(10)]                    # one cinema here...
+        + [show(i, "bam", "Cameron Winter at Carnegie Hall", days[i % 7]) for i in range(10)]
+        + [show(i, "kendall", "Animals", days[i % 7], streaming=True) for i in range(10)]   # Netflix, same day
+        + [show(i, "ff", "My Undesirable Friends", days[i % 7]) for i in range(10)]
+    )
+    chain = ([show(i, "ref-alamo", "Naza", days[i % 7], None) for i in range(12)]          # ...but a run at the chain
+             + [show(i, "ref-alamo", "Cameron Winter at Carnegie Hall", days[0], None) for i in range(2)])  # a special
+    hidden = regular_runs(rows, rows + chain, 2026, {"ref-alamo"})
+    by = lambda t: {r["id"] in hidden for r in rows if r["title"] == t}  # noqa: E731
+    assert by("Naza") == {True} and by("Animals") == {True}
+    assert by("Cameron Winter at Carnegie Hall") == {False} and by("My Undesirable Friends") == {False}
+
+
+def test_reference_venues_are_never_exported(tmp_path, monkeypatch):
+    from scraper import export as E
+    from scraper.models import VenueConfig
+    monkeypatch.setattr(E, "load_venues", lambda: [
+        VenueConfig(id="ff", name="Film Forum", source={"adapter": "custom", "module": "filmforum"}),
+        VenueConfig(id="ref", name="Chain", reference=True, source={"adapter": "alamo", "market": "nyc"})])
+    store = Store(tmp_path / "db.sqlite")
+    payload = E.build_payload(store)
+    assert [v["id"] for v in payload["venues"]] == ["ff"]
+

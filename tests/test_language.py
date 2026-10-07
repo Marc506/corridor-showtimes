@@ -332,3 +332,13 @@ def test_imdb_id_from_the_cinema_is_an_exact_match():
     assert (rows[0].language, rows[0].director, rows[0].year, rows[0].runtime_min) == ("English", "John Landis", 1980, 133)
     assert "/search/movie" not in tmdb.calls                   # never fell back to a title search
     assert rows[1].language is None and rows[1].director is None
+
+
+def test_day_and_date_streaming_release():
+    def us(*pairs):
+        return {"results": [{"iso_3166_1": "US", "release_dates": [{"type": t, "release_date": f"{d}T00:00:00.000Z"} for t, d in pairs]}]}
+    assert L.day_and_date(us((2, "2026-10-09"), (4, "2026-10-09")))            # Animals: select theaters + Netflix
+    assert not L.day_and_date(us((3, "2026-10-02"), (4, "2027-01-15")))       # a theatrical window first
+    assert not L.day_and_date(us((3, "2026-10-02")))
+    assert not L.day_and_date({"results": [{"iso_3166_1": "FR", "release_dates": [{"type": 4, "release_date": "2026-10-02"}]}]})
+

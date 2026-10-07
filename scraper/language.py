@@ -14,7 +14,7 @@ import logging
 import os
 import re
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import httpx
@@ -29,6 +29,8 @@ TOKEN_FILE = ROOT / "config" / "tmdb_token.txt"
 CACHE_FILE = ROOT / "data" / "cache" / "tmdb.json"
 API = "https://api.themoviedb.org/3"
 MISS_TTL = timedelta(days=14)
+STREAMING_GAP = timedelta(days=14)   # digital release this soon after opening: a streaming film with a theatrical window
+FACTS_TTL = timedelta(days=7)        # a new film's release dates fill in over time: refresh its facts weekly
 CACHE_VERSION = 4                  # 4: + the prominent one of several same-title films from this year
 MIN_INTERVAL_S = 0.06              # TMDB allows ~50 req/s; stay far below
 
@@ -157,8 +159,8 @@ class TmdbLanguage:
             lang, tmdb_id, sure, rel_year = self._find(q, year, director)
             hit = {"lang": lang, "id": tmdb_id, "sure": sure, "year": rel_year, "at": now.isoformat()}
             self.cache["films"][key] = hit
-        if hit.get("sure") and hit.get("id") and ("directors" not in hit or "runtime" not in hit):
-            hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
+        if hit.get("sure") and hit.get("id") and self._facts_stale(hit):
+            hit.update(self._film_facts(hit["id"]))
         return hit if hit.get("lang") else None
 
     def by_imdb(self, imdb_id: str) -> dict | None:
@@ -176,21 +178,33 @@ class TmdbLanguage:
             hit = {"lang": self.language_name(code) if code else None, "id": m.get("id"), "sure": bool(m),
                    "year": int(year) if year.isdigit() else None, "at": now.isoformat()}
             self.cache["films"][key] = hit
-        if hit.get("id") and ("directors" not in hit or "runtime" not in hit):
-            hit["directors"], hit["runtime"] = self._film_facts(hit["id"])
+        if hit.get("id") and self._facts_stale(hit):
+            hit.update(self._film_facts(hit["id"]))
         return hit if hit.get("lang") else None
 
-    def _film_facts(self, movie_id: int) -> tuple[list[str], int | None]:
-        """Directors and runtime (minutes) in one request: /movie/{id}?append_to_response=credits."""
+    @staticmethod
+    def _facts_stale(hit: dict) -> bool:
+        """Never fetched; or a recent film (this year or last) without release dates, or with dates a week old."""
+        if "directors" not in hit or "runtime" not in hit:
+            return True
+        if (hit.get("year") or 0) < today_local().year - 1:
+            return False
+        at = hit.get("facts_at")
+        return "streaming" not in hit or not at or datetime.now(timezone.utc) - datetime.fromisoformat(at) > FACTS_TTL
+
+    def _film_facts(self, movie_id: int) -> dict:
+        """One request (/movie/{id}?append_to_response=credits,release_dates): directors, runtime (minutes),
+        and whether the film reached streaming within STREAMING_GAP of its US theatrical opening."""
         try:
-            d = self._get(f"/movie/{movie_id}", append_to_response="credits")
+            d = self._get(f"/movie/{movie_id}", append_to_response="credits,release_dates")
         except Exception as e:  # noqa: BLE001 — best effort; retried next run (keys stay absent)
             log.warning("TMDB film details unavailable for %s (%s)", movie_id, e)
             raise
         crew = (d.get("credits") or {}).get("crew", [])
         directors = list(dict.fromkeys(c["name"] for c in crew if c.get("job") == "Director" and c.get("name")))
         runtime = d.get("runtime") or None                 # TMDB uses 0 for "unknown"
-        return directors, (runtime if runtime and 1 <= runtime <= 900 else None)
+        return {"directors": directors, "runtime": runtime if runtime and 1 <= runtime <= 900 else None,
+                "streaming": day_and_date(d.get("release_dates")), "facts_at": datetime.now(timezone.utc).isoformat()}
 
     def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None, bool, int | None]:
         results = self._get("/search/movie", query=q, include_adult="false").get("results", [])
@@ -268,6 +282,20 @@ def title_hints(rows) -> dict[str, tuple[int | None, str | None]]:
     return hints
 
 
+def day_and_date(release_dates: dict | None) -> bool:
+    """US release dates (TMDB types: 2 limited theatrical, 3 theatrical, 4 digital): a digital release within
+    STREAMING_GAP of the first theatrical one is a streaming film shown briefly in cinemas (Netflix's Animals:
+    select theaters and Netflix the same day)."""
+    us = next((r for r in (release_dates or {}).get("results") or [] if r.get("iso_3166_1") == "US"), None)
+    if not us:
+        return False
+    def when(types):
+        dates = [x.get("release_date", "")[:10] for x in us.get("release_dates") or [] if x.get("type") in types]
+        return min((date.fromisoformat(d) for d in dates if d), default=None)
+    theatrical, digital = when({2, 3}), when({4})
+    return bool(theatrical and digital and digital - theatrical <= STREAMING_GAP)
+
+
 def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLanguage | None,
                    hints: dict | None = None) -> None:
     """Fill missing film info in place.
@@ -287,7 +315,8 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
         elif s.language:
             stats["site"] += 1
         info = None
-        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director or not s.runtime_min):
+        recent = (s.year or today_local().year) >= today_local().year - 1   # a possible new release: streaming?
+        if tmdb and not tmdb.disabled and not opera and (not s.language or not s.director or not s.runtime_min or recent):
             year, director = s.year, s.director
             if not year and hints:
                 q = search_title(s.title)
@@ -302,6 +331,8 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                     memo[k] = None
             info = memo[k]
         if info and info.get("sure"):
+            if recent and "streaming" in info:
+                s.streaming = info["streaming"]
             if not s.director and info.get("directors"):
                 s.director = ", ".join(info["directors"][:3])
                 stats["director"] = stats.get("director", 0) + 1

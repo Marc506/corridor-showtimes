@@ -21,6 +21,8 @@ def _write(tmp_path, text):
 
 def test_every_public_venue_has_an_address_and_coordinates():
     for v in load_venues(VENUES_FILE):
+        if v.reference:                                   # never shown, never added to a calendar
+            continue
         loc = v.location or {}
         assert loc.get("address") and len(loc.get("geo") or []) == 2, v.id
         for place in loc.get("places", []):
