@@ -86,6 +86,12 @@ def build_payload(store: Store) -> dict:
     venues = []
     configured = load_venues()
     reference = {v.id for v in configured if v.reference}
+    # the page lists cinemas city by city, cities in the order they first appear in venues.yaml, so a cinema
+    # appended later (scraper.add writes at the end) still joins its own city's group
+    first_seen: dict[str, int] = {}
+    for i, v in enumerate(configured):
+        first_seen.setdefault(v.region, i)
+    configured = sorted(configured, key=lambda v: first_seen[v.region])
     for v in configured:
         if v.reference:
             continue

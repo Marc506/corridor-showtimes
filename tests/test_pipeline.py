@@ -159,3 +159,17 @@ def test_reference_venues_are_never_exported(tmp_path, monkeypatch):
     payload = E.build_payload(store)
     assert [v["id"] for v in payload["venues"]] == ["ff"]
 
+
+
+def test_exported_venues_are_grouped_by_city(tmp_path, monkeypatch):
+    """A cinema appended at the end of venues.yaml still sits with the rest of its city on the page."""
+    from scraper import export as E
+    from scraper.models import VenueConfig
+    src = {"adapter": "custom", "module": "x"}
+    monkeypatch.setattr(E, "load_venues", lambda: [
+        VenueConfig(id="ff", name="Film Forum", region="NYC", source=src),
+        VenueConfig(id="pfs", name="PFS", region="PHL", source=src),
+        VenueConfig(id="brattle", name="Brattle", region="BOS", source=src),
+        VenueConfig(id="paris", name="Paris", region="NYC", source=src)])
+    payload = E.build_payload(Store(tmp_path / "db.sqlite"))
+    assert [v["id"] for v in payload["venues"]] == ["ff", "paris", "pfs", "brattle"]

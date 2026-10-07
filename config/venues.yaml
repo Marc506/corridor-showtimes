@@ -127,6 +127,20 @@ venues:
       challenge_timeout_s: 30
     primary_cooldown_h: 20     # 浏览器路径失败后 20 小时内直接用兜底（大约每天只试一次浏览器）
 
+  - id: paris-theater
+    name: Paris Theater
+    short: Paris
+    region: NYC
+    timezone: America/New_York
+    color: '#c9184a'
+    website: https://www.paristheaternyc.com/
+    location: {address: "4 W 58th St, New York, NY 10019", geo: [40.76376, -73.9743]}
+    # 常规场次只在售票站 tickets.paristheaternyc.com，被 Cloudflare 拦截（不绕过）；改用 screenslate，再加上官网首页里的特别活动（SOURCES.md §16）
+    source: {adapter: custom, module: paris, nid: 43542}
+    fallback: null
+    horizon_days: 30
+    rate_limit_s: 1
+
   - id: filmadelphia
     name: Philadelphia Film Society
     short: PFS
@@ -306,20 +320,6 @@ venues:
     fallback: null
     horizon_days: 45
     rate_limit_s: 2
-
-  - id: paris-theater
-    name: Paris Theater
-    short: Paris
-    region: NYC
-    timezone: America/New_York
-    color: '#c9184a'
-    website: https://www.paristheaternyc.com/
-    location: {address: "4 W 58th St, New York, NY 10019", geo: [40.76376, -73.9743]}
-    # 常规场次只在售票站 tickets.paristheaternyc.com，被 Cloudflare 拦截（不绕过）；改用 screenslate，再加上官网首页里的特别活动（SOURCES.md §16）
-    source: {adapter: custom, module: paris, nid: 43542}
-    fallback: null
-    horizon_days: 30
-    rate_limit_s: 1
 
   # ---- Reference only: scraped and stored, never shown on the page. A commercial chain's schedule tells which new
   # films are in wide release, for the "Limited screenings" filter (scraper/export.py, regular_runs). One request
