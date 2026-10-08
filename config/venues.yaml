@@ -257,7 +257,7 @@ venues:
     color: '#8338ec'
     website: https://ma.to/venue/reel_nomadic
     # 流动放映团体（户外 / 酒廊），没有自己的网站排片页；读活动聚合站 ma.to 上它的页面（JSON-LD）。
-    # 一晚通常两部片，片名在介绍里用引号写出；时间是入场时间，放映在天黑以后（SOURCES.md §17）
+    # 一晚通常两部片，片名在介绍里用引号写出；时间是入场时间，备注写入场和开映（「天黑后」），不估结束时间（SOURCES.md §17）
     # 没有固定场地：默认是最常用的 Penn Treaty Park；别的场地出现时按场地名（screen）加到 places 里
     location: {name: Penn Treaty Park, address: "1301 N Beach St, Philadelphia, PA 19125", geo: [39.9655, -75.1293]}
     source:
@@ -265,6 +265,7 @@ venues:
       pages: ['https://ma.to/venue/reel_nomadic']
       titles_from_description: true
       screen_from_location: true
+      event_notes: true
     fallback: null
     horizon_days: 45
     rate_limit_s: 2

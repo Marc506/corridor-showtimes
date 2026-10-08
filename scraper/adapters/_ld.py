@@ -75,7 +75,10 @@ def to_screening(obj: dict, venue_id: str, tz, page_url: str, fetched_at: str,
     runtime = iso_duration_minutes(obj.get("duration")) or iso_duration_minutes(work.get("duration"))
     runtime = runtime if runtime and runtime <= 600 else None
     end = None
-    if (e := parse_start(obj.get("endDate"))) and 0 < (to_local(e, tz) - start).total_seconds() <= 8 * 3600:
+    e = parse_start(obj.get("endDate"))
+    e = to_local(e, tz) if e else None
+    # 23:59 means "until the end of the day" (listing sites fill it in when no end is known), not a real end
+    if e and 0 < (e - start).total_seconds() <= 8 * 3600 and (e.hour, e.minute) != (23, 59):
         end = iso(e, tz)
     url = urljoin(page_url, obj["url"]) if isinstance(obj.get("url"), str) and obj["url"] else None
     ticket = _offer_url(obj.get("offers"))

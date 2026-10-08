@@ -23,7 +23,7 @@
 | Harvard Film Archive（波士顿 Cambridge） | 配方：日历页（每场自带完整开始时间；35mm / 胶片规格来自活动标签） |
 | Somerville Theatre（波士顿 Somerville） | 网站排片页背后的售票 XML（TAPOS），一次请求全部场次；导演按 IMDb 号从 TMDB 精确查，不用 feed 里不准的导演字段 |
 | Bryn Mawr Film Institute（费城郊区） | 网页（本周页 + 之后场次各自的影片页；时间不写上午 / 下午，没标的按下午） |
-| Reel Nomadic（费城） | 活动网站 ma.to 上它的页面里的 schema.org 活动数据（`jsonld` 适配器）；流动放映团体，标题用介绍里写的片名，时间是入场时间（天黑后开映） |
+| Reel Nomadic（费城） | 活动网站 ma.to 上它的页面里的 schema.org 活动数据（`jsonld` 适配器）；流动放映团体，标题用介绍里写的片名，时间是入场时间，备注写入场和开映（「天黑后」），不估结束时间 |
 | Hiway Theater（Jenkintown）、County Theater（Doylestown）、Ambler Theater（Ambler） | 网页（首页的本周正片 + 特别放映页；三家同属 Renew Theaters，共用一个网站模板和读取模块） |
 
 设计见 `ARCHITECTURE.md`，每家网站的抓取细节和坑见 `SOURCES.md`，各售票 / 建站平台的读取方式见 `PLATFORMS.md`。

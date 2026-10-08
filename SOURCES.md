@@ -523,7 +523,7 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 ```
 
 - 向导自动识别为 `jsonld`。活动名是「一晚」的名字，片名在介绍里用引号写出，所以开 `titles_from_description`：一两部片作标题（"Young Frankenstein + The Lost Boys"），活动名作系列，介绍作备注。引号识别不把词中间的撇号当引号（"'Schindler's List'"）。
-- `startDate` 是入场时间：活动页正文写着 "Doors at 6 p.m. … Films begin after dark"，没有每部片的开映时间，所以就用入场时间；`endDate`（23:59）作结束。
+- `startDate` 是入场时间，`endDate` 一律是 23:59（「到当天结束」的占位，不是散场时间），不用——共用的 JSON-LD 解析对所有站都把 23:59 的结束当作没有。开映时间只在每个活动自己的页面里（`event_notes`，每场一次请求，按 7 天缓存）："Doors at 6 p.m. … Films begin after dark" → 备注「Doors 6pm; films begin after dark」，"Starts at 3 p.m. … Films begin at sundown" → 「Starts 3pm; films begin at sundown」。写了具体开映时间（"Films begin at 7:30 p.m."）时开始时间改用它，入场时间留在备注；只写「天黑后」时不估时间，也不估结束。
 - 场地不固定，`screen_from_location` 把每场的地点记为 `screen`；默认地址是最常用的 Penn Treaty Park，新场地出现时加到 `location.places`。
 - 已过去的活动在页面的「Past Events」里，不带 JSON-LD，不会混进来。和 PFS 没有合作关系，单独算一家。
 

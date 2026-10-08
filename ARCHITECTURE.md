@@ -147,7 +147,7 @@ venues:
 | Harvard Film Archive | `recipe`：日历页（`?page=2`、`?page=3`），每场带 `time[datetime]` |
 | Somerville Theatre | custom `tapos`：网站排片页背后的 TAPOS XML，一次请求；IMDb 号交给 TMDB 精确匹配 |
 | Bryn Mawr Film Institute | custom `brynmawr`：本周页 + 之后场次的影片页（时间无上午 / 下午，配方表达不了） |
-| Reel Nomadic | `jsonld`：活动网站 ma.to 上它的页面；`titles_from_description` 把介绍里加引号的片名作标题，`screen_from_location` 让每场记自己的场地 |
+| Reel Nomadic | `jsonld`：活动网站 ma.to 上它的页面；`titles_from_description` 把介绍里加引号的片名作标题，`screen_from_location` 让每场记自己的场地，`event_notes` 从活动页取入场 / 开映写进备注 |
 | Hiway Theater、County Theater、Ambler Theater | custom `renew`（参数 `base_url`）：Renew Theaters 模板的首页 + 特别放映页（同样没有上午 / 下午） |
 
 ## 5. 抓取层
@@ -263,7 +263,7 @@ python -m scraper.store --seed <showtimes.json 路径或 URL>   # 从上次发�
    | `spektrix` | `client` | `system.spektrix.com/<client>/` |
    | `ics` | `url`、`categories?` | `text/calendar` 链接、`.ics` / `webcal://` / `?ical=1` |
    | `wix` | `pages` | 页面含 `wix-warmup-data` 且带 Events 记录；在首页链接里挑未开场场次最多的 `/events*` 页 |
-   | `jsonld` | `pages`、`follow?`、`titles_from_description?`、`screen_from_location?` | 页面里 `startDate` 带时间的 `Event` / `ScreeningEvent`（Film Forum 首页那种空日期不算） |
+   | `jsonld` | `pages`、`follow?`、`titles_from_description?`、`screen_from_location?`、`event_notes?` | 页面里 `startDate` 带时间的 `Event` / `ScreeningEvent`（Film Forum 首页那种空日期不算） |
    | `screenslate` | `nid` | 不参与探测，只作兜底 |
 
 2. **配方**（`adapter: recipe`，`source.recipe: <id>` 指 `scraper/recipes/<id>.yaml`，或内联）：声明式描述「抓哪些页、日期从哪来、哪个节点是一个节目、每个字段怎么读」。解释器 `scraper/adapters/recipe.py` 只实现这些原语，不做通用模板语言：
