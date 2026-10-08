@@ -126,6 +126,27 @@ a { color: inherit; }
 .m-empty p { margin: 0 0 16px; font-size: 15px; }
 .m-empty-acts { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
+/* quick filters: a row of regions, then a row of switches and search that scrolls sideways if it must */
+.m-qf { padding: 10px 0 2px; }
+.m-chips {
+  display: flex; align-items: center; gap: 6px; padding: 4px 12px; overflow-x: auto;
+  overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.m-chips.regions { flex-wrap: wrap; overflow: visible; }
+.m-chips:not(.regions) .m-chip { font-weight: 500; }
+.m-chips::-webkit-scrollbar { display: none; }
+.m-chip {
+  position: relative; flex: none; display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 13px;
+  border: 1px solid var(--line); border-radius: 18px; background: var(--card); font-size: 14px; font-weight: 600; white-space: nowrap;
+}
+.m-chip::after { content: ""; position: absolute; inset: -4px -1px; }
+.m-chip .n { font-size: 12px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
+.m-chip.on { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.m-chip.on .n { color: var(--bg); opacity: .8; }
+.m-chip.tg.on::before { content: "✓"; font-size: 12px; }
+.m-chip .x { font-size: 17px; font-weight: 400; line-height: 1; }
+.m-chip .m-ic { color: var(--muted); }
+
 /* time pills (detail sheet, cinemas, films): 36px drawn, 44px to the finger */
 .m-times { display: flex; flex-wrap: wrap; gap: 8px; }
 .m-time {

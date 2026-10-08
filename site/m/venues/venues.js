@@ -1,6 +1,6 @@
 /* Cinemas (MOBILE.md §4 B) — a card per cinema: region by region, the cinema whose next screening comes
  * first on top. Each film is a row with its start times as pills. Tap a card's name to fold it; press and
- * hold it to show only that cinema. */
+ * hold it to show only that cinema. Regions and the filter switches sit in a row of buttons above the cards. */
 (function () {
   "use strict";
   const { el, icon } = window.MChrome;
@@ -52,19 +52,16 @@
 
   function render(ctx) {
     const { C, m, t, list, now } = ctx;
-    if (!list.length) return ctx.empty();
+    const chips = ctx.quickFilters();                 // regions and switches one tap away, above the cards
+    if (!list.length) return [chips, ctx.empty()];
     const byVenue = C.groupByVenue(list);
-    const out = [];
-    for (const r of m.regions) {
-      const rows = byVenue.filter(([vid]) => m.regionOf(m.venueById[vid]) === r)
-        .sort((a, b) => next(a[1], now) - next(b[1], now) || Date.parse(a[1][0].start) - Date.parse(b[1][0].start));
-      if (!rows.length) continue;
-      if (m.regions.length > 1) {
-        out.push(el("h2", { class: "vn-region" }, r, el("span", {}, t("shows", rows.reduce((n, [, l]) => n + l.length, 0)))));
-      }
-      out.push(rows.map(([vid, l]) => card(ctx, m.venueById[vid], l)));
-    }
-    return el("div", { class: "vn" }, out);
+    const regions = m.regions.map((r) => [r, byVenue.filter(([vid]) => m.regionOf(m.venueById[vid]) === r)
+      .sort((a, b) => next(a[1], now) - next(b[1], now) || Date.parse(a[1][0].start) - Date.parse(b[1][0].start))])
+      .filter(([, rows]) => rows.length);
+    return [chips, el("div", { class: "vn" }, regions.map(([r, rows]) => [
+      regions.length > 1 ? el("h2", { class: "vn-region" }, r, el("span", {}, t("shows", rows.reduce((n, [, l]) => n + l.length, 0)))) : null,
+      rows.map(([vid, l]) => card(ctx, m.venueById[vid], l)),
+    ]))];
   }
 
   window.MChrome.start({

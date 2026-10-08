@@ -46,6 +46,7 @@
     filter: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
     down: '<path d="M7 10l5 5 5-5"/>',
     rows: '<path d="M4 6h16M4 10h16M4 14h16M4 18h16"/>',
+    search: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>',
   };
   function icon(name, size = 20) {
     const s = el("span", { class: "m-ic", "aria-hidden": "true" });
@@ -141,6 +142,12 @@
     update({ regions, venues: withVenues });
   }
 
+  /** Every region on; one that was off comes back with all of its cinemas (as on the main page). */
+  function showAllRegions() {
+    const back = m.active.filter((v) => !state.regions.has(m.regionOf(v))).map((v) => v.id);
+    update({ regions: new Set(m.regions), venues: new Set([...state.venues, ...back]) });
+  }
+
   function setLang(l) {
     lang = l; t = C.translator(l);
     try { store && store.setItem(C.LS.lang, l); } catch (_) { /* ignore */ }
@@ -175,7 +182,7 @@
     ui.extra = cfg.extra ? el("button", { type: "button", class: "m-b", onclick: () => cfg.extra.onClick(context()) }) : null;
     ui.filterLbl = el("span");
     ui.filterN = el("span", { class: "m-b-n" });
-    ui.filter = el("button", { type: "button", class: "m-b m-b-filter", "aria-haspopup": "dialog", onclick: openFilters },
+    ui.filter = el("button", { type: "button", class: "m-b m-b-filter", "aria-haspopup": "dialog", onclick: () => openFilters() },
       el("span", { class: "m-b-pill" }, icon("filter", 18), ui.filterLbl, ui.filterN));
     ui.bottom = el("nav", { class: "m-bottom" + (ui.extra ? " five" : "") }, ui.prev, ui.today, ui.extra, ui.filter, ui.next);
     ui.scrim = el("div", { class: "m-scrim", onclick: () => closeSheet() });
@@ -269,7 +276,7 @@
       C, m, t, lang, el, icon, dot, store, state, now, today, list: list || C.visible(m, state, state.day, now, today),
       day: state.day, isToday: state.day === today, main: ui.main, top: ui.top,
       update, go, showDetail, toast, longPress, timePill, venueBadge, onlyVenue, empty: emptyState,
-      refresh: () => render({ keep: true }),
+      refresh: () => render({ keep: true }), quickFilters: () => quickFilters(now),
     };
   }
 
@@ -285,6 +292,8 @@
     const ctx = context(null, now);
     const out = m.data.generated_at ? cfg.render(ctx) : emptyState(t("noData"));
     ui.main.replaceChildren(...[].concat(out).filter(Boolean));
+    const chips = ui.main.querySelector(".m-chips[data-noswipe]");
+    if (chips) chips.scrollLeft = chipScroll;           // a tap far along the row keeps the row where it was
     if (opts.dayChanged) window.scrollTo(0, 0);
     if (cfg.after) cfg.after(ctx, opts);
     if (sheet && sheet.refresh) sheet.refresh();
@@ -373,7 +382,36 @@
       el("button", { type: "button", class: "m-btn small", onclick: () => closeSheet() }, btnLabel || t("done")));
   }
 
-  function openFilters() {
+  /** Regions, then the four switches and search, as two rows of buttons above the content: one tap, no sheet.
+   *  A region button shows only that region; tapping the only one shown brings every region back. */
+  let chipScroll = 0;
+  function quickFilters(now = new Date()) {
+    const day = m.forDay(state.day).filter((s) => C.passes(s, state, now, today));
+    const allOn = m.regions.every((r) => state.regions.has(r));
+    // what a region shows once picked: its chosen cinemas, or all of them when it is off now
+    const countIn = (r) => day.filter((s) => {
+      const v = m.venueById[s.venue_id] || {};
+      return m.regionOf(v) === r && (!state.regions.has(r) || state.venues.has(v.id));
+    }).length;
+    const chip = (label, on, onclick, n, cls = "") => el("button", {
+      type: "button", class: `m-chip${cls}${on ? " on" : ""}`, "aria-pressed": String(on), onclick,
+    }, label, n != null ? el("span", { class: "n" }, n) : null);
+    const regions = m.regions.length > 1 ? el("div", { class: "m-chips regions", role: "group", "aria-label": t("regions") },
+      chip(t("all"), allOn, showAllRegions, m.regions.reduce((n, r) => n + countIn(r), 0)),
+      m.regions.map((r) => chip(r, !allOn && state.regions.has(r),
+        () => (state.regions.size === 1 && state.regions.has(r) ? showAllRegions() : toggleRegion(r, true)), countIn(r)))) : null;
+    const switches = el("div", { class: "m-chips", role: "group", "aria-label": t("filter"), "data-noswipe": "",
+      onscroll: (e) => { chipScroll = e.currentTarget.scrollLeft; } },
+      [["film", "onFilm"], ["subs", "subs"], ["specials", "specials"], ["upcoming", "upcoming"]].map(([k, label]) =>
+        chip(t(label), state[k], () => update({ [k]: !state[k] }), null, " tg")),
+      state.q
+        ? el("button", { type: "button", class: "m-chip on", "aria-label": `${t("clearSearch")}: ${state.q}`, onclick: () => update({ q: "" }) },
+          `“${state.q}”`, el("span", { class: "x", "aria-hidden": "true" }, "×"))
+        : el("button", { type: "button", class: "m-chip", "aria-haspopup": "dialog", onclick: () => openFilters(true) }, icon("search", 16), t("searchShort")));
+    return el("div", { class: "m-qf" }, regions, switches);
+  }
+
+  function openFilters(focusSearch = false) {
     const count = el("strong", { class: "m-f-count", "aria-live": "polite" });
     let timer;
     const q = el("input", {
@@ -418,6 +456,7 @@
         }));
     };
     openSheet([sheetHead(count), q, toggles, venues], { label: t("filter"), refresh: fill, cls: "filters" });
+    if (focusSearch) q.focus({ preventScroll: true });
   }
 
   function mapsUrl(place) {
