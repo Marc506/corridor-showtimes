@@ -1,12 +1,12 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with twenty-one art-house and repertory cinemas in Boston, New York and Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with twenty-two art-house and repertory cinemas and screening series in Boston, New York and Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows twenty-one along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
-MoMA, Japan Society, L'Alliance New York, the Paris Theater, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, and the Renew Theaters' Hiway, County and Ambler theaters. It refreshes twice a
+follows twenty-two along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+MoMA, Japan Society, L'Alliance New York, the Paris Theater, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, the Renew Theaters' Hiway, County and Ambler theaters, and Reel Nomadic's pop-up screenings. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
 often lag behind the cinemas' own schedules.
@@ -130,6 +130,7 @@ it said last. The assistant can write that text for you — ask it to.
 | Harvard Film Archive (Cambridge) | **A recipe** over the calendar pages | Every event carries its exact start time, so no date guessing; print formats (new 35mm prints, on film) come from the event labels |
 | Somerville Theatre | **The ticketing feed behind the site's schedule** (TAPOS XML) | One request holds every first-run and repertory showing. The feed's director field mixes in wrong names, so it is ignored; the IMDb id it carries gives TMDB the exact film instead |
 | Bryn Mawr Film Institute | Server-rendered HTML: the week page, plus each later programme's own page | **Times have no am/pm** except morning shows, which the site marks, so an unmarked time is afternoon; captioned and sensory-friendly showings are labelled per time. Its Agile ticketing exposes no usable public feed |
+| Reel Nomadic (Philadelphia) | **schema.org events on its page on ma.to**, a city events listing site (`jsonld` adapter) | A pop-up collective with free outdoor and lounge screenings and no schedule page of its own. The listing names the evening ("Halloween Fest – Friday") and quotes its films in the description, so the films become the title; the time is when doors open (films start after dark), and each night keeps its own place for the calendar |
 | Hiway Theater (Jenkintown), County Theater (Doylestown), Ambler Theater | Server-rendered HTML: the home page (this week) and the special programmes page | One reader for the Renew Theaters site template, configured per site; again most times have no am/pm. The site already carries every showtime and ticket link, so the ticketing app is not read |
 
 **Fallback.** [screenslate](https://www.screenslate.com)'s open JSON:API covers the NYC venues and
@@ -195,7 +196,7 @@ against real pages (`tests/fixtures/platforms/`; details in [PLATFORMS.md](PLATF
 | `spektrix` | Spektrix's public "web user" API | `client` |
 | `ics` | an iCalendar feed the site links to | `url` |
 | `wix` | Wix sites with the Events app: the event list the page itself embeds | `pages` |
-| `jsonld` | schema.org `Event` data embedded in the site's pages | `pages`, `follow` |
+| `jsonld` | schema.org `Event` data embedded in the site's pages | `pages`, `follow`, `titles_from_description`, `screen_from_location` |
 | `recipe` | the site's HTML, read by a declarative recipe | `recipe` |
 | `screenslate` | screenslate.com's open API (NYC / SF), usually as `fallback:` | `nid` |
 

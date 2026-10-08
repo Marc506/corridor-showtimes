@@ -1,6 +1,6 @@
 # Corridor Showtimes — 架构
 
-艺术 / 重映影院的排片聚合器：每天抓取两次，合并成统一数据，以时间轴 / 列表 / 周三种视图展示，并发布到 GitHub Pages。公开实例覆盖波士顿、纽约、费城二十一家影院；任何人 fork 后给出「影院名 + 网址」就能加入自己的影院。每家影院网站的抓取细节见 [`SOURCES.md`](SOURCES.md)，各类平台（售票系统 / 建站系统）的读取方式见 [`PLATFORMS.md`](PLATFORMS.md)。
+艺术 / 重映影院的排片聚合器：每天抓取两次，合并成统一数据，以时间轴 / 列表 / 周三种视图展示，并发布到 GitHub Pages。公开实例覆盖波士顿、纽约、费城二十二家影院和放映团体；任何人 fork 后给出「影院名 + 网址」就能加入自己的影院。每家影院网站的抓取细节见 [`SOURCES.md`](SOURCES.md)，各类平台（售票系统 / 建站系统）的读取方式见 [`PLATFORMS.md`](PLATFORMS.md)。
 
 **目标**：不懂编程的人给出「影院名 + 网址」，就能把一家美国影院加进自己的排片日历。程序按网站所用的系统自动工作；做不到的，给出一份可以直接交给 AI Agent 的任务包，或者明确说「这家做不了、为什么」。
 **非目标**：托管服务（网页里直接加影院需要常驻服务器与运营方代付 LLM 费用，本项目不承担；每人在自己电脑上一份）；绕过任何反爬 / 验证码；美国以外的影院（时区是按影院配置的，留了口子）。
@@ -126,7 +126,7 @@ venues:
 * **兼容 v1**：没有 `version`、顶层是列表的旧文件照样加载；每条在内存里转换成 `source: {adapter: custom, module: <scraper>}`、`fallback: {adapter: screenslate, nid: <screenslate_nid>}`、`region: <city>`。`VenueConfig` 保留 `scraper` / `screenslate_nid` / `city` 作为别名，`extra` 继续兜住未知字段。
 * **校验**：`config/venues.schema.json`（JSON Schema）加语义检查（id 重复、时区名无效、适配器不存在、适配器缺必填参数、自定义模块文件不存在）。错误是一句一行的人话——「第 3 家影院（c）缺少 name」——不出现校验器的堆栈；语言跟随 `--lang` / `CINEMA_LANG` / `LANG`。
 
-公开实例的二十一家：
+公开实例的二十二家：
 
 | 影院 | 数据源 |
 |---|---|
@@ -147,6 +147,7 @@ venues:
 | Harvard Film Archive | `recipe`：日历页（`?page=2`、`?page=3`），每场带 `time[datetime]` |
 | Somerville Theatre | custom `tapos`：网站排片页背后的 TAPOS XML，一次请求；IMDb 号交给 TMDB 精确匹配 |
 | Bryn Mawr Film Institute | custom `brynmawr`：本周页 + 之后场次的影片页（时间无上午 / 下午，配方表达不了） |
+| Reel Nomadic | `jsonld`：活动网站 ma.to 上它的页面；`titles_from_description` 把介绍里加引号的片名作标题，`screen_from_location` 让每场记自己的场地 |
 | Hiway Theater、County Theater、Ambler Theater | custom `renew`（参数 `base_url`）：Renew Theaters 模板的首页 + 特别放映页（同样没有上午 / 下午） |
 
 ## 5. 抓取层
@@ -262,7 +263,7 @@ python -m scraper.store --seed <showtimes.json 路径或 URL>   # 从上次发�
    | `spektrix` | `client` | `system.spektrix.com/<client>/` |
    | `ics` | `url`、`categories?` | `text/calendar` 链接、`.ics` / `webcal://` / `?ical=1` |
    | `wix` | `pages` | 页面含 `wix-warmup-data` 且带 Events 记录；在首页链接里挑未开场场次最多的 `/events*` 页 |
-   | `jsonld` | `pages`、`follow?` | 页面里 `startDate` 带时间的 `Event` / `ScreeningEvent`（Film Forum 首页那种空日期不算） |
+   | `jsonld` | `pages`、`follow?`、`titles_from_description?`、`screen_from_location?` | 页面里 `startDate` 带时间的 `Event` / `ScreeningEvent`（Film Forum 首页那种空日期不算） |
    | `screenslate` | `nid` | 不参与探测，只作兜底 |
 
 2. **配方**（`adapter: recipe`，`source.recipe: <id>` 指 `scraper/recipes/<id>.yaml`，或内联）：声明式描述「抓哪些页、日期从哪来、哪个节点是一个节目、每个字段怎么读」。解释器 `scraper/adapters/recipe.py` 只实现这些原语，不做通用模板语言：

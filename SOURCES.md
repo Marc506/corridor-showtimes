@@ -508,3 +508,22 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 - 官网首页的 RSC 数据（`self.__next_f.push([1,"…"])` 里的 JSON 字符串）带着几周后的特别活动：`{"EventName":"LA BOLA NEGRA | Sneak Preview + Q&A …","EventDate":"2026-10-15","TicketLink":"https://tickets.paristheaternyc.com/order/showtimes/2001-3093/seats","EventTime":"7:05 PM"}`。活动名是大写、不带年份；同一份数据里有影片记录 `{"FilmName":"A Place in the Sun","Slug":"a-place-in-the-sun-paris","Director":"George Stevens",…,"Year":"1951"}`，用它补片名写法、导演、年份和影片页（`/film/<slug>`）——没有年份时 TMDB 会配成 2024 年的同名丹麦片。
 - 合并：screenslate 也列出的活动（开场相差 10 分钟内、同一部片）只补备注和购票链接，其余追加。所有场次算这家影院的主源（不显示 "via screenslate"）。模块 `scraper/sources/paris.py`，每次约 30 个 screenslate 请求加 1 个首页请求。地址：4 W 58th St。
 
+---
+
+## 17. Reel Nomadic（费城）— 活动网站 ma.to 上的 JSON-LD
+
+2026‑10‑08 实测。流动放映团体（Penn Treaty Park 的户外放映 Penn Treaty Pictures、Neon Clown Dream Lounge 等），免费，没有自己的排片网页（Instagram、Givebutter）。活动网站 ma.to 的页面 `https://ma.to/venue/reel_nomadic` 是服务端渲染，带 schema.org `Event`（未来的活动），无防火墙，一次请求：
+
+```json
+{"@type": "Event", "name": "Halloween Fest – Friday",
+ "description": "Outdoor screenings of 'Young Frankenstein' and 'The Lost Boys' with DJ and tarot readings.",
+ "startDate": "2026-10-09T18:00:00.000-04:00", "endDate": "2026-10-09T23:59:00.000-04:00",
+ "url": "https://ma.to/event/halloween-fest-friday-2026-10-09",
+ "location": {"@type": "Place", "name": "Penn Treaty Park", "address": {"streetAddress": "1301 N. Beach Street"}}}
+```
+
+- 向导自动识别为 `jsonld`。活动名是「一晚」的名字，片名在介绍里用引号写出，所以开 `titles_from_description`：一两部片作标题（"Young Frankenstein + The Lost Boys"），活动名作系列，介绍作备注。引号识别不把词中间的撇号当引号（"'Schindler's List'"）。
+- `startDate` 是入场时间：活动页正文写着 "Doors at 6 p.m. … Films begin after dark"，没有每部片的开映时间，所以就用入场时间；`endDate`（23:59）作结束。
+- 场地不固定，`screen_from_location` 把每场的地点记为 `screen`；默认地址是最常用的 Penn Treaty Park，新场地出现时加到 `location.places`。
+- 已过去的活动在页面的「Past Events」里，不带 JSON-LD，不会混进来。和 PFS 没有合作关系，单独算一家。
+

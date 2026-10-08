@@ -210,7 +210,7 @@ GET https://system.spektrix.com/<client>/api/v3/events/<id>/instances
 
 **范围**：通常只有当前页列出的场次；作为「首页 + 若干链接页」的抓取策略时要配 `pages` 列表。适合作为探测阶段的快速信号和小站的兜底。
 
-**参数**：`pages`（URL 列表或 `follow: "a[href*=/movies/]"` 之类的一跳规则）。
+**参数**：`pages`（URL 列表或 `follow: "a[href*=/movies/]"` 之类的一跳规则）。可选 `titles_from_description: true`：活动聚合站（ma.to）给一晚起名（"Halloween Fest – Friday"），片名在 `description` 里用引号写出——一两部片作标题（"A + B"），三部以上保留活动名；活动名记为系列，介绍记为备注。可选 `screen_from_location: true`：每场的 `location.name` 记为 `screen`，流动放映按它在 `location.places` 里找地址。
 
 ---
 
