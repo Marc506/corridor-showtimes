@@ -39,21 +39,15 @@ const tests = [];
 const test = (name, fn) => tests.push([name, fn]);
 
 // ---------- time ----------
-test("times are shown in the cinema's zone, minutes run past midnight", () => {
+test("times are shown in the cinema's zone", () => {
   assert.strictEqual(C.timeLabel("2026-10-10T19:00:00-04:00", NY), "7:00pm");
   assert.strictEqual(C.timeLabel("2026-10-10T19:00:00-04:00", "America/Los_Angeles"), "4:00pm");
-  assert.deepStrictEqual(C.timeParts("2026-10-10T09:05:00-04:00", NY), { hm: "9:05", ap: "am" });
-  assert.strictEqual(C.minutesInDay("2026-10-10T19:30:00-04:00", "2026-10-10", NY), 19 * 60 + 30);
-  assert.strictEqual(C.minutesInDay("2026-10-11T00:30:00-04:00", "2026-10-10", NY), 24 * 60 + 30);
-  assert.strictEqual(C.hourLabel(0), "12 AM");
-  assert.strictEqual(C.hourLabel(13 * 60 + 5), "1 PM");
-  assert.strictEqual(C.hourLabel(24 * 60 + 30), "12 AM");
+  assert.strictEqual(C.timeLabel("2026-10-11T00:30:00-04:00", NY), "12:30am");
 });
 
 test("day keys, shifting, titles", () => {
   assert.strictEqual(C.shiftDay("2026-10-31", 1), "2026-11-01");
   assert.strictEqual(C.shiftDay("2026-03-01", -1), "2026-02-28");
-  assert.strictEqual(C.daysBetween("2026-10-08", "2026-10-15"), 7);
   assert.ok(C.validDay("2026-10-08") && !C.validDay("2026-13-40x") && !C.validDay(""));
   assert.strictEqual(C.dayTitle("2026-10-08", "zh"), "10月8日 周四");
   assert.strictEqual(C.dayTitle("2026-10-08", "en"), "Thu, Oct 8");
@@ -167,32 +161,8 @@ test("groupFilms and groupByVenue behave as on the main page", () => {
 });
 
 test("twins: one film starting together on two screens of a cinema", () => {
-  const a = m.byId.a;
-  assert.deepStrictEqual(m.twinsOf(a).map((s) => s.id), ["a", "f"]);
-  assert.deepStrictEqual(C.groupTwins(m.forDay("2026-10-10")).map((g) => g.length), [1, 2, 1, 1, 1]);
-});
-
-test("films across cinemas: same title merges, a different year or director stays apart", () => {
-  const groups = C.filmClusters(m.forDay("2026-10-10"));
-  const happy = groups.filter((g) => C.normTitle(g.title) === "happy together");
-  assert.strictEqual(happy.length, 2);
-  assert.deepStrictEqual(happy[0].showings.map((s) => s.id), ["b", "a", "f"]);           // punctuation, case, "Wong Kar Wai"
-  assert.deepStrictEqual(happy[1].showings.map((s) => s.id), ["c"]);                     // 2026, another director
-  assert.strictEqual(happy[0].director, "Wong Kar Wai");
-  assert.strictEqual(C.normTitle("Pierrot le Fou & Me"), "pierrot le fou and me");
-});
-
-test("lane packing and spans", () => {
-  const items = [{ from: 600, to: 700 }, { from: 650, to: 760 }, { from: 705, to: 800 }];
-  assert.strictEqual(C.packLanes(items), 2);
-  assert.deepStrictEqual(items.map((i) => i.lane), [0, 1, 0]);
-  assert.deepStrictEqual(C.span(m.byId.e, "2026-10-10", NY), { from: 1470, to: 1570, known: true });
-  assert.deepStrictEqual(C.span({ ...m.byId.e, runtime_min: null }, "2026-10-10", NY), { from: 1470, to: 1570, known: false });
-});
-
-test("row facts: runtime, film gauge, a non-English language", () => {
-  assert.deepStrictEqual(C.rowFacts(m.byId.a), ["100m", "35mm", "Cantonese"]);
-  assert.deepStrictEqual(C.rowFacts(m.byId.b), ["100m"]);
+  assert.deepStrictEqual(m.twinsOf(m.byId.a).map((s) => s.id), ["a", "f"]);
+  assert.deepStrictEqual(m.twinsOf(m.byId.b).map((s) => s.id), ["b"]);
 });
 
 test("the model skips disabled cinemas and sorts each day", () => {

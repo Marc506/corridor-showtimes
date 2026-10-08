@@ -1,4 +1,4 @@
-/* Corridor Showtimes, phone pages — design tokens and the shared shell (top bar, date strip, bottom bar,
+/* Corridor Showtimes, phone layout — design tokens and the shell (top bar, date strip, bottom bar,
  * bottom sheets, time pills). Colours follow the main page; dark mode follows the system. */
 :root {
   --bg: #fbfaf7;
@@ -67,7 +67,7 @@ a { color: inherit; }
 .m-titlebox { position: relative; flex: 1 1 auto; min-width: 0; height: 44px; }
 .m-title {
   height: 100%; min-width: 0; display: flex; align-items: center; gap: 2px;
-  font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden;
+  font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden;
 }
 .m-title-main { overflow: hidden; text-overflow: ellipsis; }
 .m-title-rel { flex: none; }
@@ -77,7 +77,6 @@ a { color: inherit; }
   opacity: 0; border: 0; padding: 0; font-size: 16px; cursor: pointer;
 }
 .m-date-input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: auto; height: auto; opacity: 0; cursor: pointer; }
-.m-tools { display: flex; align-items: center; flex: none; }
 .m-hbtn {
   flex: none; height: 44px; min-width: 44px; padding: 0 3px; border: 0; background: none;
   display: inline-flex; align-items: center; justify-content: center;
@@ -86,7 +85,6 @@ a { color: inherit; }
   display: inline-flex; align-items: center; gap: 2px; height: 32px; padding: 0 10px; border-radius: 16px;
   background: var(--chip); font-size: 13px; font-weight: 600; white-space: nowrap;
 }
-.m-hbtn[aria-pressed="true"] .m-hbtn-in { background: var(--fg); color: var(--bg); }
 .m-lang .m-hbtn-in { padding: 0 9px; color: var(--muted); }
 .m-title-rel.rel { color: var(--accent); }
 /* regions in the top bar: one segmented control, 32px drawn, 44px to the finger */
@@ -98,14 +96,12 @@ a { color: inherit; }
 .m-rseg button::after { content: ""; position: absolute; inset: -8px 0; }
 .m-rseg button.on { background: var(--fg); color: var(--bg); }
 .m-rseg + .m-lang { min-width: 40px; }
-.m-row1:has(.m-rseg) .m-title { font-size: 16px; }
-.m-row1:has(.m-rseg) .m-title .m-ic svg { width: 13px; height: 13px; }
+.m-title .m-ic svg { width: 13px; height: 13px; }
 
 /* page footer */
 .m-foot { padding: 18px 16px 8px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
 .m-foot p { margin: 0 0 6px; }
-.m-foot-links { display: flex; flex-wrap: wrap; margin: 0 -8px 4px !important; }
-.m-foot-credits a { color: inherit; }
+.m-foot a { color: inherit; white-space: nowrap; }
 
 .m-strip {
   display: flex; gap: 2px; height: 51px; padding: 0 8px 3px; overflow-x: auto; overscroll-behavior-x: contain;
@@ -138,29 +134,23 @@ a { color: inherit; }
   display: inline-block; max-width: 100%; font-size: 11.5px; line-height: 1.45; padding: 0 6px; border-radius: 4px;
   color: var(--accent); box-shadow: inset 0 0 0 1px currentColor; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: 1px;
 }
-.film-fmt { color: var(--accent); font-weight: 600; }
 
 .m-empty { padding: 56px 24px; text-align: center; color: var(--muted); }
 .m-empty p { margin: 0 0 16px; font-size: 15px; }
 .m-empty-acts { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-/* quick filters: a row of regions, then a row of switches and search that scrolls sideways if it must */
-.m-qf { padding: 10px 0 2px; }
+/* quick filters: the switches and search, one row that scrolls sideways if it must */
 .m-chips {
-  display: flex; align-items: center; gap: 6px; padding: 4px 12px; overflow-x: auto;
+  display: flex; align-items: center; gap: 6px; padding: 14px 12px 6px; overflow-x: auto;
   overscroll-behavior-x: contain; scrollbar-width: none;
 }
-.m-chips.regions { flex-wrap: wrap; overflow: visible; }
-.m-chips:not(.regions) .m-chip { font-weight: 500; }
 .m-chips::-webkit-scrollbar { display: none; }
 .m-chip {
   position: relative; flex: none; display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 13px;
-  border: 1px solid var(--line); border-radius: 18px; background: var(--card); font-size: 14px; font-weight: 600; white-space: nowrap;
+  border: 1px solid var(--line); border-radius: 18px; background: var(--card); font-size: 14px; font-weight: 500; white-space: nowrap;
 }
 .m-chip::after { content: ""; position: absolute; inset: -4px -1px; }
-.m-chip .n { font-size: 12px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
 .m-chip.on { background: var(--fg); border-color: var(--fg); color: var(--bg); }
-.m-chip.on .n { color: var(--bg); opacity: .8; }
 .m-chip.tg.on::before { content: "✓"; font-size: 12px; }
 .m-chip .x { font-size: 17px; font-weight: 400; line-height: 1; }
 .m-chip .m-ic { color: var(--muted); }
@@ -215,17 +205,11 @@ a { color: inherit; }
 .m-b-n { font-size: 12.5px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
 .m-b-filter.active .m-b-pill { background: var(--fg); color: var(--bg); }
 .m-b-n:empty { display: none; }
-/* five buttons (Guide adds "Now"), or a narrow phone: previous / next shrink to their arrows */
-.m-bottom.five .m-b-step { flex: 0 0 48px; }
-.m-bottom.five .m-b-step > span:not(.m-ic) { display: none; }
-.m-bottom.five .m-b-filter { flex-grow: 2; }
-.m-bottom.five .m-b-pill { gap: 4px; padding: 0 9px; }
+/* a narrow phone: previous / next shrink to their arrows */
 @media (max-width: 359px) {
   .m-b-step { flex: 0 0 44px; }
   .m-b-step > span:not(.m-ic) { display: none; }
   .m-b-pill { gap: 4px; padding: 0 9px; }
-  .m-bottom.five .m-b-pill > .m-ic { display: none; }
-  .m-title { font-size: 16px; }
 }
 .m-b-filter.active .m-b-n { color: inherit; opacity: .85; }
 
@@ -308,15 +292,6 @@ a { color: inherit; }
 .m-d-addr { display: block; margin-top: 16px; font-size: 14px; color: var(--fg); text-decoration: none; line-height: 1.5; }
 .m-d-addr .m-label { display: block; }
 .m-d-links { display: flex; flex-wrap: wrap; margin: 8px -8px 0; }
-
-/* layout menu */
-.m-demos { display: flex; flex-direction: column; gap: 8px; }
-.m-demo { display: block; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; text-decoration: none; }
-.m-demo strong { display: block; font-size: 16px; }
-.m-demo span { font-size: 13px; color: var(--muted); }
-.m-demo.cur { border-color: var(--fg); }
-.m-demo.cur strong::after { content: " ✓"; color: var(--accent); }
-.m-menu-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 
 /* toast */
 .m-toast {

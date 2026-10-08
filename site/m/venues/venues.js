@@ -1,7 +1,7 @@
-/* Cinemas (MOBILE.md §4 B) — a card per cinema: region by region, the cinema whose next screening comes
+/* Phone layout (MOBILE.md §4 B) — a card per cinema: region by region, the cinema whose next screening comes
  * first on top. Each film is a row with its start times as pills. Tap a card's name to fold it; press and
  * hold it to show only that cinema. Regions sit beside the date; the filter switches in a row above the cards.
- * This is the page the main site sends phones to. */
+ * The main page sends phones here. */
 (function () {
   "use strict";
   const { el, icon } = window.MChrome;
@@ -53,7 +53,7 @@
 
   function render(ctx) {
     const { C, m, t, list, now } = ctx;
-    const chips = ctx.quickFilters();                 // regions and switches one tap away, above the cards
+    const chips = ctx.quickFilters();                 // the filter switches one tap away, above the cards
     if (!list.length) return [chips, ctx.empty(), ctx.footer()];
     const byVenue = C.groupByVenue(list);
     const regions = m.regions.map((r) => [r, byVenue.filter(([vid]) => m.regionOf(m.venueById[vid]) === r)
@@ -66,10 +66,6 @@
   }
 
   window.MChrome.start({
-    id: "venues",
-    title: "Corridor Showtimes",
-    topRegions: true,                // All / NYC / PHL / BOS beside the date
-    menu: false,                     // the page phones are sent to: no layout switcher
     render,
     after(ctx, opts) {
       if (!opts.first || !ctx.state.hl) return;

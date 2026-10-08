@@ -1,8 +1,7 @@
-/* Corridor Showtimes, phone pages — the shell every demo shares (MOBILE.md §3): a top bar with the date and a
- * three-week date strip, a bottom thumb bar (previous day / today / filters / next day), the filter, detail and
- * layout bottom sheets, swipe to change day, the empty state, the page footer. A demo supplies the content area:
- *   MChrome.start({ id: "agenda", render(ctx) { return nodes }, after(ctx, opts), tools(ctx), extra,
- *                   topRegions: true (region buttons in the top bar), menu: false (no layout menu), title })
+/* Corridor Showtimes, phone layout — the shell (MOBILE.md §3): a top bar with the date, the region buttons and a
+ * three-week date strip, a bottom thumb bar (previous day / today / filters / next day), the filter and detail
+ * bottom sheets, swipe to change day, the empty state, the page footer. The page supplies the content area:
+ *   MChrome.start({ render(ctx) { return nodes }, after(ctx, opts) })
  */
 (function () {
   "use strict";
@@ -46,7 +45,6 @@
     next: '<path d="M9 5l7 7-7 7"/>',
     filter: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
     down: '<path d="M7 10l5 5 5-5"/>',
-    rows: '<path d="M4 6h16M4 10h16M4 14h16M4 18h16"/>',
     search: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>',
   };
   function icon(name, size = 20) {
@@ -167,16 +165,14 @@
       onchange: (e) => C.validDay(e.target.value) && go(e.target.value < minDay() ? minDay() : e.target.value),
       onclick: (e) => { try { e.target.showPicker(); } catch (_) { /* the native control opens itself */ } },
     });
-    ui.tools = el("div", { class: "m-tools" });
-    ui.regions = cfg.topRegions && m.regions.length > 1 ? el("div", { class: "m-rseg", role: "group" }) : null;
-    ui.menuBtn = cfg.menu === false ? null : el("button", { type: "button", class: "m-hbtn", "aria-haspopup": "dialog", onclick: openMenu });
+    ui.regions = m.regions.length > 1 ? el("div", { class: "m-rseg", role: "group" }) : null;
     ui.langBtn = el("button", { type: "button", class: "m-hbtn m-lang", onclick: () => setLang(lang === "zh" ? "en" : "zh") });
     ui.strip = el("div", { class: "m-strip", role: "group" });
     ui.top = el("header", { class: "m-top" },
       el("div", { class: "m-row1" },
         el("div", { class: "m-titlebox" },                // the native date picker lies invisibly over the title only
           el("div", { class: "m-title", "aria-hidden": "true" }, ui.titleMain, ui.titleRel, icon("down", 16)), ui.dateInput),
-        ui.tools, ui.regions, ui.menuBtn, ui.langBtn),
+        ui.regions, ui.langBtn),
       ui.strip);
     ui.main = el("main", { class: "m-main", id: "m-main" });
     ui.prevLbl = el("span");
@@ -184,19 +180,17 @@
     ui.prev = el("button", { type: "button", class: "m-b m-b-step", onclick: () => step(-1) }, icon("prev"), ui.prevLbl);
     ui.next = el("button", { type: "button", class: "m-b m-b-step", onclick: () => step(1) }, ui.nextLbl, icon("next"));
     ui.today = el("button", { type: "button", class: "m-b", onclick: () => go(today) });
-    ui.extra = cfg.extra ? el("button", { type: "button", class: "m-b", onclick: () => cfg.extra.onClick(context()) }) : null;
     ui.filterLbl = el("span");
     ui.filterN = el("span", { class: "m-b-n" });
     ui.filter = el("button", { type: "button", class: "m-b m-b-filter", "aria-haspopup": "dialog", onclick: () => openFilters() },
       el("span", { class: "m-b-pill" }, icon("filter", 18), ui.filterLbl, ui.filterN));
-    ui.bottom = el("nav", { class: "m-bottom" + (ui.extra ? " five" : "") }, ui.prev, ui.today, ui.extra, ui.filter, ui.next);
+    ui.bottom = el("nav", { class: "m-bottom" }, ui.prev, ui.today, ui.filter, ui.next);
     ui.scrim = el("div", { class: "m-scrim", onclick: () => closeSheet() });
     ui.sheetBody = el("div", { class: "m-sheet-body" });
     ui.sheet = el("div", { class: "m-sheet", role: "dialog", "aria-modal": "true", tabindex: "-1" },
       el("div", { class: "m-grab", "aria-hidden": "true" }), ui.sheetBody);
     ui.toast = el("div", { class: "m-toast", role: "status", "aria-live": "polite" });
     document.body.classList.add("m-body");
-    document.body.dataset.demo = cfg.id;
     document.body.append(ui.top, ui.main, ui.bottom, ui.scrim, ui.sheet, ui.toast);
     dragToClose();
   }
@@ -215,7 +209,6 @@
   }
 
   function renderTop(now) {
-    const demo = C.DEMOS.find((d) => d.id === cfg.id);
     const rel = C.relDay(state.day, today, t);     // "今天" / "明天" stand in for the weekday (the strip shows it)
     if (lang === "zh") {
       ui.titleMain.textContent = `${C.monthDay(state.day, lang)} `;
@@ -229,10 +222,6 @@
     ui.dateInput.min = minDay();
     if (m.days.length) ui.dateInput.max = m.days[m.days.length - 1];
     ui.dateInput.setAttribute("aria-label", `${t("pickDate")}: ${C.dayTitle(state.day, lang)}${rel ? " · " + rel : ""}`);
-    if (ui.menuBtn) {
-      ui.menuBtn.replaceChildren(el("span", { class: "m-hbtn-in" }, demo ? demo[lang] : cfg.id, icon("down", 14)));
-      ui.menuBtn.setAttribute("aria-label", `${t("demos")}: ${demo ? demo[lang] : cfg.id}`);
-    }
     if (ui.regions) {
       const allOn = m.regions.every((r) => state.regions.has(r));
       const seg = (label, on, onclick) => el("button", { type: "button", class: on ? "on" : null, "aria-pressed": String(on), onclick }, label);
@@ -243,7 +232,6 @@
     ui.langBtn.replaceChildren(el("span", { class: "m-hbtn-in" }, lang === "zh" ? "EN" : "中"));
     ui.langBtn.setAttribute("aria-label", t("lang"));
     ui.langBtn.lang = lang === "zh" ? "en" : "zh-CN";
-    ui.tools.replaceChildren(...[].concat(cfg.tools ? cfg.tools(context()) : []).filter(Boolean));
 
     const days = stripDays();
     const counts = C.dayCounts(m, state, days, now, today);
@@ -283,20 +271,18 @@
     ui.next.setAttribute("aria-label", `${t("nextDay")}: ${C.dayTitle(next, lang)}`);
     ui.today.textContent = t("today");
     ui.today.disabled = state.day === today;
-    if (ui.extra) ui.extra.textContent = cfg.extra.label(t);
     ui.filterLbl.textContent = t("filter");
-    const nShown = shownVenues().length;
-    ui.filterN.textContent = ui.extra && nShown === m.active.length ? "" : t("shown", nShown, m.active.length);   // five buttons: count only when some are off
+    ui.filterN.textContent = t("shown", shownVenues().length, m.active.length);
     ui.filter.classList.toggle("active", filtersOn());
     ui.bottom.setAttribute("aria-label", t("bottomBar"));
   }
 
   function context(list, now = new Date()) {
     return {
-      C, m, t, lang, el, icon, dot, store, state, now, today, list: list || C.visible(m, state, state.day, now, today),
-      day: state.day, isToday: state.day === today, main: ui.main, top: ui.top,
-      update, go, showDetail, toast, longPress, timePill, venueBadge, onlyVenue, empty: emptyState,
-      refresh: () => render({ keep: true }), quickFilters: () => quickFilters(now), footer,
+      C, m, t, lang, state, now, today, list: list || C.visible(m, state, state.day, now, today),
+      day: state.day, isToday: state.day === today, main: ui.main,
+      update, go, showDetail, longPress, timePill, venueBadge, onlyVenue, empty: emptyState,
+      refresh: () => render({ keep: true }), quickFilters, footer,
     };
   }
 
@@ -306,7 +292,6 @@
     const now = new Date();
     today = C.todayKey(now);
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
-    document.title = cfg.title || `${(C.DEMOS.find((d) => d.id === cfg.id) || {})[lang] || ""} · Corridor Showtimes`;
     renderTop(now);
     renderBottom();
     const ctx = context(null, now);
@@ -402,43 +387,28 @@
       el("button", { type: "button", class: "m-btn small", onclick: () => closeSheet() }, btnLabel || t("done")));
   }
 
-  /** Regions (unless they sit in the top bar), then the four switches and search, as rows of buttons above
-   *  the content: one tap, no sheet. */
+  /** The four switches and search as a row of buttons above the content: one tap, no sheet. */
   let chipScroll = 0;
-  function quickFilters(now = new Date()) {
-    const day = m.forDay(state.day).filter((s) => C.passes(s, state, now, today));
-    const allOn = m.regions.every((r) => state.regions.has(r));
-    // what a region shows once picked: its chosen cinemas, or all of them when it is off now
-    const countIn = (r) => day.filter((s) => {
-      const v = m.venueById[s.venue_id] || {};
-      return m.regionOf(v) === r && (!state.regions.has(r) || state.venues.has(v.id));
-    }).length;
-    const chip = (label, on, onclick, n, cls = "") => el("button", {
-      type: "button", class: `m-chip${cls}${on ? " on" : ""}`, "aria-pressed": String(on), onclick,
-    }, label, n != null ? el("span", { class: "n" }, n) : null);
-    const regions = m.regions.length > 1 && !ui.regions ? el("div", { class: "m-chips regions", role: "group", "aria-label": t("regions") },
-      chip(t("all"), allOn, showAllRegions, m.regions.reduce((n, r) => n + countIn(r), 0)),
-      m.regions.map((r) => chip(r, !allOn && state.regions.has(r), () => pickRegion(r), countIn(r)))) : null;
-    const switches = el("div", { class: "m-chips", role: "group", "aria-label": t("filter"), "data-noswipe": "",
+  function quickFilters() {
+    const chip = (label, on, onclick) => el("button", {
+      type: "button", class: `m-chip tg${on ? " on" : ""}`, "aria-pressed": String(on), onclick }, label);
+    return el("div", { class: "m-chips", role: "group", "aria-label": t("filter"), "data-noswipe": "",
       onscroll: (e) => { chipScroll = e.currentTarget.scrollLeft; } },
       [["film", "onFilm"], ["subs", "subs"], ["specials", "specials"], ["upcoming", "upcoming"]].map(([k, label]) =>
-        chip(t(label), state[k], () => update({ [k]: !state[k] }), null, " tg")),
+        chip(t(label), state[k], () => update({ [k]: !state[k] }))),
       state.q
         ? el("button", { type: "button", class: "m-chip on", "aria-label": `${t("clearSearch")}: ${state.q}`, onclick: () => update({ q: "" }) },
           `“${state.q}”`, el("span", { class: "x", "aria-hidden": "true" }, "×"))
         : el("button", { type: "button", class: "m-chip", "aria-haspopup": "dialog", onclick: () => openFilters(true) }, icon("search", 16), t("searchShort")));
-    return el("div", { class: "m-qf" }, regions, switches);
   }
 
-  /** The end of the page: freshness, language, source and the TMDB credit its terms ask for. */
+  /** The end of the page: freshness, source and the TMDB credit its terms ask for. */
   function footer() {
     const gen = m.data.generated_at;
     return el("footer", { class: "m-foot" },
       el("p", {}, [gen ? t("updated", C.relTime(gen, t)) : t("noData"),
-        m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · ")),
-      el("p", { class: "m-foot-links" },
-        el("button", { type: "button", class: "m-link", lang: lang === "zh" ? "en" : "zh-CN", onclick: () => setLang(lang === "zh" ? "en" : "zh") }, t("lang")),
-        el("a", { class: "m-link", href: "https://github.com/Marc506/corridor-showtimes", target: "_blank", rel: "noopener" }, t("source"))),
+        m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · "), " · ",
+        el("a", { href: "https://github.com/Marc506/corridor-showtimes", target: "_blank", rel: "noopener" }, t("source"))),
       el("p", { class: "m-foot-credits" }, t("credits")[0],
         el("a", { href: "https://www.themoviedb.org/", target: "_blank", rel: "noopener" }, "TMDB"), t("credits")[1]));
   }
@@ -551,22 +521,6 @@
     ], { label: s.title, cls: "detail" });
   }
 
-  function openMenu() {
-    const hash = C.buildHash(state, m, today);
-    const gen = m.data.generated_at;
-    openSheet([
-      sheetHead(el("strong", {}, t("demos")), t("close")),
-      el("nav", { class: "m-demos" }, C.DEMOS.map((d) => el("a", {
-        class: "m-demo" + (d.id === cfg.id ? " cur" : ""), href: `../${d.id}/index.html${hash}`, "aria-current": d.id === cfg.id ? "page" : null,
-      }, el("strong", {}, d[lang]), el("span", {}, d[lang + "D"])))),
-      el("div", { class: "m-menu-links" },
-        el("a", { class: "m-btn ghost", href: "../index.html" }, t("chooser")),
-        el("button", { type: "button", class: "m-btn ghost", lang: lang === "zh" ? "en" : "zh-CN", onclick: () => { closeSheet(); setLang(lang === "zh" ? "en" : "zh"); } }, t("lang"))),
-      el("p", { class: "m-hint" }, [gen ? t("updated", C.relTime(gen, t)) : t("noData"),
-        m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · ")),
-    ], { label: t("menu"), cls: "menu" });
-  }
-
   let toastTimer;
   function toast(msg, action, onAction) {
     clearTimeout(toastTimer);
@@ -649,8 +603,9 @@
     cfg = config;
     if (history.state && history.state.mSheet) history.replaceState(null, "", location.href);
     build();
-    if (cfg.swipe !== false) swipe(ui.main);
+    swipe(ui.main);
     writeHash();
+    document.title = "Corridor Showtimes";
     render({ first: true });
     window.addEventListener("popstate", () => {
       if (!ignorePop && !sheet) return;    // a plain hash change: "hashchange" below follows it
@@ -672,7 +627,6 @@
     setInterval(() => {
       if (followToday()) return;
       const now = new Date();
-      if (cfg.tick) cfg.tick(context(null, now));
       if (!sheet && startedCount(C.visible(m, state, state.day, now, today), now) !== lastStarted) render({ keep: true });
     }, 30e3);
     let hiddenAt = null;
