@@ -9,7 +9,7 @@
 
   const DEFAULT_TZ = "America/New_York";
   const FILM_FORMATS = new Set(["16mm", "35mm", "70mm", "Film"]);   // "Film" = on film, gauge unknown (screenslate)
-  const LS = { venues: "cinema.venues", regions: "cinema.regions", lang: "cinema.lang" };
+  const LS = { venues: "cinema.venues", regions: "cinema.regions", lang: "cinema.lang", layout: "cinema.layout" };   // layout: "full" = a phone that chose the main page
 
   const DEMOS = [
     { id: "agenda", zh: "时间流", en: "Agenda",
@@ -36,6 +36,7 @@
       filmsShows: (f, n) => `${f} 部 · ${n} 场`, stale: (r) => `旧数据 · ${r}`, failed: "抓取失败",
       viaTag: (src) => `这家的主源暂时抓取失败，数据来自 ${src}，可能不全`, regions: "区域", website: "影院官网",
       // phone pages
+      source: "源代码", credits: ["排片版权归各影院所有，购票请点链接去影院官网。语言和导演数据来自 ", "（This product uses the TMDB API but is not endorsed or certified by TMDB）"],
       filter: "筛选", all: "全部", searchShort: "搜索", clearSearch: "清除搜索", venuesShows: (n, k) => `${n} 家影院 · ${k} 场`, clear: "清空", done: "完成", cinemas: "影院",
       onlyRegion: (r) => `只看 ${r}`, longPress: "点按选中或取消，长按只看这一家", started: (n) => `已开场 ${n} 场`, startedTag: "已开场",
       hideStarted: "收起", now: "现在", seeTomorrow: "看明天", seeDay: (d) => `看 ${d}`, prevDay: "前一天", nextDay: "后一天",
@@ -57,6 +58,7 @@
       dayEmpty: "No matching screenings at the selected cinemas on this day.", close: "Close", minutes: (n) => `${n} min`, runtimeUnknown: "runtime unknown",
       filmsShows: (f, n) => `${f} film${f === 1 ? "" : "s"} · ${n} show${n === 1 ? "" : "s"}`, stale: (r) => `Stale · ${r}`, failed: "Fetch failed",
       viaTag: (src) => `This cinema's own site failed; data from ${src}, may be incomplete`, regions: "Regions", website: "Cinema website",
+      source: "Source code", credits: ["Showtimes belong to the cinemas — use the links to buy tickets from them. Language and director data from ", " (this product uses the TMDB API but is not endorsed or certified by TMDB)."],
       filter: "Filters", all: "All", searchShort: "Search", clearSearch: "Clear search", venuesShows: (n, k) => `${n} cinema${n === 1 ? "" : "s"} · ${k} show${k === 1 ? "" : "s"}`, clear: "None", done: "Done", cinemas: "Cinemas",
       onlyRegion: (r) => `Only ${r}`, longPress: "Tap to select, press and hold for only that one", started: (n) => `${n} already started`, startedTag: "started",
       hideStarted: "Hide", now: "Now", seeTomorrow: "Tomorrow", seeDay: (d) => `Go to ${d}`, prevDay: "Previous day", nextDay: "Next day",

@@ -70,7 +70,7 @@ a { color: inherit; }
   font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden;
 }
 .m-title-main { overflow: hidden; text-overflow: ellipsis; }
-.m-title-rel { color: var(--accent); flex: none; }
+.m-title-rel { flex: none; }
 .m-title .m-ic { color: var(--muted); margin-left: 2px; }
 .m-date-input {
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
@@ -88,6 +88,24 @@ a { color: inherit; }
 }
 .m-hbtn[aria-pressed="true"] .m-hbtn-in { background: var(--fg); color: var(--bg); }
 .m-lang .m-hbtn-in { padding: 0 9px; color: var(--muted); }
+.m-title-rel.rel { color: var(--accent); }
+/* regions in the top bar: one segmented control, 32px drawn, 44px to the finger */
+.m-rseg { flex: none; display: flex; gap: 2px; margin-left: 6px; padding: 2px; border-radius: 16px; background: var(--chip); }
+.m-rseg button {
+  position: relative; min-width: 40px; height: 28px; padding: 0 7px; border: 0; border-radius: 14px; background: none;
+  font-size: 13px; font-weight: 650; color: var(--muted); letter-spacing: .01em;
+}
+.m-rseg button::after { content: ""; position: absolute; inset: -8px 0; }
+.m-rseg button.on { background: var(--fg); color: var(--bg); }
+.m-rseg + .m-lang { min-width: 40px; }
+.m-row1:has(.m-rseg) .m-title { font-size: 16px; }
+.m-row1:has(.m-rseg) .m-title .m-ic svg { width: 13px; height: 13px; }
+
+/* page footer */
+.m-foot { padding: 18px 16px 8px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.m-foot p { margin: 0 0 6px; }
+.m-foot-links { display: flex; flex-wrap: wrap; margin: 0 -8px 4px !important; }
+.m-foot-credits a { color: inherit; }
 
 .m-strip {
   display: flex; gap: 2px; height: 51px; padding: 0 8px 3px; overflow-x: auto; overscroll-behavior-x: contain;

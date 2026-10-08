@@ -1,7 +1,8 @@
 /* Corridor Showtimes, phone pages — the shell every demo shares (MOBILE.md §3): a top bar with the date and a
  * three-week date strip, a bottom thumb bar (previous day / today / filters / next day), the filter, detail and
- * layout bottom sheets, swipe to change day, the empty state. A demo supplies the content area only:
- *   MChrome.start({ id: "agenda", render(ctx) { return nodes }, after(ctx, opts), tools(ctx), extra })
+ * layout bottom sheets, swipe to change day, the empty state, the page footer. A demo supplies the content area:
+ *   MChrome.start({ id: "agenda", render(ctx) { return nodes }, after(ctx, opts), tools(ctx), extra,
+ *                   topRegions: true (region buttons in the top bar), menu: false (no layout menu), title })
  */
 (function () {
   "use strict";
@@ -148,6 +149,9 @@
     update({ regions: new Set(m.regions), venues: new Set([...state.venues, ...back]) });
   }
 
+  /** A region button: only that region; tapping the only one shown brings every region back. */
+  const pickRegion = (r) => (state.regions.size === 1 && state.regions.has(r) ? showAllRegions() : toggleRegion(r, true));
+
   function setLang(l) {
     lang = l; t = C.translator(l);
     try { store && store.setItem(C.LS.lang, l); } catch (_) { /* ignore */ }
@@ -164,14 +168,15 @@
       onclick: (e) => { try { e.target.showPicker(); } catch (_) { /* the native control opens itself */ } },
     });
     ui.tools = el("div", { class: "m-tools" });
-    ui.menuBtn = el("button", { type: "button", class: "m-hbtn", "aria-haspopup": "dialog", onclick: openMenu });
+    ui.regions = cfg.topRegions && m.regions.length > 1 ? el("div", { class: "m-rseg", role: "group" }) : null;
+    ui.menuBtn = cfg.menu === false ? null : el("button", { type: "button", class: "m-hbtn", "aria-haspopup": "dialog", onclick: openMenu });
     ui.langBtn = el("button", { type: "button", class: "m-hbtn m-lang", onclick: () => setLang(lang === "zh" ? "en" : "zh") });
     ui.strip = el("div", { class: "m-strip", role: "group" });
     ui.top = el("header", { class: "m-top" },
       el("div", { class: "m-row1" },
         el("div", { class: "m-titlebox" },                // the native date picker lies invisibly over the title only
           el("div", { class: "m-title", "aria-hidden": "true" }, ui.titleMain, ui.titleRel, icon("down", 16)), ui.dateInput),
-        ui.tools, ui.menuBtn, ui.langBtn),
+        ui.tools, ui.regions, ui.menuBtn, ui.langBtn),
       ui.strip);
     ui.main = el("main", { class: "m-main", id: "m-main" });
     ui.prevLbl = el("span");
@@ -211,15 +216,30 @@
 
   function renderTop(now) {
     const demo = C.DEMOS.find((d) => d.id === cfg.id);
-    ui.titleMain.textContent = C.dayTitle(state.day, lang);
-    const rel = C.relDay(state.day, today, t);
-    ui.titleRel.textContent = rel ? ` · ${rel}` : "";
+    const rel = C.relDay(state.day, today, t);     // "今天" / "明天" stand in for the weekday (the strip shows it)
+    if (lang === "zh") {
+      ui.titleMain.textContent = `${C.monthDay(state.day, lang)} `;
+      ui.titleRel.textContent = rel || C.weekday(state.day, lang);
+    } else {
+      ui.titleMain.textContent = rel ? "" : C.dayTitle(state.day, lang);          // "Tomorrow, Oct 9" / "Sun, Oct 11"
+      ui.titleRel.textContent = rel ? `${rel}, ${C.monthDay(state.day, lang)}` : "";
+    }
+    ui.titleRel.classList.toggle("rel", !!rel);
     ui.dateInput.value = state.day;
     ui.dateInput.min = minDay();
     if (m.days.length) ui.dateInput.max = m.days[m.days.length - 1];
     ui.dateInput.setAttribute("aria-label", `${t("pickDate")}: ${C.dayTitle(state.day, lang)}${rel ? " · " + rel : ""}`);
-    ui.menuBtn.replaceChildren(el("span", { class: "m-hbtn-in" }, demo ? demo[lang] : cfg.id, icon("down", 14)));
-    ui.menuBtn.setAttribute("aria-label", `${t("demos")}: ${demo ? demo[lang] : cfg.id}`);
+    if (ui.menuBtn) {
+      ui.menuBtn.replaceChildren(el("span", { class: "m-hbtn-in" }, demo ? demo[lang] : cfg.id, icon("down", 14)));
+      ui.menuBtn.setAttribute("aria-label", `${t("demos")}: ${demo ? demo[lang] : cfg.id}`);
+    }
+    if (ui.regions) {
+      const allOn = m.regions.every((r) => state.regions.has(r));
+      const seg = (label, on, onclick) => el("button", { type: "button", class: on ? "on" : null, "aria-pressed": String(on), onclick }, label);
+      ui.regions.setAttribute("aria-label", t("regions"));
+      ui.regions.replaceChildren(seg(t("all"), allOn, showAllRegions),
+        ...m.regions.map((r) => seg(r, !allOn && state.regions.has(r), () => pickRegion(r))));
+    }
     ui.langBtn.replaceChildren(el("span", { class: "m-hbtn-in" }, lang === "zh" ? "EN" : "中"));
     ui.langBtn.setAttribute("aria-label", t("lang"));
     ui.langBtn.lang = lang === "zh" ? "en" : "zh-CN";
@@ -276,7 +296,7 @@
       C, m, t, lang, el, icon, dot, store, state, now, today, list: list || C.visible(m, state, state.day, now, today),
       day: state.day, isToday: state.day === today, main: ui.main, top: ui.top,
       update, go, showDetail, toast, longPress, timePill, venueBadge, onlyVenue, empty: emptyState,
-      refresh: () => render({ keep: true }), quickFilters: () => quickFilters(now),
+      refresh: () => render({ keep: true }), quickFilters: () => quickFilters(now), footer,
     };
   }
 
@@ -286,7 +306,7 @@
     const now = new Date();
     today = C.todayKey(now);
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
-    document.title = `${(C.DEMOS.find((d) => d.id === cfg.id) || {})[lang] || ""} · Corridor Showtimes`;
+    document.title = cfg.title || `${(C.DEMOS.find((d) => d.id === cfg.id) || {})[lang] || ""} · Corridor Showtimes`;
     renderTop(now);
     renderBottom();
     const ctx = context(null, now);
@@ -382,8 +402,8 @@
       el("button", { type: "button", class: "m-btn small", onclick: () => closeSheet() }, btnLabel || t("done")));
   }
 
-  /** Regions, then the four switches and search, as two rows of buttons above the content: one tap, no sheet.
-   *  A region button shows only that region; tapping the only one shown brings every region back. */
+  /** Regions (unless they sit in the top bar), then the four switches and search, as rows of buttons above
+   *  the content: one tap, no sheet. */
   let chipScroll = 0;
   function quickFilters(now = new Date()) {
     const day = m.forDay(state.day).filter((s) => C.passes(s, state, now, today));
@@ -396,10 +416,9 @@
     const chip = (label, on, onclick, n, cls = "") => el("button", {
       type: "button", class: `m-chip${cls}${on ? " on" : ""}`, "aria-pressed": String(on), onclick,
     }, label, n != null ? el("span", { class: "n" }, n) : null);
-    const regions = m.regions.length > 1 ? el("div", { class: "m-chips regions", role: "group", "aria-label": t("regions") },
+    const regions = m.regions.length > 1 && !ui.regions ? el("div", { class: "m-chips regions", role: "group", "aria-label": t("regions") },
       chip(t("all"), allOn, showAllRegions, m.regions.reduce((n, r) => n + countIn(r), 0)),
-      m.regions.map((r) => chip(r, !allOn && state.regions.has(r),
-        () => (state.regions.size === 1 && state.regions.has(r) ? showAllRegions() : toggleRegion(r, true)), countIn(r)))) : null;
+      m.regions.map((r) => chip(r, !allOn && state.regions.has(r), () => pickRegion(r), countIn(r)))) : null;
     const switches = el("div", { class: "m-chips", role: "group", "aria-label": t("filter"), "data-noswipe": "",
       onscroll: (e) => { chipScroll = e.currentTarget.scrollLeft; } },
       [["film", "onFilm"], ["subs", "subs"], ["specials", "specials"], ["upcoming", "upcoming"]].map(([k, label]) =>
@@ -410,6 +429,24 @@
         : el("button", { type: "button", class: "m-chip", "aria-haspopup": "dialog", onclick: () => openFilters(true) }, icon("search", 16), t("searchShort")));
     return el("div", { class: "m-qf" }, regions, switches);
   }
+
+  /** The end of the page: freshness, the full website (remembered on this phone), language, source and the
+   *  TMDB credit its terms ask for. */
+  function footer() {
+    const gen = m.data.generated_at;
+    return el("footer", { class: "m-foot" },
+      el("p", {}, [gen ? t("updated", C.relTime(gen, t)) : t("noData"),
+        m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · ")),
+      el("p", { class: "m-foot-links" },
+        el("a", { class: "m-link", href: fullSiteUrl() }, t("fullSite")),
+        el("button", { type: "button", class: "m-link", lang: lang === "zh" ? "en" : "zh-CN", onclick: () => setLang(lang === "zh" ? "en" : "zh") }, t("lang")),
+        el("a", { class: "m-link", href: "https://github.com/Marc506/corridor-showtimes", target: "_blank", rel: "noopener" }, t("source"))),
+      el("p", { class: "m-foot-credits" }, t("credits")[0],
+        el("a", { href: "https://www.themoviedb.org/", target: "_blank", rel: "noopener" }, "TMDB"), t("credits")[1]));
+  }
+
+  /** The main page with the same day and filters; "?full" keeps a phone there instead of sending it back here. */
+  const fullSiteUrl = () => `../../index.html?full${C.buildHash(state, m, today)}`;
 
   function openFilters(focusSearch = false) {
     const count = el("strong", { class: "m-f-count", "aria-live": "polite" });
@@ -529,7 +566,7 @@
       }, el("strong", {}, d[lang]), el("span", {}, d[lang + "D"])))),
       el("div", { class: "m-menu-links" },
         el("a", { class: "m-btn ghost", href: "../index.html" }, t("chooser")),
-        el("a", { class: "m-btn ghost", href: `../../index.html${hash}` }, t("fullSite")),
+        el("a", { class: "m-btn ghost", href: fullSiteUrl() }, t("fullSite")),
         el("button", { type: "button", class: "m-btn ghost", lang: lang === "zh" ? "en" : "zh-CN", onclick: () => { closeSheet(); setLang(lang === "zh" ? "en" : "zh"); } }, t("lang"))),
       el("p", { class: "m-hint" }, [gen ? t("updated", C.relTime(gen, t)) : t("noData"),
         m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · ")),
@@ -616,6 +653,8 @@
 
   function start(config) {
     cfg = config;
+    // opened on purpose (or sent here by the main page): the main page sends this phone here again from now on
+    try { if (store && store.getItem(C.LS.layout) === "full") store.removeItem(C.LS.layout); } catch (_) { /* ignore */ }
     if (history.state && history.state.mSheet) history.replaceState(null, "", location.href);
     build();
     if (cfg.swipe !== false) swipe(ui.main);

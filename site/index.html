@@ -11,6 +11,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Showtimes">
   <meta name="theme-color" content="#141414">
+  <script>
+    // Phones get the phone layout (m/venues/). Its "Full website" link opens this page with ?full, remembered on
+    // that phone (cinema.layout), so whoever prefers this page stays here; the phone page forgets it when opened.
+    (function () {
+      var full = /[?&]full\b/.test(location.search), stay = full;
+      try { if (full) localStorage.setItem("cinema.layout", "full"); else stay = localStorage.getItem("cinema.layout") === "full"; } catch (e) { /* no storage: ?full alone */ }
+      var phone = window.matchMedia && matchMedia("(max-width: 640px), (hover: none) and (pointer: coarse) and (max-height: 500px)").matches;
+      if (phone && !stay) location.replace("m/venues/index.html" + location.hash);
+    })();
+  </script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,6 +28,7 @@
     <div class="brand">
       <h1>Corridor Showtimes</h1>
       <span id="freshness" class="freshness"></span>
+      <a id="phone-layout" class="phone-layout" href="m/venues/index.html" data-i18n="phoneLayout">手机版</a>
       <nav id="views" class="views" data-i18n-aria="views" aria-label="视图">
         <button data-view="timeline" data-i18n="timeline">时间轴</button>
         <button data-view="list" data-i18n="list">列表</button>

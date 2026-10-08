@@ -181,7 +181,7 @@
       } }, t.copy);
       root.replaceChildren(...[
         el("header", { class: "ch-top" }, el("h1", {}, t.title),
-          el("div", { class: "ch-links" }, el("a", { class: "m-link", href: "../index.html" }, t.main),
+          el("div", { class: "ch-links" }, el("a", { class: "m-link", href: "../index.html?full" }, t.main),
             el("button", { type: "button", class: "m-link", lang: lang === "zh" ? "en" : "zh-CN",
               onclick: () => { lang = lang === "zh" ? "en" : "zh"; try { store && store.setItem(C.LS.lang, lang); } catch (_) { /* ignore */ } render(); } }, lang === "zh" ? "EN" : "中文"))),
         el("p", {}, t.intro),
