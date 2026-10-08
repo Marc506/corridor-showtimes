@@ -355,10 +355,8 @@ body[data-view="list"] main { max-width: 1100px; }
 }
 
 .controls-toggle { display: none; }
-.phone-layout { display: none; font-size: 13px; color: var(--accent); }
 @media (max-width: 640px) {
   .top { padding: 10px 12px 8px; position: static; }
-  .phone-layout { display: inline; }
   /* regions, cinemas and filters fold behind one button; the date row stays */
   .controls { display: none; }
   .top.open .controls { display: block; }

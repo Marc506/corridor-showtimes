@@ -9,7 +9,7 @@
 
   const DEFAULT_TZ = "America/New_York";
   const FILM_FORMATS = new Set(["16mm", "35mm", "70mm", "Film"]);   // "Film" = on film, gauge unknown (screenslate)
-  const LS = { venues: "cinema.venues", regions: "cinema.regions", lang: "cinema.lang", layout: "cinema.layout" };   // layout: "full" = a phone that chose the main page
+  const LS = { venues: "cinema.venues", regions: "cinema.regions", lang: "cinema.lang" };
 
   const DEMOS = [
     { id: "agenda", zh: "时间流", en: "Agenda",
@@ -40,7 +40,7 @@
       filter: "筛选", all: "全部", searchShort: "搜索", clearSearch: "清除搜索", venuesShows: (n, k) => `${n} 家影院 · ${k} 场`, clear: "清空", done: "完成", cinemas: "影院",
       onlyRegion: (r) => `只看 ${r}`, longPress: "点按选中或取消，长按只看这一家", started: (n) => `已开场 ${n} 场`, startedTag: "已开场",
       hideStarted: "收起", now: "现在", seeTomorrow: "看明天", seeDay: (d) => `看 ${d}`, prevDay: "前一天", nextDay: "后一天",
-      pickDate: "选择日期", demos: "换个方案", chooser: "全部方案与评测清单", fullSite: "完整版网页", lang: "English",
+      pickDate: "选择日期", demos: "换个方案", chooser: "全部方案与评测清单", lang: "English",
       onlyFilm: "只看这部", onlyVenue: (n) => `只看 ${n}`, undo: "撤销", nowOnly: (n) => `现在只看 ${n}`,
       otherTimes: "这家今天的其他场次", sameTime: "同一时间也在", address: "地址", alsoScreen: (x) => `同时在 ${x} 放映`,
       dense: "紧凑", roomy: "宽松", dayMode: "当天", weekMode: "7 天", allStarted: (n) => `已全部开场 ${n} 部`,
@@ -62,7 +62,7 @@
       filter: "Filters", all: "All", searchShort: "Search", clearSearch: "Clear search", venuesShows: (n, k) => `${n} cinema${n === 1 ? "" : "s"} · ${k} show${k === 1 ? "" : "s"}`, clear: "None", done: "Done", cinemas: "Cinemas",
       onlyRegion: (r) => `Only ${r}`, longPress: "Tap to select, press and hold for only that one", started: (n) => `${n} already started`, startedTag: "started",
       hideStarted: "Hide", now: "Now", seeTomorrow: "Tomorrow", seeDay: (d) => `Go to ${d}`, prevDay: "Previous day", nextDay: "Next day",
-      pickDate: "Pick a date", demos: "Switch layout", chooser: "All layouts and the test sheet", fullSite: "Full website", lang: "中文",
+      pickDate: "Pick a date", demos: "Switch layout", chooser: "All layouts and the test sheet", lang: "中文",
       onlyFilm: "Only this film", onlyVenue: (n) => `Only ${n}`, undo: "Undo", nowOnly: (n) => `Showing only ${n}`,
       otherTimes: "Other times here today", sameTime: "Same time at", address: "Address", alsoScreen: (x) => `Also on ${x}`,
       dense: "Compact", roomy: "Roomy", dayMode: "Day", weekMode: "7 days", allStarted: (n) => `${n} film${n === 1 ? "" : "s"} already started`,

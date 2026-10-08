@@ -84,7 +84,7 @@
 
 **看排片**：双击 **`~/Applications/Corridor Showtimes.app`**（可拖到 Dock；Spotlight 搜 "Corridor Showtimes" 也能找到）。它打开 `site/index.html`；如果数据超过 13 小时没更新（比如电脑在 1 点 / 13 点都关着），还会在后台触发一次更新，一分钟后刷新网页即可。也可以直接在浏览器收藏 `file:///Users/yanghaolei/cinema/site/index.html`。不需要服务器。
 
-**手机上看**：打开在线版 https://marc506.github.io/corridor-showtimes/ ，Safari 里「分享 → 添加到主屏幕」即可像 App 一样使用。手机打开会自动进入手机版（`m/venues/`）：一家影院一张卡，每部片下面是可以点的场次时间；顶上是日期和「全部 / NYC / PHL / BOS」，再下面是三周的日期条（每天有场次数）和胶片 / 字幕 / 限定 / 隐藏已开场几个开关；底栏换日（也可以左右滑），详情和完整的影院列表从底部弹出。页面最下面的「完整版网页」会让这台手机以后留在完整版，完整版里点「手机版」可以回来。在线版由 Mac 上的定时任务每次抓取后自动发布（`scripts/publish.sh` → `gh-pages` 分支），Mac 关机期间停在最后一次的数据。
+**手机上看**：打开在线版 https://marc506.github.io/corridor-showtimes/ ，Safari 里「分享 → 添加到主屏幕」即可像 App 一样使用。手机打开会自动进入手机版（`m/venues/`）：一家影院一张卡，每部片下面是可以点的场次时间；顶上是日期和「全部 / NYC / PHL / BOS」，再下面是三周的日期条（每天有场次数）和胶片 / 字幕 / 限定 / 隐藏已开场几个开关；底栏换日（也可以左右滑），详情和完整的影院列表从底部弹出。在线版由 Mac 上的定时任务每次抓取后自动发布（`scripts/publish.sh` → `gh-pages` 分支），Mac 关机期间停在最后一次的数据。
 
 重建这个 app（改了图标或路径时）：`/opt/anaconda3/bin/python3 scripts/make_app.py`
 

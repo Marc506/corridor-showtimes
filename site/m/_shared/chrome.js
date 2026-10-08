@@ -430,23 +430,18 @@
     return el("div", { class: "m-qf" }, regions, switches);
   }
 
-  /** The end of the page: freshness, the full website (remembered on this phone), language, source and the
-   *  TMDB credit its terms ask for. */
+  /** The end of the page: freshness, language, source and the TMDB credit its terms ask for. */
   function footer() {
     const gen = m.data.generated_at;
     return el("footer", { class: "m-foot" },
       el("p", {}, [gen ? t("updated", C.relTime(gen, t)) : t("noData"),
         m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · ")),
       el("p", { class: "m-foot-links" },
-        el("a", { class: "m-link", href: fullSiteUrl() }, t("fullSite")),
         el("button", { type: "button", class: "m-link", lang: lang === "zh" ? "en" : "zh-CN", onclick: () => setLang(lang === "zh" ? "en" : "zh") }, t("lang")),
         el("a", { class: "m-link", href: "https://github.com/Marc506/corridor-showtimes", target: "_blank", rel: "noopener" }, t("source"))),
       el("p", { class: "m-foot-credits" }, t("credits")[0],
         el("a", { href: "https://www.themoviedb.org/", target: "_blank", rel: "noopener" }, "TMDB"), t("credits")[1]));
   }
-
-  /** The main page with the same day and filters; "?full" keeps a phone there instead of sending it back here. */
-  const fullSiteUrl = () => `../../index.html?full${C.buildHash(state, m, today)}`;
 
   function openFilters(focusSearch = false) {
     const count = el("strong", { class: "m-f-count", "aria-live": "polite" });
@@ -566,7 +561,6 @@
       }, el("strong", {}, d[lang]), el("span", {}, d[lang + "D"])))),
       el("div", { class: "m-menu-links" },
         el("a", { class: "m-btn ghost", href: "../index.html" }, t("chooser")),
-        el("a", { class: "m-btn ghost", href: fullSiteUrl() }, t("fullSite")),
         el("button", { type: "button", class: "m-btn ghost", lang: lang === "zh" ? "en" : "zh-CN", onclick: () => { closeSheet(); setLang(lang === "zh" ? "en" : "zh"); } }, t("lang"))),
       el("p", { class: "m-hint" }, [gen ? t("updated", C.relTime(gen, t)) : t("noData"),
         m.days.length ? t("range", m.days[0], m.days[m.days.length - 1]) : ""].filter(Boolean).join(" · ")),
@@ -653,8 +647,6 @@
 
   function start(config) {
     cfg = config;
-    // opened on purpose (or sent here by the main page): the main page sends this phone here again from now on
-    try { if (store && store.getItem(C.LS.layout) === "full") store.removeItem(C.LS.layout); } catch (_) { /* ignore */ }
     if (history.state && history.state.mSheet) history.replaceState(null, "", location.href);
     build();
     if (cfg.swipe !== false) swipe(ui.main);

@@ -61,8 +61,8 @@
     const IDS = C.DEMOS.map((d) => d.id);
     const T = {
       zh: {
-        title: "手机版 · 四个方案", main: "完整版网页",
-        intro: "四个方案共用同一个外壳——顶栏日期条、底栏（前一天 / 今天 / 筛选 / 后一天）、筛选和详情的底部抽屉、左右滑动换日——只有中间的内容怎么排不同。请在手机上依次打开，每个都做一遍下面的任务。影院选择、语言和筛选与完整版网页互通。",
+        title: "四个方案",
+        intro: "四个方案共用同一个外壳——顶栏日期条、底栏（前一天 / 今天 / 筛选 / 后一天）、筛选和详情的底部抽屉、左右滑动换日——只有中间的内容怎么排不同。请在手机上依次打开，每个都做一遍下面的任务。影院选择、语言和筛选与主站互通。",
         demos: "方案", motive: "动机", open: "打开",
         why: { agenda: "现在 / 接下来有什么可以看", venues: "我要去某家影院，它今天放什么", guide: "每个时段有哪些选择", films: "今天 / 这周有什么片子" },
         tasks: "评测任务（记录点击次数 / 滚动屏数 / 是否出错）",
@@ -75,8 +75,8 @@
         std: "共同标准（MOBILE.md §1）：✓ 达到，◐ 部分达到",
       },
       en: {
-        title: "Phone layouts · four options", main: "Full website",
-        intro: "All four share one shell — the date strip on top, the bottom bar (previous day / today / filters / next day), the filter and detail sheets, swipe to change day — and differ only in how the day is laid out in between. Open each on your phone and do the tasks below. Cinema choice, language and filters carry over to and from the full website.",
+        title: "Four phone layouts",
+        intro: "All four share one shell — the date strip on top, the bottom bar (previous day / today / filters / next day), the filter and detail sheets, swipe to change day — and differ only in how the day is laid out in between. Open each on your phone and do the tasks below. Cinema choice, language and filters carry over to and from the main page.",
         demos: "Layouts", motive: "For", open: "Open",
         why: { agenda: "What can I see now or next", venues: "I'm going to one cinema — what's on there", guide: "What are the choices in each time slot", films: "What films are on today or this week" },
         tasks: "Tasks (count taps / screens scrolled / mistakes)",
@@ -181,7 +181,7 @@
       } }, t.copy);
       root.replaceChildren(...[
         el("header", { class: "ch-top" }, el("h1", {}, t.title),
-          el("div", { class: "ch-links" }, el("a", { class: "m-link", href: "../index.html?full" }, t.main),
+          el("div", { class: "ch-links" },
             el("button", { type: "button", class: "m-link", lang: lang === "zh" ? "en" : "zh-CN",
               onclick: () => { lang = lang === "zh" ? "en" : "zh"; try { store && store.setItem(C.LS.lang, lang); } catch (_) { /* ignore */ } render(); } }, lang === "zh" ? "EN" : "中文"))),
         el("p", {}, t.intro),

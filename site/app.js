@@ -74,7 +74,7 @@
       onFilm: "只看胶片", subs: "有字幕", subsT: "只显示有字幕可看的场次：非英语片（英文字幕）、开放字幕场次（Open captions）和默片",
       upcoming: "隐藏已开场", specials: "限定放映",
       controls: (n, total, k) => `筛选 · ${n}/${total} 家影院${k ? ` · ${k} 项` : ""}`, wkNotYet: (l) => `未公布：${l}`, wkNothing: "所选影院这天没有场次", zoomIn: "放大", zoomOut: "缩小",
-      fromToday: "从今天起", search: "搜索片名 / 导演", phoneLayout: "手机版",
+      fromToday: "从今天起", search: "搜索片名 / 导演",
     },
     en: {
       never: "never", justNow: "just now", minAgo: (n) => `${n} min ago`, hrAgo: (n) => `${n} h ago`, dayAgo: (n) => `${n} days ago`,
@@ -124,7 +124,7 @@
       onFilm: "On film", subs: "Subtitled / captioned", subsT: "Only screenings you can follow by reading: non-English films (English subtitles), open-caption screenings and silent films",
       upcoming: "Hide started", specials: "Limited screenings",
       controls: (n, total, k) => `Filters · ${n}/${total} cinemas${k ? ` · ${k} on` : ""}`, wkNotYet: (l) => `Not yet listed: ${l}`, wkNothing: "Nothing at the selected cinemas", zoomIn: "Zoom in", zoomOut: "Zoom out",
-      fromToday: "Start today", search: "Search title / director", phoneLayout: "Phone layout",
+      fromToday: "Start today", search: "Search title / director",
     },
   };
 
@@ -451,7 +451,6 @@
     fresh.textContent = gen ? t("updated", relTime(gen)) + (stale && local ? t("staleHint") : "") : t("noDataYet");
     fresh.title = gen ? new Date(gen).toLocaleString() + (stale && local ? "\n" + t("staleHintT") : "") : "";
     fresh.classList.toggle("old", stale);
-    $("#phone-layout").href = "m/venues/index.html" + location.hash;     // shown on narrow screens only
 
     document.querySelectorAll("#views button").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
