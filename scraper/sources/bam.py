@@ -11,8 +11,8 @@ from bs4 import BeautifulSoup
 
 from ..base import DETAIL_TTL, BaseScraper
 from ..models import RawPage, Screening
-from ..normalize import (clean_text, iso, language_from_text, make_id, normalize_format, parse_iso, to_local,
-                         today_local)
+from ..normalize import (clean_text, iso, language_from_text, make_id, normalize_format, parse_iso, title_norm,
+                         to_local, today_local)
 from ..registry import register
 
 API = "https://www.bam.org/api/BAMApi/GetCalendarEventsByDayWithOnGoing"
@@ -98,11 +98,27 @@ def programme_name(title: str) -> str:
     return PRESENTS.sub("", title).strip() or title
 
 
+def talk_after(lines: list[str], directors: list[str]) -> str | None:
+    """A block that follows a film block, as that film's talk ("Conversation with Joie Lee, …", footnote
+    "*pre-recorded" folded in) — when it names one of the film's directors or is a Q&A; otherwise None."""
+    text = " ".join(f"({line.strip('* ')})" if line.startswith("*") else line.rstrip("*") for line in lines)
+    said = f" {title_norm(text)} "
+    if re.match(r"(?:q ?& ?a|post-screening)\b", text, re.I) or any(f" {title_norm(d)} " in said for d in directors):
+        return text
+    return None
+
+
+def clock(hour: int, minute: int) -> str:
+    return f"{hour % 12 or 12}{f':{minute:02d}' if minute else ''}{'am' if hour < 12 else 'pm'}"
+
+
 def split_programme(s: Screening, schedule: list[dict], tz) -> list[Screening] | None:
-    """A one-day programme with a running order -> one row per film block, each ending when the next block starts;
-    talks and breaks are left out. A block of one film is titled by the film; a block of several (a set of shorts)
-    by the programme's name, with each film in the note. None when the schedule doesn't fit this screening (it
-    starts more than 90 minutes away from the listed start, or its times don't run forward)."""
+    """A one-day programme with a running order -> one row per film block; talks and breaks on their own are left
+    out. One film is titled by the film, two as "A + B", three or more (a set of shorts) by the programme's name
+    with each film in the note. A talk right after a film block with that film's director (or a Q&A) joins it:
+    the row runs to the talk's end and its note says when the talk starts ("… at 12:45pm"); otherwise the row ends when the next
+    block starts. None when the schedule doesn't fit this screening (it starts more than 90 minutes away from the
+    listed start, or its times don't run forward)."""
     start = parse_iso(s.start, tz)
     times = [to_local(datetime(start.year, start.month, start.day, *b["time"]), tz) for b in schedule]
     if abs(times[0] - start) > timedelta(minutes=90) or any(b <= a for a, b in zip(times, times[1:])):
@@ -113,20 +129,26 @@ def split_programme(s: Screening, schedule: list[dict], tz) -> list[Screening] |
             continue
         films = b["films"]
         directors = list(dict.fromkeys(d for _, d, _ in films if d))
-        if len(films) == 1:
-            title, year, notes = films[0][0], films[0][2], [b["header"]]
+        if len(films) <= 2:
+            title, notes = " + ".join(t for t, _, _ in films), [b["header"]]
         else:
             if not directors and b["header"] and (m := WORKS_OF.match(b["header"])):
                 directors = [clean_text(m.group(1))]
             listed = "; ".join(f"{t} ({y})" if y else f"{t} (dir. {d})" if d else t for t, d, y in films)
-            title, year = programme_name(s.title), None
+            title = programme_name(s.title)
             notes = [f"{b['header']}: {listed}" if b["header"] else listed]
+        notes += b["extra"]
+        last = i + 1
+        if last < len(schedule) and not block_films(schedule[last]["lines"]) \
+                and (talk := talk_after(schedule[last]["lines"], directors)):
+            notes.append(f"{talk} at {clock(*schedule[last]['time'])}")
+            last += 1
         begin = iso(times[i], tz)
         out.append(replace(
             s, id=make_id(s.venue_id, begin, title), title=title, start=begin,
-            end=iso(times[i + 1], tz) if i + 1 < len(times) else None, director=", ".join(directors) or None,
-            year=year, runtime_min=None, series=s.title,
-            note="; ".join(filter(None, notes + b["extra"] + [s.note])) or None))
+            end=iso(times[last], tz) if last < len(times) else None, director=", ".join(directors) or None,
+            year=films[0][2] if len(films) == 1 else None, runtime_min=None, series=s.title,
+            note="; ".join(filter(None, notes + [s.note])) or None))
     return out or None
 
 

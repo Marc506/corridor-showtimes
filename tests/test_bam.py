@@ -39,7 +39,8 @@ def test_bam_detail_page():
 
 def test_bam_day_programme_splits_into_its_film_blocks():
     """A one-day programme whose page lists a running order becomes one row per film block; talks are left out.
-    A single film keeps its title; a set of films takes the programme's name, without the presenter."""
+    One or two films keep their titles; a set of three or more takes the programme's name, without the presenter.
+    A talk with the film's director right after it joins that row."""
     from scraper.models import Screening
     from scraper.sources.bam import parse_detail, split_programme
     from tests.conftest import FIXTURES
@@ -48,12 +49,15 @@ def test_bam_day_programme_splits_into_its_film_blocks():
                        start="2026-10-10T12:01:00-04:00", day="2026-10-10", detail_url="https://www.bam.org/film/x")
     rows = split_programme(parent, d["schedule"], "America/New_York")
     conf = "Black Women's Film Conference 2026"
-    assert [(r.start[11:16], r.end[11:16], r.title) for r in rows] == [
-        ("12:15", "12:45", conf), ("13:45", "15:15", conf), ("16:30", "18:00", "Sugar Island"), ("19:00", "19:45", conf)]
+    assert [(r.start[11:16], r.end[11:16], r.title) for r in rows] == [     # each runs through its own talk
+        ("12:15", "13:45", conf), ("13:45", "15:45", conf), ("16:30", "19:00", "Sugar Island"),
+        ("19:00", "20:30", "Brick by Brick + Heat")]
     assert rows[0].director == "Yace Sula, Tchaiko Omawale, Joie Lee"
+    assert rows[0].note.endswith("; Conversation with Joie Lee, Tchaiko Omawale & Yace Sula at 12:45pm")
     assert rows[1].director == "Akosua Adoma Owusu"
     assert rows[1].note.startswith("The Works of Akosua Adoma Owusu: Ajube Kete (2005); Boyant (2008)")
-    assert rows[2].director == "Johanné Gómez Terrero" and rows[2].note is None
+    assert rows[2].director == "Johanné Gómez Terrero"
+    assert rows[2].note == "Conversation with Johanné Gómez Terrero & Loira Limbal (pre-recorded) at 6pm"
     assert {r.series for r in rows} == {parent.title} and {r.detail_url for r in rows} == {parent.detail_url}
     assert len({r.id for r in rows}) == 4
 
@@ -66,3 +70,5 @@ def test_bam_schedule_that_does_not_fit_is_ignored():
     noon = Screening(id="x", venue_id="bam", title="T", start="2026-10-10T12:00:00-04:00", day="2026-10-10")
     assert split_programme(noon, schedule, "America/New_York") is None      # listed at noon, schedule at 7pm
     assert parse_schedule("No running order here") is None
+    other = parse_schedule("Schedule:\n12pm\nHeat dir. Aicha Cherif\n1pm\nConversation with a critic\n2pm\nBreak")
+    assert split_programme(noon, other, "America/New_York")[0].end[11:16] == "13:00"   # not her talk: not joined
