@@ -1,0 +1,65 @@
+/* Guide: the page itself doesn't scroll; the timeline is one box that scrolls both ways between the bars.
+ * The time axis sticks to its top, the cinema names to its left. */
+body[data-demo="guide"] { padding-bottom: 0; overflow: hidden; }
+body[data-demo="guide"] .m-main { min-height: 0; height: calc(100vh - var(--top-h) - var(--bar-h) - var(--bar-pad)); height: calc(100dvh - var(--top-h) - var(--bar-h) - var(--bar-pad)); }
+body[data-demo="guide"] .m-main > .m-empty { height: 100%; overflow: auto; }
+.gd {
+  height: 100%; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y pinch-zoom; scrollbar-width: none;
+}
+.gd::-webkit-scrollbar { display: none; }
+.gd-inner { position: relative; min-height: 100%; }
+.gd-head { position: sticky; top: 0; z-index: 6; display: flex; height: 28px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.gd-corner {
+  position: sticky; left: 0; z-index: 2; flex: none; width: var(--label-w); padding-left: 10px; line-height: 27px;
+  background: var(--bg); border-right: 1px solid var(--line); font-size: 11.5px; font-weight: 700; color: var(--muted);
+}
+.gd-axis { position: relative; flex: none; }
+.gd-hour {
+  position: absolute; top: 0; padding-left: 5px; line-height: 27px; border-left: 1px solid var(--line);
+  font-size: 11.5px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.gd-hour.near { visibility: hidden; }
+.gd-now-tag {
+  position: absolute; top: 5px; z-index: 1; transform: translateX(-50%); padding: 0 5px; border-radius: 9px;
+  background: var(--now); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; font-variant-numeric: tabular-nums;
+}
+.gd-body { position: relative; }
+.gd-row { display: flex; border-bottom: 1px solid var(--line); }
+.gd-label {
+  position: sticky; left: 0; z-index: 4; flex: none; width: var(--label-w);
+  padding: 7px 4px 4px 10px; background: var(--bg); border-right: 1px solid var(--line); box-shadow: inset 4px 0 0 var(--c);
+}
+.gd-vn {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; overflow-wrap: break-word;
+  font-size: 11px; font-weight: 700; line-height: 1.24;
+}
+.gd-warn { position: absolute; right: 4px; bottom: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--ss); }
+.gd-warn.stale { background: #e0a100; }
+.gd-warn.failed { background: var(--bad); }
+.gd-track {
+  position: relative; flex: none;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px);
+  background-size: var(--hour) 100%, var(--hour) 100%;
+  background-position: 0 0, calc(var(--hour) / 2) 0;
+}
+.gd-b {
+  position: absolute; height: 44px; overflow: hidden; overflow: clip; display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  padding: 0 7px 0 8px; border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 6px;
+  background: var(--card); text-align: left; line-height: 1.2;
+}
+.gd-b:active { background: var(--chip); }
+.gd-b.unknown { border-style: dashed; border-left-style: solid; }
+/* a block that starts left of the view keeps its text in view (overflow: clip leaves sticky working) */
+.gd-t, .gd-n { position: sticky; left: calc(var(--label-w) + 6px); max-width: 100%; }
+.gd-t { font-size: 11.5px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gd-t em { font-style: normal; color: var(--accent); }
+.gd-n { font-size: 13.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gd-b.narrow { padding: 0 4px 0 5px; justify-content: center; }
+.gd-b.narrow .gd-t { font-size: 11px; color: var(--fg); }
+.gd-b.past { background: var(--bg); }
+.gd-b.past .gd-n, .gd-b.past .gd-t { color: var(--muted); }
+.gd-b.past .gd-t { text-decoration: line-through; }
+.gd-b.hl { outline: 2px solid var(--accent); outline-offset: 1px; z-index: 1; }
+.gd-now { position: absolute; top: 0; bottom: 0; z-index: 3; width: 2px; margin-left: -1px; background: var(--now); pointer-events: none; }

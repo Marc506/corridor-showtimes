@@ -1,0 +1,52 @@
+/* Films: a card per film; cinema names on the left, that cinema's times as pills on the right. */
+.fm-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding: 4px 12px 0 14px; }
+.fm-sum { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fm-seg { display: flex; padding: 3px; border-radius: 12px; background: var(--chip); }
+.fm-seg button {
+  position: relative; min-width: 64px; height: 38px; padding: 0 12px; border: 0; border-radius: 9px; background: none;
+  font-size: 14px; font-weight: 600; color: var(--muted);
+}
+.fm-seg button::after { content: ""; position: absolute; inset: -3px 0; }
+.fm-seg button[aria-pressed="true"] { background: var(--card); color: var(--fg); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.fm { padding: 2px 10px 8px; }
+.fm-card { margin-bottom: 8px; padding: 10px 12px 11px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.fm-card.hl { box-shadow: inset 3px 0 0 var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.fm-title {
+  margin: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere;
+  font-size: 17px; font-weight: 750; line-height: 1.25;
+}
+.fm-card.one { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.fm-head { min-width: 0; }
+.fm-sub { margin-top: 2px; font-size: 13px; color: var(--muted); }
+.fm-at { display: inline-flex; align-items: center; gap: 5px; color: var(--fg); font-weight: 600; }
+.m-times.fm-solo { margin-top: 8px; gap: 8px 6px; }
+.fm-series {
+  display: inline-block; max-width: 100%; margin-top: 5px; padding: 0 7px; border-radius: 5px; background: var(--chip);
+  font-size: 12px; line-height: 1.6; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fm-venues { margin-top: 8px; }
+.fm-v { display: grid; grid-template-columns: 94px minmax(0, 1fr); gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.fm-vn {
+  display: flex; align-items: flex-start; gap: 6px; padding-top: 9px;
+  font-size: 12.5px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere;
+}
+.fm-vn .dot { margin-top: 3px; }
+.fm-v .m-times { gap: 6px; }
+.fm-fold {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; margin: 4px 0 10px; padding: 0 14px;
+  border: 0; border-radius: 12px; background: var(--chip); color: var(--muted); font-size: 14px; font-weight: 600;
+}
+/* 7 days */
+.fm-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 10px; }
+.fm-wd {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; height: 48px; padding: 0;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--card); line-height: 1.15;
+}
+.fm-wd .wd { font-size: 11.5px; color: var(--muted); }
+.fm-wd .n { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fm-wd.today .wd { color: var(--accent); font-weight: 700; }
+.fm-wd.zero { border-color: transparent; background: none; }
+.fm-wd.zero .n { color: var(--muted); font-weight: 400; }
+.fm-vsum { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.fm-vs { display: inline-flex; align-items: center; gap: 5px; }
+.fm-vs b { color: var(--fg); font-weight: 650; font-variant-numeric: tabular-nums; }

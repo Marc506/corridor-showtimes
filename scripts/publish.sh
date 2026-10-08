@@ -16,6 +16,7 @@ STAGE=$(mktemp -d)
 INDEX=$(mktemp)
 trap 'rm -rf "$STAGE" "$INDEX"' EXIT
 cp site/index.html site/app.js site/calendar.js site/styles.css site/data.js site/manifest.webmanifest site/*.png "$STAGE"/
+rsync -a --exclude '*.test.js' site/m "$STAGE"/      # phone layout demos at /m/ (they read ../../data.js)
 touch "$STAGE/.nojekyll"                      # serve files as-is, no Jekyll processing
 PY="$ROOT/.venv/bin/python"; [[ -x "$PY" ]] || PY=python3
 "$PY" scripts/stamp_assets.py "$STAGE" >/dev/null   # app.js -> app.js?v=<hash>, so a reload never mixes versions

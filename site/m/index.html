@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Phone layouts · Corridor Showtimes</title>
+  <meta name="description" content="Four phone layouts for Corridor Showtimes, side by side, with a test sheet for choosing one.">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="_shared/core.css">
+  <style>
+    body { padding: 0 0 40px; }
+    .ch { max-width: 640px; margin: 0 auto; padding: 0 14px; }
+    .ch-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; }
+    .ch-top h1 { margin: 0; font-size: 18px; }
+    .ch-links { display: flex; flex: none; }
+    .ch p { margin: 6px 0 10px; }
+    .ch h2 { margin: 26px 0 8px; font-size: 13px; font-weight: 800; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
+    .ch-demo { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 10px; margin-bottom: 10px; padding: 12px 14px;
+      border: 1px solid var(--line); border-radius: 14px; background: var(--card); text-decoration: none; }
+    .ch-demo .k { grid-row: span 3; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--fg); color: var(--bg); font-size: 18px; font-weight: 800; }
+    .ch-demo strong { font-size: 17px; }
+    .ch-demo .why { font-size: 13px; color: var(--accent); font-weight: 600; }
+    .ch-demo .what { font-size: 14px; color: var(--muted); }
+    .ch-task { margin: 14px 0 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .ch-task h3 { margin: 0 0 8px; font-size: 15px; line-height: 1.35; }
+    .ch-grid { display: grid; grid-template-columns: 1fr repeat(3, 64px); align-items: center; gap: 6px; font-size: 13px; }
+    .ch-grid .hd { color: var(--muted); font-size: 12px; text-align: center; }
+    .ch-grid .nm { font-weight: 700; }
+    .ch-grid input[type="number"] { width: 100%; height: 40px; padding: 0 6px; border: 1px solid var(--line); border-radius: 10px;
+      background: var(--bg); color: var(--fg); font: 16px var(--font); text-align: center; }
+    .ch-grid label { display: grid; place-items: center; height: 40px; }
+    .ch-grid input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); }
+    .ch-grid select { width: 100%; height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); font: 16px var(--font); text-align: center; }
+    .ch-sum { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .ch-sum th, .ch-sum td { padding: 8px 4px; border-bottom: 1px solid var(--line); text-align: center; }
+    .ch-sum th:first-child, .ch-sum td:first-child { text-align: left; }
+    .ch-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .ch-std { margin: 0; padding: 0; list-style: none; }
+    .ch-std li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 2px 8px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .ch-std .st { font-weight: 800; }
+    .ch-std .st.ok { color: #2a8a4a; }
+    .ch-std .st.part { color: #b07d00; }
+    .ch-std .nt { grid-column: 2; font-size: 12.5px; color: var(--muted); }
+    @media (prefers-color-scheme: dark) { .ch-std .st.ok { color: #6fcf8f; } .ch-std .st.part { color: #f2cc66; } }
+    .ch-foot { margin-top: 24px; font-size: 12.5px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="ch" id="ch"></div>
+  <script src="_shared/core.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const C = window.MCore;
+    const store = (() => { try { return window.localStorage; } catch (_) { return null; } })();
+    let lang = C.initialLang(location.hash, store, navigator.language);
+    const KEY = "cinema.m.eval";
+    const IDS = C.DEMOS.map((d) => d.id);
+    const T = {
+      zh: {
+        title: "手机版 · 四个方案", main: "完整版网页",
+        intro: "四个方案共用同一个外壳——顶栏日期条、底栏（前一天 / 今天 / 筛选 / 后一天）、筛选和详情的底部抽屉、左右滑动换日——只有中间的内容怎么排不同。请在手机上依次打开，每个都做一遍下面的任务。影院选择、语言和筛选与完整版网页互通。",
+        demos: "方案", motive: "动机", open: "打开",
+        why: { agenda: "现在 / 接下来有什么可以看", venues: "我要去某家影院，它今天放什么", guide: "每个时段有哪些选择", films: "今天 / 这周有什么片子" },
+        tasks: "评测任务（记录点击次数 / 滚动屏数 / 是否出错）",
+        list: ["现在是 19:00，找出 20:00 前开始、片长 ≤ 100 分钟的任意一场。", "看 Metrograph 今天的全部场次。", "《Primetime》这周在哪些影院、各几场。", "看明天晚上 7 点以后所有胶片放映。", "把某一场加进日历。"],
+        clicks: "点击", screens: "滚屏", error: "出错",
+        subj: "主观评分（1–5）", subjList: ["首屏信息量", "片名可读性", "「现在」感", "单手操作", "好看"],
+        summary: "汇总", total: "点击合计", scr: "滚屏合计", err: "出错", avg: "主观均分",
+        copy: "复制结果", copied: "已复制", reset: "清空记录", resetQ: "清空所有评测记录？",
+        saved: "记录只存在这台手机的浏览器里。",
+        std: "共同标准（MOBILE.md §1）：✓ 达到，◐ 部分达到",
+      },
+      en: {
+        title: "Phone layouts · four options", main: "Full website",
+        intro: "All four share one shell — the date strip on top, the bottom bar (previous day / today / filters / next day), the filter and detail sheets, swipe to change day — and differ only in how the day is laid out in between. Open each on your phone and do the tasks below. Cinema choice, language and filters carry over to and from the full website.",
+        demos: "Layouts", motive: "For", open: "Open",
+        why: { agenda: "What can I see now or next", venues: "I'm going to one cinema — what's on there", guide: "What are the choices in each time slot", films: "What films are on today or this week" },
+        tasks: "Tasks (count taps / screens scrolled / mistakes)",
+        list: ["It's 7pm: find any screening starting before 8pm that runs 100 minutes or less.", "See all of Metrograph's screenings today.", "Where is Primetime playing this week, and how many times at each cinema.", "See every screening on film tomorrow after 7pm.", "Add a screening to your calendar."],
+        clicks: "Taps", screens: "Screens", error: "Mistake",
+        subj: "Impressions (1–5)", subjList: ["First screen", "Titles readable", "Sense of “now”", "One-handed", "Looks good"],
+        summary: "Summary", total: "Taps", scr: "Screens", err: "Mistakes", avg: "Avg score",
+        copy: "Copy results", copied: "Copied", reset: "Clear", resetQ: "Clear every test result?",
+        saved: "Results are kept in this phone's browser only.",
+        std: "Shared standard (MOBILE.md §1): ✓ met, ◐ partly",
+      },
+    };
+    // MOBILE.md §1 as built, measured in Chromium at 375×812 and 390×844 (2026-10-08 data): ok / part.
+    const STANDARDS = [
+      ["ok", "视口 375×812 / 390×844", "两种宽度都实测；内容区占视口 81–82%。",
+        "375×812 / 390×844 viewports", "Measured at both widths; the content area is 81–82% of the screen."],
+      ["ok", "顶部 ≤ 96px，底部 ≤ 64px", "顶栏 96px；底栏 56px，有 Home 条的手机只多 inset − 22px，最多 64px。",
+        "Top ≤ 96px, bottom ≤ 64px", "Top bar 96px; bottom bar 56px, growing by inset − 22px on phones with a home bar (64px at most)."],
+      ["ok", "不依赖缩放", "双指缩放仍然可用（没加 user-scalable=no），但不需要它。",
+        "No zooming needed", "Pinch zoom still works (no user-scalable=no) but nothing needs it."],
+      ["part", "一屏 ≥ 10 场", "时间流 11–16 场、影片 10–21、节目表 7–15（停在当天第一场附近时少）；影院卡片 6–15——按影院排，一屏常常只是一家影院的几部片。",
+        "≥ 10 screenings per screen", "Agenda 11–16, Films 10–21, Guide 7–15 (fewer when it opens on the day's first show); Cinemas 6–15 — one screen is often a few films at one cinema."],
+      ["part", "片名 ≥ 15px、最多 2 行", "时间流 / 影院 15.5px，影片 17px；节目表 13.5px 单行（§4 C 规定 44px 色块内单行）。",
+        "Titles ≥ 15px, two lines", "Agenda / Cinemas 15.5px, Films 17px; Guide 13.5px on one line (a 44px block, as §4 C asks)."],
+      ["ok", "对比度、深色模式", "影院颜色只做色点或左边条；文字都在页面底色上。",
+        "Contrast, dark mode", "Cinema colours only as dots or left bars; text always sits on the page colours."],
+      ["part", "点击目标 ≥ 44px，操作在底部", "全部 ≥ 44px（时间按钮画 36px、可点区域 44px），只有「紧凑」行是 36px——这正是紧凑的用意。",
+        "Targets ≥ 44px, actions at the bottom", "All ≥ 44px (time buttons draw 36px, tap area 44px) except Compact rows, 36px by design."],
+      ["part", "左右滑动换日", "60px 阈值、150ms 过渡，减少动态效果时关闭。节目表不支持：横向滑动是它自己的滚动。",
+        "Swipe to change day", "60px, 150ms, off with reduced motion. Not in Guide, where sideways swipes scroll the timeline."],
+      ["ok", "详情抽屉", "购票 / 详情 / 加入日历（Apple、Google）；同一时间其他影院、本院其他场次、地址；下拉、点外面、Esc、手机返回键都能关。",
+        "Detail sheet", "Tickets / Details / Add to calendar (Apple, Google); same time elsewhere, other times here, address; pull down, tap outside, Esc or Back closes it."],
+      ["ok", "筛选抽屉", "按区域分组的影院、全选 / 清空 / 只看某区、长按 = 只看这家（可撤销）、四个开关、搜索、实时「N 家 · M 场」。",
+        "Filter sheet", "Cinemas by region, All / None / Only a region, press and hold = only that cinema (undo), four switches, search, live count."],
+      ["ok", "「现在」看得见", "时间流：已开场折叠 + 现在线；节目表：现在线 + 「现在」按钮；影片：全部开场的片沉底折叠。",
+        "“Now” is visible", "Agenda folds started shows above a now line; Guide has a now line and a Now button; Films folds finished films."],
+      ["ok", "URL 与存储和主站互通", "同一套 hash 参数和 cinema.venues / cinema.regions / cinema.lang（有测试；主站链接改到这里场次数一致）。",
+        "Same URL and storage as the main page", "Same hash parameters and cinema.venues / cinema.regions / cinema.lang keys (tested; a main-page link shows the same screenings here)."],
+      ["ok", "中英双语", "跟随浏览器语言并记住选择；共用的词条沿用主站键名。",
+        "Chinese / English", "Follows the browser and remembers the choice; shared strings keep the main page's key names."],
+      ["ok", "只渲染当天，< 1500 节点，换日 < 100ms", "最忙的一天最多约 1,240 个节点；换日 4–8ms。",
+        "One day, < 1,500 nodes, day change < 100ms", "At most about 1,240 nodes on the busiest day; changing day takes 4–8ms."],
+      ["part", "页面 < 60KB（不含 data.js）", "传输约 29KB（gzip，GitHub Pages 压缩后）；未压缩约 88KB，其中 8.5KB 是与主站共用的 calendar.js。无框架、无构建。",
+        "Page < 60KB without data.js", "About 29KB over the wire (gzip, as GitHub Pages serves it); about 88KB uncompressed, 8.5KB of it the calendar.js shared with the main page. No framework, no build."],
+      ["part", "Lighthouse", "这台电脑没有装 Lighthouse，暂未跑分；上面的数字是在 Chromium 里实测的。",
+        "Lighthouse", "Not run yet (Lighthouse isn't installed here); the numbers above were measured in Chromium."],
+    ];
+
+    const load = () => { try { return JSON.parse((store && store.getItem(KEY)) || "{}"); } catch (_) { return {}; } };
+    let data = load();
+    const save = () => { try { store && store.setItem(KEY, JSON.stringify(data)); } catch (_) { /* ignore */ } };
+    const el = (tag, attrs = {}, ...kids) => {
+      const n = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (v == null || v === false) continue;
+        if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v === true ? "" : v);
+      }
+      for (const c of kids.flat(Infinity)) if (c != null && c !== false) n.append(c instanceof Node ? c : document.createTextNode(String(c)));
+      return n;
+    };
+    const letter = (i) => "ABCD"[i];
+    const name = (id) => (C.DEMOS.find((d) => d.id === id) || {})[lang] || id;
+    const val = (k) => data[k];
+    const set = (k, v) => { if (v === "" || v == null || v === false) delete data[k]; else data[k] = v; save(); renderSummary(); };
+
+    function totals(id) {
+      let clicks = 0, screens = 0, errs = 0, n = 0, sum = 0;
+      for (let i = 0; i < 5; i++) {
+        clicks += +val(`${id}.t${i}.c`) || 0; screens += +val(`${id}.t${i}.s`) || 0; errs += val(`${id}.t${i}.e`) ? 1 : 0;
+      }
+      for (let i = 0; i < 5; i++) { const v = +val(`${id}.q${i}`); if (v) { n++; sum += v; } }
+      return { clicks, screens, errs, avg: n ? (sum / n).toFixed(1) : "–" };
+    }
+
+    let sumBox;
+    function renderSummary() {
+      const t = T[lang];
+      sumBox.replaceChildren(el("table", { class: "ch-sum" },
+        el("tr", {}, el("th", {}, ""), el("th", {}, t.total), el("th", {}, t.scr), el("th", {}, t.err), el("th", {}, t.avg)),
+        IDS.map((id, i) => { const x = totals(id); return el("tr", {}, el("td", {}, `${letter(i)} ${name(id)}`), el("td", {}, x.clicks), el("td", {}, x.screens), el("td", {}, x.errs), el("td", {}, x.avg)); })));
+    }
+
+    function report() {
+      const t = T[lang];
+      const lines = [`${t.title} — ${new Date().toLocaleString()}`];
+      IDS.forEach((id, i) => {
+        const x = totals(id);
+        lines.push(`${letter(i)} ${name(id)}: ${t.total} ${x.clicks} · ${t.scr} ${x.screens} · ${t.err} ${x.errs} · ${t.avg} ${x.avg}`);
+        t.list.forEach((_, k) => lines.push(`   ${k + 1}. ${val(`${id}.t${k}.c`) ?? "–"} / ${val(`${id}.t${k}.s`) ?? "–"}${val(`${id}.t${k}.e`) ? " ✗" : ""}`));
+        lines.push("   " + t.subjList.map((s, k) => `${s} ${val(`${id}.q${k}`) ?? "–"}`).join(" · "));
+      });
+      return lines.join("\n");
+    }
+
+    function render() {
+      const t = T[lang];
+      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+      const root = document.getElementById("ch");
+      sumBox = el("div");
+      const copyBtn = el("button", { type: "button", class: "m-btn", onclick: async () => {
+        try { await navigator.clipboard.writeText(report()); copyBtn.textContent = t.copied; } catch (_) { prompt("", report()); }
+      } }, t.copy);
+      root.replaceChildren(...[
+        el("header", { class: "ch-top" }, el("h1", {}, t.title),
+          el("div", { class: "ch-links" }, el("a", { class: "m-link", href: "../index.html" }, t.main),
+            el("button", { type: "button", class: "m-link", lang: lang === "zh" ? "en" : "zh-CN",
+              onclick: () => { lang = lang === "zh" ? "en" : "zh"; try { store && store.setItem(C.LS.lang, lang); } catch (_) { /* ignore */ } render(); } }, lang === "zh" ? "EN" : "中文"))),
+        el("p", {}, t.intro),
+        el("h2", {}, t.demos),
+        C.DEMOS.map((d, i) => el("a", { class: "ch-demo", href: `${d.id}/index.html` },
+          el("span", { class: "k", "aria-hidden": "true" }, letter(i)),
+          el("strong", {}, `${d[lang]} →`),
+          el("span", { class: "why" }, `${t.motive}: ${t.why[d.id]}`),
+          el("span", { class: "what" }, d[lang + "D"]))),
+        el("h2", {}, t.tasks),
+        t.list.map((task, k) => el("section", { class: "ch-task" }, el("h3", {}, `${k + 1}. ${task}`),
+          el("div", { class: "ch-grid" },
+            el("span", {}), el("span", { class: "hd" }, t.clicks), el("span", { class: "hd" }, t.screens), el("span", { class: "hd" }, t.error),
+            IDS.map((id, i) => [
+              el("span", { class: "nm" }, `${letter(i)} ${name(id)}`),
+              ["c", "s"].map((f) => { const inp = el("input", { type: "number", min: "0", inputmode: "numeric", "aria-label": `${name(id)} · ${k + 1} · ${f === "c" ? t.clicks : t.screens}`,
+                oninput: (e) => set(`${id}.t${k}.${f}`, e.target.value) }); inp.value = val(`${id}.t${k}.${f}`) ?? ""; return inp; }),
+              el("label", {}, (() => { const cb = el("input", { type: "checkbox", "aria-label": `${name(id)} · ${k + 1} · ${t.error}`,
+                onchange: (e) => set(`${id}.t${k}.e`, e.target.checked) }); cb.checked = !!val(`${id}.t${k}.e`); return cb; })()),
+            ])))),
+        el("section", { class: "ch-task" }, el("h3", {}, t.subj),
+          el("div", { class: "ch-grid", style: "grid-template-columns: 1fr repeat(4, 56px)" },
+            el("span", {}), IDS.map((id, i) => el("span", { class: "hd" }, letter(i))),
+            t.subjList.map((s, k) => [el("span", { class: "nm" }, s), IDS.map((id) => {
+              const sel = el("select", { "aria-label": `${name(id)} · ${s}`, onchange: (e) => set(`${id}.q${k}`, e.target.value) },
+                ["", 1, 2, 3, 4, 5].map((n) => el("option", { value: String(n) }, n === "" ? "–" : n)));
+              sel.value = val(`${id}.q${k}`) ?? ""; return sel;
+            })]))),
+        el("h2", {}, t.summary), sumBox,
+        el("div", { class: "ch-acts" }, copyBtn,
+          el("button", { type: "button", class: "m-btn ghost", onclick: () => { if (confirm(t.resetQ)) { data = {}; save(); render(); } } }, t.reset)),
+        el("p", { class: "m-hint" }, t.saved),
+        el("h2", {}, t.std),
+        el("ol", { class: "ch-std" }, STANDARDS.map(([st, zhH, zhN, enH, enN], i) => el("li", {},
+          el("span", { class: "st " + st, "aria-hidden": "true" }, st === "ok" ? "✓" : "◐"),
+          el("span", {}, `${i + 1}. ${lang === "zh" ? zhH : enH}`), el("span", { class: "nt" }, lang === "zh" ? zhN : enN)))),
+        el("p", { class: "ch-foot" }, "Corridor Showtimes · ", el("a", { href: "https://github.com/Marc506/corridor-showtimes" }, "GitHub")),
+      ].flat(Infinity));
+      renderSummary();
+    }
+    render();
+  })();
+  </script>
+</body>
+</html>
