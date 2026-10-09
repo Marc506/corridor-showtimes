@@ -29,7 +29,7 @@
     --pl-bad: #ff8a80;
   }
 }
-html.pl-open, html.pl-open body { overflow: hidden; }
+html.pl-locked, html.pl-locked body { overflow: hidden; }
 
 /* ---------- the buttons that open it ---------- */
 .pl-open {

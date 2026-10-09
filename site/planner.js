@@ -456,7 +456,7 @@
     if (step == null) restore();
     S.step = step || (resume ? 3 : 1);
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
-    document.documentElement.classList.add("pl-open");
+    document.documentElement.classList.add("pl-locked");
     try { history.pushState({ planner: 1 }, "", location.href); pushed = true; } catch (_) { pushed = false; }
     if (S.step === 3) solve(); else render();
     ui.body.scrollTop = 0;
@@ -466,7 +466,7 @@
   function onClosed() {
     if (!shown) return;
     shown = false;
-    document.documentElement.classList.remove("pl-open");
+    document.documentElement.classList.remove("pl-locked");
     if (pushed && history.state && history.state.planner) { ownBack = true; history.back(); }
     pushed = false;
     if (openBtn) openBtn.focus({ preventScroll: true });
@@ -485,7 +485,6 @@
 
   function render() {
     if (!dlg) return;
-    document.documentElement.classList.toggle("pl-zh", lang() === "zh");
     ui.title.textContent = t("plan");
     ui.close.setAttribute("aria-label", t("close"));
     ui.steps.replaceChildren(...t("steps").map((name, i) => {
