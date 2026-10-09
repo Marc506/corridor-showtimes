@@ -26,3 +26,11 @@ def test_format_suffix_in_titles():
     assert split_format_suffix("The Misconceived - 35MM") == ("The Misconceived", "35mm")
     assert split_format_suffix("Blade Runner (4K Restoration)") == ("Blade Runner", None)
     assert split_format_suffix("Up - Down") == ("Up - Down", None)
+
+
+def test_la_is_an_article_before_a_word_and_los_angeles_otherwise():
+    from scraper.normalize import smart_title
+    assert smart_title("LA BOLA NEGRA") == "La Bola Negra"
+    assert smart_title("VIVA LA VIDA") == "Viva la Vida"
+    assert smart_title("TO LIVE AND DIE IN LA") == "To Live and Die in LA"
+    assert smart_title("LA 92") == "LA 92"

@@ -122,7 +122,7 @@ def smart_title(s: str | None) -> str | None:
     words = re.split(r"( |…)", s)
     out = []
     after_break = True                      # start of title, or after ':' / '—' / '+'
-    for w in words:
+    for i, w in enumerate(words):
         if w in (" ", "…", ""):
             out.append(w)
             continue
@@ -131,6 +131,9 @@ def smart_title(s: str | None) -> str | None:
         bare = core.replace(".", "")
         if not core:
             out.append(w)
+        elif core == "LA" and not trail and re.match(r"[^\W\d]", next((x for x in words[i + 1:] if x.strip(" …")), "")):
+            # an article before a word ("LA BOLA NEGRA", "VIVA LA VIDA"); Los Angeles at the end or before a number
+            out.append(lead + ("la" if not after_break and not lead else "La") + trail)
         elif core in _KEEP_UPPER or re.fullmatch(r"(?:[A-Z]\.)+[A-Z]", core) or (_ROMAN.match(bare) and bare not in {"I", "MIX", "MID", "DIM", "LID", "CID", "DID", "MILD", "CIVIL", "LIVID", "VIVID"} or bare == "I"):
             out.append(lead + core + trail)
         elif (bare.isalpha() and len(bare) >= 2 and not re.search(r"[AEIOUYÀ-ÿ]", bare)
