@@ -1,8 +1,8 @@
-# Corridor Showtimes（按你关注的影院聚合排片，默认收录波士顿、纽约、费城的 22 家艺术影院和放映团体）
+# Corridor Showtimes（按你关注的影院聚合排片，默认收录波士顿、纽约、费城的 23 家艺术影院和放映团体）
 
 [English](README.md) · 在线版：**https://marc506.github.io/corridor-showtimes/**
 
-每天自动抓取 22 家影院和放映团体的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
+每天自动抓取 23 家影院和放映团体的排片，合并成一个网页，按「时间轴 / 列表 / 周」查看。
 
 | 影院 | 数据来源 |
 |---|---|
@@ -24,6 +24,7 @@
 | Somerville Theatre（波士顿 Somerville） | 网站排片页背后的售票 XML（TAPOS），一次请求全部场次；导演按 IMDb 号从 TMDB 精确查，不用 feed 里不准的导演字段 |
 | Bryn Mawr Film Institute（费城郊区） | 网页（本周页 + 之后场次各自的影片页；时间不写上午 / 下午，没标的按下午） |
 | Reel Nomadic（费城） | 活动网站 ma.to 上它的页面里的 schema.org 活动数据（`jsonld` 适配器）；流动放映团体，标题用介绍里写的片名，时间是入场时间，备注写入场和开映（「天黑后」），不估结束时间 |
+| The Secret Cinema（费城） | 官网首页（手写 HTML，UTF-16 编码）；流动 16mm 放映，每场一节，写了时间的才收，片单进备注 |
 | Hiway Theater（Jenkintown）、County Theater（Doylestown）、Ambler Theater（Ambler） | 网页（首页的本周正片 + 特别放映页；三家同属 Renew Theaters，共用一个网站模板和读取模块） |
 
 设计见 `ARCHITECTURE.md`，每家网站的抓取细节和坑见 `SOURCES.md`，各售票 / 建站平台的读取方式见 `PLATFORMS.md`。

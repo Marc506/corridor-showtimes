@@ -527,3 +527,24 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 - 场地不固定，`screen_from_location` 把每场的地点记为 `screen`；默认地址是最常用的 Penn Treaty Park，新场地出现时加到 `location.places`。
 - 已过去的活动在页面的「Past Events」里，不带 JSON-LD，不会混进来。和 PFS 没有合作关系，单独算一家。
 
+---
+
+## 18. The Secret Cinema（费城）— ★★ 手写首页（UTF-16）
+
+2026‑10‑08 实测。1992 年起的流动放映，只放胶片（16mm 或更大，「NOT VIDEO… NOT EVER!」），场地不固定：Rotunda 每月的 Bright Bulb 系列、富兰克林研究所的 Science After Hours、酒吧、画廊等。官网 `https://www.thesecretcinema.com/` 是 Word 97 生成的手写 HTML，**UTF-16 小端带字节序标记、响应头没有 charset**：httpx 按 UTF-8 读出来全是乱码，向导因此误判成「需要浏览器渲染」。现在通用的请求代码（`normalize.response_text`）和向导的探测都看字节序标记，按 UTF-16 解码。
+
+```html
+<HR WIDTH=100%>
+<H2 ALIGN=CENTER><B><I>Archive Discoveries 2026:</B></H2>
+<H2 ALIGN=CENTER><B>Unseen Curiosities from the Secret Cinema Collection </I>at Rotunda</B></H2>
+<P><B>Thursday, October 8, 2026<BR>8:00 pm<BR>Admission: FREE</B>
+<P><B><A HREF="https://www.therotunda.org">The Rotunda</A><BR>4014 Walnut Street<BR>Philadelphia</B>
+…
+<P><B><I>Invisible Walls </I>(1968, Dir: Richard A. Cowan) - </B>The "invisible walls" of the title …
+```
+
+- 按 `<HR>` 分节；有 `<H2>` 标题、加粗的「星期, 月 日, 年」和时间行的节是一场。标题是几个 `<H2>` 连起来，去掉结尾和场地同名的「at Rotunda」；「7:30 pm until 11:30 pm」给出结束时间。日期下面那块加粗文字的第一行是场地，记为 `screen`，`location.places` 给出 Rotunda 和富兰克林研究所的地址（默认 Rotunda）。
+- 节里「*片名* (1968, Dir: …)」的片单写进备注（年代可以是「1950s」），「Admission: FREE」记为 Free。规格：节里写了 16mm 就是 16mm，否则 Film（反正都是胶片，「只看胶片」会算进去）。
+- 「FUTURE SECRET CINEMA EVENTS (more info soon)」那一栏只有日期和场地，没有时间，不收；等它们挪到上面正式公布时自然出现。列表里偶有笔误（「January 29, 2026」应为 2027），反正不读。
+- 每次 1 个请求。没有每场的单独页面，`detail_url` 是首页。
+

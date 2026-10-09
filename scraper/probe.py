@@ -28,6 +28,8 @@ from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
+from .normalize import response_text
+
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/128 Safari/537.36")
 MAX_REQUESTS = 12
@@ -183,7 +185,8 @@ class SiteProbe:
         except httpx.HTTPError as e:
             return ProbeResponse(url=url, status=0, error=str(e)[:200], final_url=url)
         return ProbeResponse(url=url, status=r.status_code, content_type=r.headers.get("content-type", ""),
-                             text=r.text, final_url=str(r.url), headers={k.lower(): v for k, v in r.headers.items()})
+                             text=response_text(r.content, r.text), final_url=str(r.url),
+                             headers={k.lower(): v for k, v in r.headers.items()})
 
     def get(self, url: str) -> ProbeResponse | None:
         """GET once (cached). None when the request budget is spent or the host already refused us."""

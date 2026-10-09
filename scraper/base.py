@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import httpx
 
 from .models import RawPage, Screening, VenueConfig, VenueStatus
-from .normalize import TZ, make_id, now_utc_iso, today_local, zone
+from .normalize import TZ, make_id, now_utc_iso, response_text, today_local, zone
 
 log = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class HttpClient:
                     r = self._curl(url, headers)
                 else:
                     hr = self._client.get(url, headers=headers)
-                    r = _Resp(hr.status_code, hr.text, str(hr.url))
+                    r = _Resp(hr.status_code, response_text(hr.content, hr.text), str(hr.url))
             except httpx.HTTPError as e:
                 last_exc = e
                 log.warning("GET %s failed (%s), attempt %d", url, e, attempt + 1)

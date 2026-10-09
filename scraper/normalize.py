@@ -35,6 +35,14 @@ def today_local(tz: ZoneInfo | str | None = None) -> date:
     return datetime.now(zone(tz)).date()
 
 
+def response_text(content: bytes, text: str) -> str:
+    """The body as text. Old hand-written pages may be UTF-16 with a byte-order mark and no charset header
+    (The Secret Cinema), which a UTF-8 default turns into noise; the mark decides then."""
+    if content[:2] in (b"\xff\xfe", b"\xfe\xff"):
+        return content.decode("utf-16")
+    return text
+
+
 def clean_text(s: str | None) -> str | None:
     """Unescape HTML entities, collapse whitespace; empty -> None."""
     if s is None:

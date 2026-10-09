@@ -1,12 +1,12 @@
 # Corridor Showtimes
 
-**Showtimes from the cinemas you follow, on one timeline — starting with twenty-two art-house and repertory cinemas and screening series in Boston, New York and Philadelphia.**
+**Showtimes from the cinemas you follow, on one timeline — starting with twenty-three art-house and repertory cinemas and screening series in Boston, New York and Philadelphia.**
 
 **Live site → https://marc506.github.io/corridor-showtimes/** · [中文说明](README.zh-CN.md)
 
 Corridor Showtimes aggregates the calendars of art-house and repertory cinemas. The public instance
-follows twenty-two along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
-MoMA, Japan Society, L'Alliance New York, the Paris Theater, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, the Renew Theaters' Hiway, County and Ambler theaters, and Reel Nomadic's pop-up screenings. It refreshes twice a
+follows twenty-three along the Northeast Corridor: the Coolidge Corner Theatre, the Brattle Theatre, the Harvard Film Archive, the Somerville Theatre and Landmark's Kendall Square around Boston, Metrograph, Film Forum, Film at Lincoln Center, Anthology Film Archives, BAM,
+MoMA, Japan Society, L'Alliance New York, the Paris Theater, the Philadelphia Film Society, Landmark's Ritz Five, the Lightbox Film Center, the Bryn Mawr Film Institute, the Renew Theaters' Hiway, County and Ambler theaters, Reel Nomadic's pop-up screenings, and the Secret Cinema's 16mm shows. It refreshes twice a
 day and shows the day as a timeline, so you can answer *"what can I see tonight, and when?"* at a
 glance. It was built as a faster, customizable alternative to existing listings sites, which
 often lag behind the cinemas' own schedules.
@@ -131,6 +131,7 @@ it said last. The assistant can write that text for you — ask it to.
 | Somerville Theatre | **The ticketing feed behind the site's schedule** (TAPOS XML) | One request holds every first-run and repertory showing. The feed's director field mixes in wrong names, so it is ignored; the IMDb id it carries gives TMDB the exact film instead |
 | Bryn Mawr Film Institute | Server-rendered HTML: the week page, plus each later programme's own page | **Times have no am/pm** except morning shows, which the site marks, so an unmarked time is afternoon; captioned and sensory-friendly showings are labelled per time. Its Agile ticketing exposes no usable public feed |
 | Reel Nomadic (Philadelphia) | **schema.org events on its page on ma.to**, a city events listing site (`jsonld` adapter) | A pop-up collective with free outdoor and lounge screenings and no schedule page of its own. The listing names the evening ("Halloween Fest – Friday") and quotes its films in the description, so the films become the title; the time is when doors open, and each event's own page adds when the films begin ("Doors 6pm; films begin after dark") — no end time is guessed. Each night keeps its own place for the calendar |
+| The Secret Cinema (Philadelphia) | Its hand-written home page | A floating 16mm series since 1992. The page is UTF-16 with no charset header, which a UTF-8 default turns into noise, so the byte-order mark now decides the encoding for every source. Each announced programme is one section with date, time and place; the films it highlights go in the note. Future dates without a time wait until they are announced |
 | Hiway Theater (Jenkintown), County Theater (Doylestown), Ambler Theater | Server-rendered HTML: the home page (this week) and the special programmes page | One reader for the Renew Theaters site template, configured per site; again most times have no am/pm. The site already carries every showtime and ticket link, so the ticketing app is not read |
 
 **Fallback.** [screenslate](https://www.screenslate.com)'s open JSON:API covers the NYC venues and

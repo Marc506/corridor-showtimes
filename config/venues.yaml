@@ -270,6 +270,26 @@ venues:
     horizon_days: 45
     rate_limit_s: 2
 
+  - id: secret-cinema
+    name: The Secret Cinema
+    short: Secret
+    region: PHL
+    timezone: America/New_York
+    color: '#fb5607'
+    website: https://www.thesecretcinema.com/
+    # 1992 年起的流动 16mm 放映（Rotunda、富兰克林研究所、酒吧、画廊……）；首页手写 HTML（UTF-16），
+    # 每场一节，写了日期和时间的才算；「FUTURE … (more info soon)」只有日期，不收（SOURCES.md §18）
+    location:
+      address: "4014 Walnut St, Philadelphia, PA 19104"
+      geo: [39.9544, -75.2028]
+      places:
+        - {match: Rotunda, name: The Rotunda, address: "4014 Walnut St, Philadelphia, PA 19104", geo: [39.9544, -75.2028]}
+        - {match: Franklin Institute, name: The Franklin Institute, address: "222 N 20th St, Philadelphia, PA 19103", geo: [39.9582, -75.1731]}
+    source: {adapter: custom, module: secret_cinema}
+    fallback: null
+    horizon_days: 90
+    rate_limit_s: 2
+
   - id: coolidge-corner-theatre
     name: Coolidge Corner Theatre
     short: Coolidge
