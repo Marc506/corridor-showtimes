@@ -12,13 +12,14 @@
   <meta name="apple-mobile-web-app-title" content="Showtimes">
   <meta name="theme-color" content="#141414">
   <script>
-    // Phones get the phone layout (m/venues/), keeping the hash. ?full opens this page anyway (for testing).
+    // Phones get the phone layout (m/venues/), keeping the query (?plan=) and the hash. ?full opens this page anyway (for testing).
     (function () {
       var phone = window.matchMedia && matchMedia("(max-width: 640px), (hover: none) and (pointer: coarse) and (max-height: 500px)").matches;
-      if (phone && !/[?&]full\b/.test(location.search)) location.replace("m/venues/index.html" + location.hash);
+      if (phone && !/[?&]full\b/.test(location.search)) location.replace("m/venues/index.html" + location.search + location.hash);
     })();
   </script>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="planner.css">
 </head>
 <body>
   <header class="top">
@@ -75,5 +76,7 @@
   <script src="data.js"></script>
   <script src="calendar.js"></script>
   <script src="app.js"></script>
+  <script src="plan.js"></script>
+  <script src="planner.js"></script>
 </body>
 </html>

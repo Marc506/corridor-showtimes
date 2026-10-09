@@ -1,0 +1,93 @@
+{
+ "about": "Three films, several screenings; every combination with all three is possible — the one with the widest short gaps wins (A 13:00 → B 15:10 → C 17:20, gaps 40 and 40).",
+ "venues": [
+  {
+   "id": "ff",
+   "name": "Film Forum",
+   "short": "FF",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "mg",
+   "name": "Metrograph",
+   "short": "MG",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "bam",
+   "name": "BAM Rose Cinemas",
+   "short": "BAM",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "pfs",
+   "name": "Philadelphia Film Society",
+   "short": "PFS",
+   "region": "PHL",
+   "timezone": "America/New_York",
+   "status": "ok"
+  }
+ ],
+ "screenings": [
+  {
+   "id": "a1",
+   "venue_id": "ff",
+   "title": "Alpha",
+   "start": "2026-10-10T13:00:00-04:00",
+   "end": "2026-10-10T14:30:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 90,
+   "year": 2026
+  },
+  {
+   "id": "b1",
+   "venue_id": "mg",
+   "title": "Beta",
+   "start": "2026-10-10T14:50:00-04:00",
+   "end": "2026-10-10T16:20:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 90,
+   "year": 2026
+  },
+  {
+   "id": "b2",
+   "venue_id": "mg",
+   "title": "Beta",
+   "start": "2026-10-10T15:10:00-04:00",
+   "end": "2026-10-10T16:40:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 90,
+   "year": 2026
+  },
+  {
+   "id": "c1",
+   "venue_id": "ff",
+   "title": "Gamma",
+   "start": "2026-10-10T16:40:00-04:00",
+   "end": "2026-10-10T18:10:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 90,
+   "year": 2026
+  },
+  {
+   "id": "c2",
+   "venue_id": "ff",
+   "title": "Gamma",
+   "start": "2026-10-10T17:20:00-04:00",
+   "end": "2026-10-10T18:50:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 90,
+   "year": 2026
+  }
+ ],
+ "scope": {
+  "from": "2026-10-09",
+  "to": "2026-10-12"
+ }
+}

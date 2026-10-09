@@ -15,7 +15,7 @@ import re
 import sys
 from pathlib import Path
 
-ASSETS = ("styles.css", "data.js", "calendar.js", "app.js")
+ASSETS = ("styles.css", "data.js", "calendar.js", "app.js", "plan.js", "planner.js", "planner.css")
 
 
 def version(data: bytes) -> str:

@@ -1,0 +1,73 @@
+{
+ "about": "A → B → C each overlapping by 10 minutes: B would lose 10 at the head and 10 at the tail, over a 15-minute cap; with a 20-minute cap all three fit.",
+ "venues": [
+  {
+   "id": "ff",
+   "name": "Film Forum",
+   "short": "FF",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "mg",
+   "name": "Metrograph",
+   "short": "MG",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "bam",
+   "name": "BAM Rose Cinemas",
+   "short": "BAM",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "pfs",
+   "name": "Philadelphia Film Society",
+   "short": "PFS",
+   "region": "PHL",
+   "timezone": "America/New_York",
+   "status": "ok"
+  }
+ ],
+ "screenings": [
+  {
+   "id": "a1",
+   "venue_id": "ff",
+   "title": "Alpha",
+   "start": "2026-10-10T13:00:00-04:00",
+   "end": "2026-10-10T15:00:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 120,
+   "year": 2026
+  },
+  {
+   "id": "b1",
+   "venue_id": "ff",
+   "title": "Beta",
+   "start": "2026-10-10T14:50:00-04:00",
+   "end": "2026-10-10T16:50:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 120,
+   "year": 2026
+  },
+  {
+   "id": "c1",
+   "venue_id": "ff",
+   "title": "Gamma",
+   "start": "2026-10-10T16:40:00-04:00",
+   "end": "2026-10-10T18:40:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 120,
+   "year": 2026
+  }
+ ],
+ "scope": {
+  "from": "2026-10-09",
+  "to": "2026-10-12"
+ }
+}

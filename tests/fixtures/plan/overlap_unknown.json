@@ -1,0 +1,63 @@
+{
+ "about": "As overlap.json, but Alpha's runtime is unknown: its 120 minutes are an estimate, so no overlap plan is offered.",
+ "venues": [
+  {
+   "id": "ff",
+   "name": "Film Forum",
+   "short": "FF",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "mg",
+   "name": "Metrograph",
+   "short": "MG",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "bam",
+   "name": "BAM Rose Cinemas",
+   "short": "BAM",
+   "region": "NYC",
+   "timezone": "America/New_York",
+   "status": "ok"
+  },
+  {
+   "id": "pfs",
+   "name": "Philadelphia Film Society",
+   "short": "PFS",
+   "region": "PHL",
+   "timezone": "America/New_York",
+   "status": "ok"
+  }
+ ],
+ "screenings": [
+  {
+   "id": "a1",
+   "venue_id": "ff",
+   "title": "Alpha",
+   "start": "2026-10-10T19:00:00-04:00",
+   "end": null,
+   "day": "2026-10-10",
+   "runtime_min": null,
+   "year": 2026
+  },
+  {
+   "id": "b1",
+   "venue_id": "mg",
+   "title": "Beta",
+   "start": "2026-10-10T20:50:00-04:00",
+   "end": "2026-10-10T22:30:00-04:00",
+   "day": "2026-10-10",
+   "runtime_min": 100,
+   "year": 2026
+  }
+ ],
+ "scope": {
+  "from": "2026-10-09",
+  "to": "2026-10-12"
+ }
+}
