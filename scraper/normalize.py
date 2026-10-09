@@ -131,7 +131,7 @@ def smart_title(s: str | None) -> str | None:
         bare = core.replace(".", "")
         if not core:
             out.append(w)
-        elif core in _KEEP_UPPER or (_ROMAN.match(bare) and bare not in {"I", "MIX", "MID", "DIM", "LID", "CID", "DID", "MILD", "CIVIL", "LIVID", "VIVID"} or bare == "I"):
+        elif core in _KEEP_UPPER or re.fullmatch(r"(?:[A-Z]\.)+[A-Z]", core) or (_ROMAN.match(bare) and bare not in {"I", "MIX", "MID", "DIM", "LID", "CID", "DID", "MILD", "CIVIL", "LIVID", "VIVID"} or bare == "I"):
             out.append(lead + core + trail)
         elif (bare.isalpha() and len(bare) >= 2 and not re.search(r"[AEIOUYÀ-ÿ]", bare)
               and bare not in _NOT_ACRONYM):

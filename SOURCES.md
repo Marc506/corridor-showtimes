@@ -342,6 +342,11 @@ https://filmadelphia.org/showtimes/?start_date=9/24/2026    # 一天一页，M/D
 
 **实测补充（2026‑10‑02，开放字幕）**：开放字幕场次在每一场的 `CustomProperties` 里有一个**隐藏**属性 `{"Group": "Accessibility", "Name": "Amenities", "Value": "Open Captioning"}`。实测只出现在周二、Bourse 和 East 的首轮片场次上；同一天 Film Center 的回顾展场次没有。按这个标记（而不是按星期几）给场次加备注「Open captions」，网页的「有字幕」筛选把它们算进去。解析在通用的 `scraper/adapters/agile.py` 里，其他 Agile 影院同样适用。
 
+**实测补充（2026‑10‑09，费城电影节 PFF35）**：电影节（10/15–25，三处影院的 Bourse 1–3、East A/B、Film Center）的票走 Agile 里另一个入口，会员预售（10/7）和公开发售（10/9 10:00）之后，这个 feed 里仍然一场都没有（feed 里所有场次都是 `DuringSales`，电影节期间只有首轮片）。单场购票页（`ticketsearchcriteria.aspx?evtinfo=…`）有 Incapsula，不抓；电影节入口的 GUID 没找到。所以用电影节公布的**场刊排片表 PDF** 补：
+
+- `scripts/import_pff_grid.py <PDF> pff35`（需要 PyMuPDF，不是抓取程序的依赖）读 PDF 的文字层和坐标：每天一块（竖排的「THURSDAY 10.15」），每个影厅一行（「FILM SOCIETY / BOURSE 1」），每格一场（「7:15 • WHEN A WITNESS RECANTS (117 min, p. 99)」）。时间不写上午 / 下午：一行里只会往后排，第一格 9–11 点算上午、其余算下午，之后每格取比前一格晚的最近读法（7:30 之后的 10:30 是晚上，8:30pm 之后的 12:00 是午夜，即第二天 0:00）。格子的底色对照 KEY 得出单元（World View、Centerpieces……，白色的短片合集没有单元），记为备注。被截断的片名（「LABRADOR — AUTOPSY OF...」）用别的格子里的全名补。EVENTS / PANELS 两行不是放映，不收。结果写到 `config/schedules/pff35.yaml`（209 场，逐日核对过格数）。
+- `venues.yaml` 里 PFS 的 `schedules: [config/schedules/pff35.yaml]`：模块把文件当作一页读进来（解析仍是纯函数），系列「Philadelphia Film Festival」，结束 = 开始 + 节目总片长，链接到电影节片单页。feed 里同一栋楼（Bourse / East / Center）、10 分钟内、同一部片已经有的就不用文件里的——只看时间和楼不够，Bourse 的首轮片同时在别的厅放（10/16 7:30 的 The Last Critic 旁边就有一场首轮片）。电影节一旦出现在 feed 里，feed 的场次（带购票链接）自动取代；场刊之后改了场，要重新导入。
+
 ---
 
 ## 10. screenslate.com 兜底源 — ★ 开放 JSON（Drupal 10 JSON:API + 自定义 REST）

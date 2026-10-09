@@ -37,3 +37,29 @@ def test_open_caption_showings_are_tagged():
         {"StartDate": "2026-10-07T15:30:00", "Venue": {"Name": "PFS - Bourse Theater 1"}, "CustomProperties": []}]}]}
     rows = scraper_for("filmadelphia").parse([RawPage(url="x", body=json.dumps(feed), fetched_at="2026-10-02T01:00:00Z", ext="json")])
     assert [(r.day, r.note) for r in rows] == [("2026-10-06", "Open captions"), ("2026-10-07", None)]
+
+
+def test_festival_schedule_fills_in_what_the_feed_lacks(parse_fixture):
+    """Rows from config/schedules/*.yaml (the festival's printed grid) join the feed's; the feed's own listing of
+    the same film in the same building wins, but a different film next door is not mistaken for it."""
+    from scraper.models import RawPage
+    from tests.conftest import page, scraper_for
+    feed = parse_fixture("filmadelphia", "feed.json")
+    ad = next(r for r in feed if r.title == "American Doctor")
+    t = ad.start[:16]
+    grid = f"""series: Philadelphia Film Festival
+screenings:
+- {{start: '{t}', screen: Film Society Bourse 1, title: AMERICAN DOCTOR, runtime_min: 93, section: Non/Fiction}}
+- {{start: '{t}', screen: Film Society Bourse 2, title: THE LAST CRITIC, runtime_min: 83, section: Sight & Soundtrack}}
+- {{start: '2026-10-15T18:45', screen: Film Society Center, title: THE ONLY LIVING PICKPOCKET IN N.Y., runtime_min: 88}}
+"""
+    yml = RawPage(url="file://config/schedules/x.yaml", body=grid, fetched_at=ad.scraped_at, ext="yaml")
+    rows = scraper_for("filmadelphia").parse([page("filmadelphia", "feed.json"), yml])
+    added = [r for r in rows if r.series == "Philadelphia Film Festival"]
+    assert len(rows) == len(feed) + 2
+    assert [(r.title, r.note) for r in added] == [("The Last Critic", "Sight & Soundtrack"),
+                                                  ("The Only Living Pickpocket in N.Y.", None)]
+    pick = added[1]
+    assert (pick.start, pick.end, pick.screen) == ("2026-10-15T18:45:00-04:00", "2026-10-15T20:13:00-04:00",
+                                                   "Film Society Center")
+    assert pick.detail_url == "https://filmadelphia.org/festival/films/"

@@ -161,6 +161,9 @@ venues:
     horizon_days: 60
     rate_limit_s: 3
     agile_guid: 6634566a-a49f-4dec-89e6-bb4c5eda4814
+    # 电影节（PFF35）走另一个售票入口、不在这个 feed 里：场刊 PDF 导入的 config/schedules/pff35.yaml 补上，
+    # feed 里同一栋楼、10 分钟内、同一部片已有的不用（SOURCES.md §9）
+    schedules: [config/schedules/pff35.yaml]
 
   - id: landmark-ritz-five
     name: Landmark Ritz Five

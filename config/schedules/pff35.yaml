@@ -1,0 +1,1259 @@
+# PFF35 screenings, read from the festival's printed schedule grid (PFF35-Schedule-Grid.pdf) by
+# scripts/import_pff_grid.py. Used by scraper/sources/filmadelphia.py only for screenings the PFS feed
+# doesn't list. Times are local (America/New_York); runtime is the programme's total.
+series: Philadelphia Film Festival
+screenings:
+- start: 2026-10-15T18:30
+  screen: Film Society Bourse 1
+  title: NEVER AFTER DARK
+  runtime_min: 104
+  page: 86
+  section: After Hours
+- start: 2026-10-15T18:45
+  screen: Film Society Center
+  title: THE ONLY LIVING PICKPOCKET IN N.Y.
+  runtime_min: 88
+  page: 23
+  section: Centerpieces
+- start: 2026-10-15T19:15
+  screen: Film Society East B
+  title: TANGLES
+  runtime_min: 102
+  page: 64
+  section: This Animated Life
+- start: 2026-10-15T19:30
+  screen: Film Society East A
+  title: LOVE IS THE MONSTER
+  runtime_min: 95
+  page: 53
+  section: World View
+- start: 2026-10-15T21:15
+  screen: Film Society Bourse 1
+  title: NEVER AFTER DARK
+  runtime_min: 104
+  page: 86
+  section: After Hours
+- start: 2026-10-15T21:15
+  screen: Film Society Center
+  title: THE ONLY LIVING PICKPOCKET IN N.Y.
+  runtime_min: 88
+  page: 23
+  section: Centerpieces
+- start: 2026-10-16T11:30
+  screen: Film Society East B
+  title: THE ASSASSIN(S)
+  runtime_min: 131
+  page: 47
+  section: World View
+- start: 2026-10-16T12:00
+  screen: Film Society East A
+  title: VIVA CARMEN
+  runtime_min: 90
+  page: 65
+  section: This Animated Life
+- start: 2026-10-16T12:15
+  screen: Film Society Bourse 2
+  title: GROUND FLOOR
+  runtime_min: 108
+  page: 51
+  section: World View
+- start: 2026-10-16T12:45
+  screen: Film Society Bourse 1
+  title: FLIES
+  runtime_min: 101
+  page: 93
+  section: Community Screenings
+- start: 2026-10-16T14:00
+  screen: Film Society East A
+  title: WE ARE ALL STRANGERS
+  runtime_min: 157
+  page: 55
+  section: World View
+- start: 2026-10-16T14:15
+  screen: Film Society East B
+  title: BUNKER
+  runtime_min: 126
+  page: 42
+  section: Spotlights
+- start: 2026-10-16T14:45
+  screen: Film Society Bourse 2
+  title: REHEARSALS FOR A REVOLUTION
+  runtime_min: 98
+  page: 75
+  section: Non/Fiction
+- start: 2026-10-16T15:00
+  screen: Film Society Bourse 1
+  title: LOVE IS THE MONSTER
+  runtime_min: 95
+  page: 53
+  section: World View
+- start: 2026-10-16T17:00
+  screen: Film Society Bourse 2
+  title: THE BURNING GIANTS
+  runtime_min: 118
+  page: 48
+  section: World View
+- start: 2026-10-16T17:00
+  screen: Film Society East B
+  title: SALVATION
+  runtime_min: 120
+  page: 54
+  section: World View
+- start: 2026-10-16T17:15
+  screen: Film Society Bourse 1
+  title: HANGING BY A WIRE
+  runtime_min: 78
+  page: 73
+  section: Non/Fiction
+- start: 2026-10-16T17:15
+  screen: Film Society East A
+  title: YELLOW LETTERS
+  runtime_min: 127
+  page: 56
+  section: World View
+- start: 2026-10-16T18:00
+  screen: Film Society Center
+  title: PAPER TIGER
+  runtime_min: 115
+  page: 33
+  section: Centerpieces
+- start: 2026-10-16T19:15
+  screen: Film Society Bourse 1
+  title: WHEN A WITNESS RECANTS
+  runtime_min: 117
+  page: 99
+  section: State of the Union
+- start: 2026-10-16T19:30
+  screen: Film Society Bourse 2
+  title: THE LAST CRITIC
+  runtime_min: 83
+  page: 89
+  section: Sight & Soundtrack
+- start: 2026-10-16T19:30
+  screen: Film Society East B
+  title: YALE
+  runtime_min: 120
+  page: 81
+  section: Filmadelphia
+- start: 2026-10-16T20:00
+  screen: Film Society East A
+  title: QUEEN AT SEA
+  runtime_min: 121
+  page: 44
+  section: Spotlights
+- start: 2026-10-16T20:30
+  screen: Film Society Center
+  title: CLUB KID
+  runtime_min: 122
+  page: 28
+  section: Centerpieces
+- start: 2026-10-16T22:15
+  screen: Film Society Bourse 1
+  title: LABRADOR — AUTOPSY OF SILENCE
+  runtime_min: 120
+  page: 53
+  section: World View
+- start: 2026-10-16T22:30
+  screen: Film Society Bourse 2
+  title: SICK
+  runtime_min: 90
+  page: 87
+  section: After Hours
+- start: 2026-10-16T22:30
+  screen: Film Society East B
+  title: VERTIGINOUS
+  runtime_min: 67
+  page: 64
+  section: This Animated Life
+- start: 2026-10-16T22:45
+  screen: Film Society East A
+  title: TOO MANY BEASTS
+  runtime_min: 95
+  page: 60
+  section: Cinema de France
+- start: 2026-10-17T10:15
+  screen: Film Society Center
+  title: IRON BOY
+  runtime_min: 90
+  page: 63
+  section: This Animated Life
+- start: 2026-10-17T11:00
+  screen: Film Society East A
+  title: CLARISSA
+  runtime_min: 134
+  page: 49
+  section: World View
+- start: 2026-10-17T11:45
+  screen: Film Society Bourse 2
+  title: SEIZED
+  runtime_min: 94
+  page: 98
+  section: State of the Union
+- start: 2026-10-17T12:00
+  screen: Film Society Bourse 1
+  title: BRIAN
+  runtime_min: 94
+  page: 69
+  section: Made in USA
+- start: 2026-10-17T12:00
+  screen: Film Society Bourse 3
+  title: 'MY UNDESIRABLE FRIENDS: PART I — LAST AIR IN MOSCOW'
+  runtime_min: 342
+  page: 102
+  section: From the Vaults
+- start: 2026-10-17T12:00
+  screen: Film Society East B
+  title: FATHERLAND
+  runtime_min: 82
+  page: 37
+  section: Masters of Cinema
+- start: 2026-10-17T12:15
+  screen: Film Society Center
+  title: BIG PHAN
+  runtime_min: 95
+  page: 78
+  section: Filmadelphia
+- start: 2026-10-17T14:00
+  screen: Film Society Bourse 2
+  title: NARRATIVE SHORTS PROGRAM
+  runtime_min: 97
+  page: 105
+  section: null
+- start: 2026-10-17T14:00
+  screen: Film Society East B
+  title: COWARD
+  runtime_min: 125
+  page: 49
+  section: World View
+- start: 2026-10-17T14:15
+  screen: Film Society East A
+  title: ONCE UPON A TIME IN HARLEM
+  runtime_min: 100
+  page: 40
+  section: Masters of Cinema
+- start: 2026-10-17T14:30
+  screen: Film Society Bourse 1
+  title: WE ARE ALIENS
+  runtime_min: 117
+  page: 65
+  section: This Animated Life
+- start: 2026-10-17T14:45
+  screen: Film Society Center
+  title: ALL OF A SUDDEN
+  runtime_min: 196
+  page: 26
+  section: Centerpieces
+- start: 2026-10-17T16:30
+  screen: Film Society Bourse 2
+  title: ELEPHANTS IN THE FOG
+  runtime_min: 108
+  page: 92
+  section: Community Screenings
+- start: 2026-10-17T16:30
+  screen: Film Society East A
+  title: JEAN-MICHEL BASQUIAT
+  runtime_min: 97
+  page: 74
+  section: Non/Fiction
+- start: 2026-10-17T16:45
+  screen: Film Society East B
+  title: ANIMATED SHORTS PROGRAM
+  runtime_min: 93
+  page: 66
+  section: null
+- start: 2026-10-17T17:00
+  screen: Film Society Bourse 1
+  title: THE MATCH
+  runtime_min: 91
+  page: 75
+  section: Non/Fiction
+- start: 2026-10-17T18:45
+  screen: Film Society Center
+  title: LA BOLA NEGRA
+  runtime_min: 155
+  page: 32
+  section: Centerpieces
+- start: 2026-10-17T18:45
+  screen: Film Society East A
+  title: BEDFORD PARK
+  runtime_min: 121
+  page: 68
+  section: Made in USA
+- start: 2026-10-17T19:00
+  screen: Film Society Bourse 2
+  title: SENTIENT
+  runtime_min: 105
+  page: 94
+  section: Community Screenings
+- start: 2026-10-17T19:15
+  screen: Film Society Bourse 1
+  title: WE ARE THE SHAGGS
+  runtime_min: 100
+  page: 90
+  section: Sight & Soundtrack
+- start: 2026-10-17T19:15
+  screen: Film Society East B
+  title: FILMADELPHIA SHORTS PROGRAM
+  runtime_min: 115
+  page: 82
+  section: Filmadelphia
+- start: 2026-10-17T21:15
+  screen: Film Society Bourse 2
+  title: THE BLOW
+  runtime_min: 105
+  page: 58
+  section: Cinema de France
+- start: 2026-10-17T21:30
+  screen: Film Society Bourse 1
+  title: UGLY CRY
+  runtime_min: 94
+  page: 71
+  section: Made in USA
+- start: 2026-10-17T21:30
+  screen: Film Society East A
+  title: THE HAUNTING OF PENNHURST
+  runtime_min: 82
+  page: 79
+  section: Filmadelphia
+- start: 2026-10-17T22:00
+  screen: Film Society Center
+  title: HALF
+  runtime_min: 96
+  page: 86
+  section: After Hours
+- start: 2026-10-17T22:00
+  screen: Film Society East B
+  title: 5 MORE MINUTES
+  runtime_min: 93
+  page: 84
+  section: After Hours
+- start: 2026-10-18T09:45
+  screen: Film Society East B
+  title: LE FAUX SOIR
+  runtime_min: 133
+  page: 60
+  section: Cinema de France
+- start: 2026-10-18T10:15
+  screen: Film Society East A
+  title: VIVA CARMEN
+  runtime_min: 90
+  page: 65
+  section: This Animated Life
+- start: 2026-10-18T11:30
+  screen: Film Society Bourse 3
+  title: THE DREAMED ADVENTURE
+  runtime_min: 167
+  page: 50
+  section: World View
+- start: 2026-10-18T11:45
+  screen: Film Society Bourse 1
+  title: 'CARL SAGAN: WE ARE MADE OF…'
+  runtime_min: 98
+  page: 73
+  section: Non/Fiction
+- start: 2026-10-18T12:00
+  screen: Film Society Bourse 2
+  title: I'LL BE GONE IN JUNE
+  runtime_min: 125
+  page: 52
+  section: World View
+- start: 2026-10-18T12:15
+  screen: Film Society East A
+  title: THE MELTDOWN
+  runtime_min: 108
+  page: 54
+  section: World View
+- start: 2026-10-18T12:30
+  screen: Film Society East B
+  title: TENDER LOVING CARE
+  runtime_min: 107
+  page: 41
+  section: Masters of Cinema
+- start: 2026-10-18T14:30
+  screen: Film Society Bourse 1
+  title: EVERYTIME
+  runtime_min: 124
+  page: 50
+  section: World View
+- start: 2026-10-18T15:00
+  screen: Film Society Bourse 2
+  title: NUISANCE BEAR
+  runtime_min: 90
+  page: 98
+  section: State of the Union
+- start: 2026-10-18T15:00
+  screen: Film Society Center
+  title: FJORD
+  runtime_min: 146
+  page: 30
+  section: Centerpieces
+- start: 2026-10-18T15:00
+  screen: Film Society East A
+  title: MAKING MARIE ANTOINETTE
+  runtime_min: 82
+  page: 74
+  section: Non/Fiction
+- start: 2026-10-18T15:15
+  screen: Film Society East B
+  title: EXTRA GEOGRAPHY
+  runtime_min: 94
+  page: 51
+  section: World View
+- start: 2026-10-18T17:00
+  screen: Film Society Bourse 2
+  title: NAZA
+  runtime_min: 80
+  page: 97
+  section: State of the Union
+- start: 2026-10-18T17:00
+  screen: Film Society East A
+  title: BEN'IMANA
+  runtime_min: 101
+  page: 48
+  section: World View
+- start: 2026-10-18T17:15
+  screen: Film Society Bourse 1
+  title: UGLY CRY
+  runtime_min: 94
+  page: 71
+  section: Made in USA
+- start: 2026-10-18T17:30
+  screen: Film Society East B
+  title: CHILI FINGER
+  runtime_min: 100
+  page: 43
+  section: Spotlights
+- start: 2026-10-18T18:00
+  screen: Film Society Center
+  title: BEHEMOTH!
+  runtime_min: 124
+  page: 27
+  section: Centerpieces
+- start: 2026-10-18T19:00
+  screen: Film Society Bourse 2
+  title: 14TH
+  runtime_min: 108
+  page: 96
+  section: State of the Union
+- start: 2026-10-18T19:15
+  screen: Film Society East A
+  title: THE CYCLE
+  runtime_min: 111
+  page: 85
+  section: After Hours
+- start: 2026-10-18T19:45
+  screen: Film Society Bourse 1
+  title: THE DREAMED ADVENTURE
+  runtime_min: 167
+  page: 50
+  section: World View
+- start: 2026-10-18T20:00
+  screen: Film Society East B
+  title: THE DIARY OF A CHAMBERMAID
+  runtime_min: 94
+  page: 37
+  section: Masters of Cinema
+- start: 2026-10-18T20:45
+  screen: Film Society Center
+  title: JOSEPHINE
+  runtime_min: 119
+  page: 31
+  section: Centerpieces
+- start: 2026-10-19T12:45
+  screen: Film Society East B
+  title: WE ARE ALL STRANGERS
+  runtime_min: 157
+  page: 55
+  section: World View
+- start: 2026-10-19T13:15
+  screen: Film Society Bourse 1
+  title: THE BLOW
+  runtime_min: 105
+  page: 58
+  section: Cinema de France
+- start: 2026-10-19T13:15
+  screen: Film Society East A
+  title: BEN'IMANA
+  runtime_min: 101
+  page: 48
+  section: World View
+- start: 2026-10-19T15:30
+  screen: Film Society Bourse 1
+  title: I SEE BUILDINGS FALL LIKE LIGHTNING
+  runtime_min: 109
+  page: 52
+  section: World View
+- start: 2026-10-19T15:30
+  screen: Film Society East A
+  title: A LONG WINTER
+  runtime_min: 117
+  page: 38
+  section: Masters of Cinema
+- start: 2026-10-19T16:00
+  screen: Film Society East B
+  title: CONGO BOY
+  runtime_min: 91
+  page: 88
+  section: Sight & Soundtrack
+- start: 2026-10-19T18:00
+  screen: Film Society Center
+  title: RAISE THE RED LANTERN
+  runtime_min: 125
+  page: 102
+  section: From the Vaults
+- start: 2026-10-19T18:00
+  screen: Film Society East A
+  title: GENTLE BY BIRTH
+  runtime_min: 100
+  page: 79
+  section: Filmadelphia
+- start: 2026-10-19T18:15
+  screen: Film Society Bourse 1
+  title: ADULT SUPERVISION
+  runtime_min: 108
+  page: 46
+  section: World View
+- start: 2026-10-19T18:15
+  screen: Film Society East B
+  title: FATHERLAND
+  runtime_min: 82
+  page: 37
+  section: Masters of Cinema
+- start: 2026-10-19T18:30
+  screen: Film Society Bourse 2
+  title: NAZA
+  runtime_min: 80
+  page: 97
+  section: State of the Union
+- start: 2026-10-19T20:15
+  screen: Film Society East B
+  title: POSSIBLE LOVE
+  runtime_min: 164
+  page: 41
+  section: Masters of Cinema
+- start: 2026-10-19T20:30
+  screen: Film Society Bourse 2
+  title: TEST
+  runtime_min: 108
+  page: 70
+  section: Made in USA
+- start: 2026-10-19T20:30
+  screen: Film Society East A
+  title: TIME WARP
+  runtime_min: 113
+  page: 76
+  section: Non/Fiction
+- start: 2026-10-19T20:45
+  screen: Film Society Bourse 1
+  title: THE CYCLE
+  runtime_min: 111
+  page: 85
+  section: After Hours
+- start: 2026-10-20T12:45
+  screen: Film Society Bourse 1
+  title: FLIES
+  runtime_min: 101
+  page: 93
+  section: Community Screenings
+- start: 2026-10-20T12:45
+  screen: Film Society East A
+  title: SALVATION
+  runtime_min: 120
+  page: 54
+  section: World View
+- start: 2026-10-20T13:15
+  screen: Film Society East B
+  title: TANGLES
+  runtime_min: 102
+  page: 64
+  section: This Animated Life
+- start: 2026-10-20T15:15
+  screen: Film Society Bourse 1
+  title: WHEN A WITNESS RECANTS
+  runtime_min: 117
+  page: 99
+  section: State of the Union
+- start: 2026-10-20T15:30
+  screen: Film Society East B
+  title: WOLFRAM
+  runtime_min: 102
+  page: 55
+  section: World View
+- start: 2026-10-20T15:45
+  screen: Film Society East A
+  title: AH GIRL
+  runtime_min: 99
+  page: 47
+  section: World View
+- start: 2026-10-20T17:45
+  screen: Film Society East B
+  title: MOUSE
+  runtime_min: 120
+  page: 70
+  section: Made in USA
+- start: 2026-10-20T18:00
+  screen: Film Society Bourse 1
+  title: LA GRADIVA
+  runtime_min: 145
+  page: 59
+  section: Cinema de France
+- start: 2026-10-20T18:00
+  screen: Film Society Bourse 2
+  title: FIRST THEY CAME FOR MY COLLEGE
+  runtime_min: 105
+  page: 97
+  section: State of the Union
+- start: 2026-10-20T18:00
+  screen: Film Society Center
+  title: THE LIFE AND DEATHS OF WILSON…
+  runtime_min: 121
+  page: 43
+  section: Spotlights
+- start: 2026-10-20T18:00
+  screen: Film Society East A
+  title: LOOK BACK
+  runtime_min: 100
+  page: 39
+  section: Masters of Cinema
+- start: 2026-10-20T20:15
+  screen: Film Society East A
+  title: CLARISSA
+  runtime_min: 134
+  page: 49
+  section: World View
+- start: 2026-10-20T20:45
+  screen: Film Society Bourse 2
+  title: TEST
+  runtime_min: 108
+  page: 70
+  section: Made in USA
+- start: 2026-10-20T20:45
+  screen: Film Society East B
+  title: MINOTAUR
+  runtime_min: 141
+  page: 39
+  section: Masters of Cinema
+- start: 2026-10-20T21:00
+  screen: Film Society Bourse 1
+  title: ARRESTED MEMORY
+  runtime_min: 87
+  page: 85
+  section: After Hours
+- start: 2026-10-20T21:00
+  screen: Film Society Center
+  title: I DON'T WANT TO DRINK YOUR BLOOD…
+  runtime_min: 86
+  page: 80
+  section: Filmadelphia
+- start: 2026-10-21T13:00
+  screen: Film Society East B
+  title: I SEE BUILDINGS FALL LIKE LIGHTNING
+  runtime_min: 109
+  page: 52
+  section: World View
+- start: 2026-10-21T13:30
+  screen: Film Society Bourse 1
+  title: RIDER
+  runtime_min: 87
+  page: 90
+  section: Sight & Soundtrack
+- start: 2026-10-21T13:30
+  screen: Film Society East A
+  title: WHO KILLED ALEX ODEH?
+  runtime_min: 83
+  page: 76
+  section: Non/Fiction
+- start: 2026-10-21T15:30
+  screen: Film Society Bourse 1
+  title: FIRST THEY CAME FOR MY COLLEGE
+  runtime_min: 105
+  page: 97
+  section: State of the Union
+- start: 2026-10-21T15:30
+  screen: Film Society East B
+  title: LE FAUX SOIR
+  runtime_min: 133
+  page: 60
+  section: Cinema de France
+- start: 2026-10-21T15:45
+  screen: Film Society East A
+  title: WOLFRAM
+  runtime_min: 102
+  page: 55
+  section: World View
+- start: 2026-10-21T17:30
+  screen: Film Society Center
+  title: JOY WILL PREVAIL
+  runtime_min: 107
+  page: 80
+  section: Filmadelphia
+- start: 2026-10-21T18:00
+  screen: Film Society East A
+  title: THE ASSASSIN(S)
+  runtime_min: 131
+  page: 47
+  section: World View
+- start: 2026-10-21T18:15
+  screen: Film Society Bourse 1
+  title: BRIAN
+  runtime_min: 94
+  page: 69
+  section: Made in USA
+- start: 2026-10-21T18:15
+  screen: Film Society East B
+  title: VERTIGINOUS
+  runtime_min: 67
+  page: 64
+  section: This Animated Life
+- start: 2026-10-21T18:30
+  screen: Film Society Bourse 2
+  title: KIKUYU LAND
+  runtime_min: 90
+  page: 93
+  section: Community Screenings
+- start: 2026-10-21T20:00
+  screen: Film Society East B
+  title: POSSIBLE LOVE
+  runtime_min: 164
+  page: 41
+  section: Masters of Cinema
+- start: 2026-10-21T20:15
+  screen: Film Society Center
+  title: WRITTEN ON THE WIND
+  runtime_min: 99
+  page: 21
+  section: null
+- start: 2026-10-21T20:30
+  screen: Film Society Bourse 2
+  title: NUISANCE BEAR
+  runtime_min: 90
+  page: 98
+  section: State of the Union
+- start: 2026-10-21T20:45
+  screen: Film Society Bourse 1
+  title: WICKER
+  runtime_min: 105
+  page: 45
+  section: Spotlights
+- start: 2026-10-21T20:45
+  screen: Film Society East A
+  title: 5 MORE MINUTES
+  runtime_min: 93
+  page: 84
+  section: After Hours
+- start: 2026-10-22T13:00
+  screen: Film Society Bourse 1
+  title: 'CARL SAGAN: WE ARE MADE OF STAR…'
+  runtime_min: 98
+  page: 73
+  section: Non/Fiction
+- start: 2026-10-22T13:00
+  screen: Film Society East B
+  title: THE MELTDOWN
+  runtime_min: 106
+  page: 54
+  section: World View
+- start: 2026-10-22T14:00
+  screen: Film Society East A
+  title: IN WAVES
+  runtime_min: 91
+  page: 62
+  section: This Animated Life
+- start: 2026-10-22T15:30
+  screen: Film Society Bourse 1
+  title: THE OLDEST PERSON IN THE WORLD
+  runtime_min: 87
+  page: 94
+  section: Community Screenings
+- start: 2026-10-22T15:30
+  screen: Film Society East B
+  title: A TALENT FOR MURDER
+  runtime_min: 106
+  page: 44
+  section: Spotlights
+- start: 2026-10-22T16:15
+  screen: Film Society East A
+  title: RIDER
+  runtime_min: 87
+  page: 90
+  section: Sight & Soundtrack
+- start: 2026-10-22T18:00
+  screen: Film Society Bourse 1
+  title: TIME WARP
+  runtime_min: 113
+  page: 76
+  section: Non/Fiction
+- start: 2026-10-22T18:00
+  screen: Film Society Center
+  title: ELSINORE
+  runtime_min: 111
+  page: 29
+  section: Centerpieces
+- start: 2026-10-22T18:00
+  screen: Film Society East B
+  title: LOOK BACK
+  runtime_min: 100
+  page: 39
+  section: Masters of Cinema
+- start: 2026-10-22T18:15
+  screen: Film Society East A
+  title: CONGO BOY
+  runtime_min: 91
+  page: 88
+  section: Sight & Soundtrack
+- start: 2026-10-22T18:30
+  screen: Film Society Bourse 2
+  title: DOCUMENTARY SHORTS PROGRAM
+  runtime_min: 88
+  page: 104
+  section: null
+- start: 2026-10-22T20:15
+  screen: Film Society East B
+  title: BITTER CHRISTMAS
+  runtime_min: 111
+  page: 36
+  section: Masters of Cinema
+- start: 2026-10-22T20:30
+  screen: Film Society Center
+  title: KWAIDAN
+  runtime_min: 183
+  page: 101
+  section: From the Vaults
+- start: 2026-10-22T20:30
+  screen: Film Society East A
+  title: THE DIARY OF A CHAMBERMAID
+  runtime_min: 94
+  page: 37
+  section: Masters of Cinema
+- start: 2026-10-22T20:45
+  screen: Film Society Bourse 1
+  title: DOWNBEAT
+  runtime_min: 91
+  page: 89
+  section: Sight & Soundtrack
+- start: 2026-10-22T21:00
+  screen: Film Society Bourse 2
+  title: HALF
+  runtime_min: 96
+  page: 86
+  section: After Hours
+- start: 2026-10-23T11:30
+  screen: Film Society East A
+  title: BEDFORD PARK
+  runtime_min: 121
+  page: 68
+  section: Made in USA
+- start: 2026-10-23T11:45
+  screen: Film Society Bourse 2
+  title: BOATBUILDERS
+  runtime_min: 103
+  page: 72
+  section: Non/Fiction
+- start: 2026-10-23T12:00
+  screen: Film Society Bourse 1
+  title: SENTIENT
+  runtime_min: 105
+  page: 94
+  section: State of the Union
+- start: 2026-10-23T12:00
+  screen: Film Society East B
+  title: LABRADOR — AUTOPSY OF SILENCE
+  runtime_min: 120
+  page: 53
+  section: World View
+- start: 2026-10-23T14:15
+  screen: Film Society Bourse 1
+  title: 14TH
+  runtime_min: 108
+  page: 96
+  section: State of the Union
+- start: 2026-10-23T14:15
+  screen: Film Society East A
+  title: AH GIRL
+  runtime_min: 99
+  page: 47
+  section: World View
+- start: 2026-10-23T14:30
+  screen: Film Society Bourse 2
+  title: GOODBYE CRUEL WORLD
+  runtime_min: 93
+  page: 59
+  section: Cinema de France
+- start: 2026-10-23T14:30
+  screen: Film Society East B
+  title: YELLOW LETTERS
+  runtime_min: 127
+  page: 56
+  section: World View
+- start: 2026-10-23T16:45
+  screen: Film Society Bourse 1
+  title: MAKING MARIE ANTOINETTE
+  runtime_min: 82
+  page: 74
+  section: Non/Fiction
+- start: 2026-10-23T16:45
+  screen: Film Society Bourse 2
+  title: LA GRADIVA
+  runtime_min: 145
+  page: 59
+  section: Cinema de France
+- start: 2026-10-23T16:45
+  screen: Film Society East A
+  title: GROUND FLOOR
+  runtime_min: 108
+  page: 51
+  section: World View
+- start: 2026-10-23T17:15
+  screen: Film Society East B
+  title: COWARD
+  runtime_min: 125
+  page: 49
+  section: World View
+- start: 2026-10-23T18:00
+  screen: Film Society Center
+  title: RAY GUNN
+  runtime_min: 119
+  page: 63
+  section: This Animated Life
+- start: 2026-10-23T18:45
+  screen: Film Society Bourse 1
+  title: THE LAST CRITIC
+  runtime_min: 83
+  page: 89
+  section: Sight & Soundtrack
+- start: 2026-10-23T19:15
+  screen: Film Society East A
+  title: THE DREAMED ADVENTURE
+  runtime_min: 167
+  page: 50
+  section: World View
+- start: 2026-10-23T19:45
+  screen: Film Society Bourse 2
+  title: THE OLDEST PERSON IN THE WORLD
+  runtime_min: 87
+  page: 94
+  section: Community Screenings
+- start: 2026-10-23T20:00
+  screen: Film Society East B
+  title: BITTER CHRISTMAS
+  runtime_min: 111
+  page: 36
+  section: Masters of Cinema
+- start: 2026-10-23T20:30
+  screen: Film Society Center
+  title: WILD HORSE NINE
+  runtime_min: 118
+  page: 34
+  section: Centerpieces
+- start: 2026-10-23T21:00
+  screen: Film Society Bourse 1
+  title: DOWNBEAT
+  runtime_min: 91
+  page: 89
+  section: Sight & Soundtrack
+- start: 2026-10-23T22:15
+  screen: Film Society Bourse 2
+  title: SICK
+  runtime_min: 90
+  page: 87
+  section: After Hours
+- start: 2026-10-23T22:30
+  screen: Film Society East B
+  title: CHILI FINGER
+  runtime_min: 100
+  page: 43
+  section: Spotlights
+- start: 2026-10-23T22:45
+  screen: Film Society East A
+  title: ARRESTED MEMORY
+  runtime_min: 87
+  page: 85
+  section: After Hours
+- start: 2026-10-24T00:00
+  screen: Film Society Center
+  title: THE ROCKY HORROR PICTURE SHOW
+  runtime_min: 100
+  page: 103
+  section: From the Vaults
+- start: 2026-10-24T11:30
+  screen: Film Society Bourse 2
+  title: BOATBUILDERS
+  runtime_min: 103
+  page: 72
+  section: Non/Fiction
+- start: 2026-10-24T11:30
+  screen: Film Society Center
+  title: CLOSE ENCOUNTERS OF THE THIRD KIND
+  runtime_min: 137
+  page: 101
+  section: From the Vaults
+- start: 2026-10-24T11:30
+  screen: Film Society East B
+  title: BUNKER
+  runtime_min: 126
+  page: 42
+  section: Spotlights
+- start: 2026-10-24T11:45
+  screen: Film Society East A
+  title: ONCE UPON A TIME IN HARLEM
+  runtime_min: 100
+  page: 40
+  section: Masters of Cinema
+- start: 2026-10-24T12:00
+  screen: Film Society Bourse 1
+  title: IRON BOY
+  runtime_min: 90
+  page: 63
+  section: This Animated Life
+- start: 2026-10-24T12:00
+  screen: Film Society Bourse 3
+  title: 'MY UNDESIRABLE FRIENDS: PART II — EXILE'
+  runtime_min: 370
+  page: 40
+  section: Masters of Cinema
+- start: 2026-10-24T14:00
+  screen: Film Society Bourse 1
+  title: THE BURNING GIANTS
+  runtime_min: 118
+  page: 48
+  section: World View
+- start: 2026-10-24T14:00
+  screen: Film Society East A
+  title: EXTRA GEOGRAPHY
+  runtime_min: 94
+  page: 51
+  section: World View
+- start: 2026-10-24T14:15
+  screen: Film Society Bourse 2
+  title: DOCUMENTARY SHORTS PROGRAM
+  runtime_min: 88
+  page: 104
+  section: null
+- start: 2026-10-24T14:15
+  screen: Film Society East B
+  title: JOY WILL PREVAIL
+  runtime_min: 107
+  page: 80
+  section: Filmadelphia
+- start: 2026-10-24T14:30
+  screen: Film Society Center
+  title: BEING HEUMANN
+  runtime_min: 127
+  page: 69
+  section: Made in USA
+- start: 2026-10-24T16:30
+  screen: Film Society East A
+  title: FILMADELPHIA SHORTS PROGRAM
+  runtime_min: 115
+  page: 82
+  section: Filmadelphia
+- start: 2026-10-24T16:45
+  screen: Film Society Bourse 1
+  title: EVERYTIME
+  runtime_min: 124
+  page: 50
+  section: World View
+- start: 2026-10-24T16:45
+  screen: Film Society Bourse 2
+  title: REHEARSALS FOR A REVOLUTION
+  runtime_min: 98
+  page: 75
+  section: Non/Fiction
+- start: 2026-10-24T17:00
+  screen: Film Society East B
+  title: TENDER LOVING CARE
+  runtime_min: 107
+  page: 41
+  section: Masters of Cinema
+- start: 2026-10-24T17:15
+  screen: Film Society Center
+  title: YALE
+  runtime_min: 120
+  page: 81
+  section: Filmadelphia
+- start: 2026-10-24T19:00
+  screen: Film Society Bourse 2
+  title: JEAN-MICHEL BASQUIAT
+  runtime_min: 97
+  page: 74
+  section: Non/Fiction
+- start: 2026-10-24T19:15
+  screen: Film Society East A
+  title: ADULT SUPERVISION
+  runtime_min: 108
+  page: 46
+  section: World View
+- start: 2026-10-24T19:30
+  screen: Film Society Bourse 1
+  title: WHO KILLED ALEX ODEH?
+  runtime_min: 83
+  page: 76
+  section: Non/Fiction
+- start: 2026-10-24T19:30
+  screen: Film Society East B
+  title: MINOTAUR
+  runtime_min: 141
+  page: 39
+  section: Masters of Cinema
+- start: 2026-10-24T20:15
+  screen: Film Society Center
+  title: INK
+  runtime_min: 116
+  page: 38
+  section: Masters of Cinema
+- start: 2026-10-24T21:15
+  screen: Film Society Bourse 2
+  title: WE ARE THE SHAGGS
+  runtime_min: 100
+  page: 90
+  section: Sight & Soundtrack
+- start: 2026-10-24T21:45
+  screen: Film Society Bourse 1
+  title: WE ARE ALIENS
+  runtime_min: 117
+  page: 65
+  section: This Animated Life
+- start: 2026-10-24T21:45
+  screen: Film Society East A
+  title: TOO MANY BEASTS
+  runtime_min: 95
+  page: 60
+  section: Cinema de France
+- start: 2026-10-24T22:30
+  screen: Film Society East B
+  title: I DON'T WANT TO DRINK YOUR BLOOD…
+  runtime_min: 86
+  page: 80
+  section: Filmadelphia
+- start: 2026-10-24T22:45
+  screen: Film Society Center
+  title: VICTORIAN PSYCHO
+  runtime_min: 102
+  page: 87
+  section: After Hours
+- start: 2026-10-25T10:00
+  screen: Film Society East B
+  title: A TALENT FOR MURDER
+  runtime_min: 106
+  page: 44
+  section: Spotlights
+- start: 2026-10-25T10:15
+  screen: Film Society East A
+  title: IN WAVES
+  runtime_min: 91
+  page: 62
+  section: This Animated Life
+- start: 2026-10-25T12:00
+  screen: Film Society Bourse 2
+  title: NARRATIVE SHORTS PROGRAM
+  runtime_min: 97
+  page: 105
+  section: null
+- start: 2026-10-25T12:00
+  screen: Film Society Bourse 3
+  title: THE BURNING GIANTS
+  runtime_min: 118
+  page: 48
+  section: World View
+- start: 2026-10-25T12:15
+  screen: Film Society Bourse 1
+  title: I'LL BE GONE IN JUNE
+  runtime_min: 125
+  page: 52
+  section: World View
+- start: 2026-10-25T12:30
+  screen: Film Society East A
+  title: THE MATCH
+  runtime_min: 91
+  page: 75
+  section: Non/Fiction
+- start: 2026-10-25T12:30
+  screen: Film Society East B
+  title: BIG PHAN
+  runtime_min: 95
+  page: 78
+  section: Filmadelphia
+- start: 2026-10-25T14:00
+  screen: Film Society Center
+  title: '2001: A SPACE ODYSSEY'
+  runtime_min: 159
+  page: 100
+  section: From the Vaults
+- start: 2026-10-25T14:30
+  screen: Film Society Bourse 2
+  title: GOODBYE CRUEL WORLD
+  runtime_min: 93
+  page: 59
+  section: Cinema de France
+- start: 2026-10-25T14:45
+  screen: Film Society East A
+  title: A LONG WINTER
+  runtime_min: 117
+  page: 38
+  section: Masters of Cinema
+- start: 2026-10-25T15:00
+  screen: Film Society East B
+  title: ANIMATED SHORTS PROGRAM
+  runtime_min: 93
+  page: 66
+  section: null
+- start: 2026-10-25T15:15
+  screen: Film Society Bourse 1
+  title: HANGING BY A WIRE
+  runtime_min: 78
+  page: 73
+  section: Non/Fiction
+- start: 2026-10-25T16:45
+  screen: Film Society Bourse 2
+  title: SEIZED
+  runtime_min: 94
+  page: 98
+  section: State of the Union
+- start: 2026-10-25T17:15
+  screen: Film Society Bourse 1
+  title: ELEPHANTS IN THE FOG
+  runtime_min: 108
+  page: 92
+  section: Community Screenings
+- start: 2026-10-25T17:15
+  screen: Film Society East A
+  title: GENTLE BY BIRTH
+  runtime_min: 100
+  page: 79
+  section: Filmadelphia
+- start: 2026-10-25T17:30
+  screen: Film Society East B
+  title: MOUSE
+  runtime_min: 120
+  page: 70
+  section: Made in USA
+- start: 2026-10-25T19:00
+  screen: Film Society Bourse 2
+  title: KIKUYU LAND
+  runtime_min: 90
+  page: 93
+  section: Community Screenings
+- start: 2026-10-25T19:30
+  screen: Film Society Center
+  title: THE DEBUT
+  runtime_min: 105
+  page: 25
+  section: Centerpieces
+- start: 2026-10-25T19:45
+  screen: Film Society Bourse 1
+  title: QUEEN AT SEA
+  runtime_min: 121
+  page: 44
+  section: Spotlights
+- start: 2026-10-25T20:00
+  screen: Film Society East A
+  title: THE HAUNTING OF PENNHURST
+  runtime_min: 82
+  page: 79
+  section: Filmadelphia
+- start: 2026-10-25T20:30
+  screen: Film Society East B
+  title: THE DEBUT
+  runtime_min: 105
+  page: 25
+  section: Centerpieces

@@ -15,7 +15,7 @@
 | L'Alliance New York | 网页（列表 + 每场详情页） |
 | MoMA | 浏览器（Cloudflare），通常回退到 screenslate |
 | Paris Theater | screenslate（售票站被 Cloudflare 挡住）+ 官网首页里的特别活动（映后谈、导读） |
-| Philadelphia Film Society | 售票系统 Agile Ticketing 的公开 feed |
+| Philadelphia Film Society | 售票系统 Agile Ticketing 的公开 feed；费城电影节不在 feed 里，从电影节的场刊排片表（PDF）导入（`scripts/import_pff_grid.py`） |
 | Landmark Ritz Five（费城）、Landmark Kendall Square（波士顿 Cambridge） | 网站自己的公开排片接口（Webedia 平台，全美连锁按影院编号各取一家；向导自动识别） |
 | Lightbox Film Center（费城） | Wix 网站页面里内嵌的活动数据（票在 Ticketleap 卖；放映地点不固定，每场记自己的场地） |
 | Coolidge Corner Theatre（波士顿 Brookline） | 配方：网站的每日排片页（三周，每天一页；Coolidge Education 课程不算放映；户外场按系列 / 片名对应地点） |

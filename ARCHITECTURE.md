@@ -140,7 +140,7 @@ venues:
 | L'Alliance New York | custom：列表卡片 + 每场详情页（配方表达不了） |
 | MoMA | custom：Playwright 浏览器；通常回退到 screenslate |
 | Paris Theater | custom `paris`：screenslate（售票站被 Cloudflare 拦截）+ 官网首页 RSC 里的特别活动 |
-| Philadelphia Film Society | custom `filmadelphia`：`agile` 适配器的薄壳，固定 PFS 的 GUID 与集群 |
+| Philadelphia Film Society | custom `filmadelphia`：`agile` 适配器的薄壳，固定 PFS 的 GUID 与集群；`schedules:` 列出的场刊导入文件（费城电影节）补 feed 里没有的场次 |
 | Landmark Ritz Five、Landmark Kendall Square | `boxofficeapi`：Webedia 平台的公开排片接口（各自的影院编号 X081D / X019B） |
 | Lightbox Film Center | `wix`：Wix Events 页面内嵌的 JSON |
 | Coolidge Corner Theatre | `recipe`：每日排片页（`/showtimes?date=`），三周 |
