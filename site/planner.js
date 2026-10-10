@@ -33,8 +33,7 @@
       perDayUnit: "场", noLimit: "不限", allowTight: "允许紧张换场（换场少于 15 分钟）",
       miss: "允许错过片头 / 片尾", missUnit: "分钟以内", missOff: "不允许",
       scopeCount: (f, n) => `范围内 ${f} 部影片 · ${n} 场`, toFilms: "下一步：选片", back: "返回",
-      search: "搜索片名、导演或影院", sortBy: "排序", sortTitle: "片名", sortCount: "场次多", sortFirst: "最早",
-      sortTitleT: "按片名排序", sortCountT: "场次多的在前", sortFirstT: "最早有场次的在前",
+      search: "搜索片名、导演或影院", sortBy: "排序", sortTitle: "按片名", sortFirst: "按时间顺序", sortFirstT: "最早有场次的在前",
       picked: (k) => `已选 ${k} 部`, go: "开始排片", approxWarn: "超过 12 部将使用近似算法",
       maxPick: (n) => `最多选 ${n} 部`, clearPicked: "清空", notInScope: "范围内没有场次",
       filmLine: (n, where) => `${n} 场 · ${where}`, nVenues: (n) => `${n} 家影院`, minutes: (n) => `${n} 分钟`,
@@ -80,8 +79,7 @@
       perDayUnit: "a day", noLimit: "No limit", allowTight: "Allow tight changes (under 15 minutes)",
       miss: "Allow missing a head or tail", missUnit: "min at most", missOff: "Never",
       scopeCount: (f, n) => `${f} film${f === 1 ? "" : "s"} · ${n} show${n === 1 ? "" : "s"} in range`, toFilms: "Next: films", back: "Back",
-      search: "Search title, director or cinema", sortBy: "Sort", sortTitle: "Title", sortCount: "Shows", sortFirst: "Earliest",
-      sortTitleT: "Sort by title", sortCountT: "Most screenings first", sortFirstT: "Soonest screening first",
+      search: "Search title, director or cinema", sortBy: "Sort", sortTitle: "By title", sortFirst: "By time", sortFirstT: "Soonest screening first",
       picked: (k) => `${k} picked`, go: "Make plans", approxWarn: "More than 12 films: plans will be approximate",
       maxPick: (n) => `At most ${n} films`, clearPicked: "Clear", notInScope: "No screening in range",
       filmLine: (n, where) => `${n} show${n === 1 ? "" : "s"} · ${where}`, nVenues: (n) => `${n} cinemas`, minutes: (n) => `${n} min`,
@@ -240,7 +238,7 @@
       S.forbidTight = !!o.forbidTight;
       if (o.maxOverlap != null) S.maxOverlap = Math.max(0, Math.min(30, +o.maxOverlap || 0));
       if (Array.isArray(o.picked)) S.picked = o.picked.filter((k) => typeof k === "string");
-      if (["title", "count", "first"].includes(o.sort)) S.sort = o.sort;
+      if (["title", "first"].includes(o.sort)) S.sort = o.sort;
       if (Array.isArray(o.locked)) S.locked = new Set(o.locked);
       if (Array.isArray(o.excluded)) S.excluded = new Set(o.excluded);
     }
@@ -606,7 +604,7 @@
     const q = el("input", { type: "search", class: "pl-search", placeholder: t("search"), "aria-label": t("search"), value: S.q,
       autocomplete: "off", spellcheck: "false", enterkeyhint: "search",
       oninput: () => { clearTimeout(timer); timer = setTimeout(() => { S.q = q.value.trim(); fillList(); }, 120); } });
-    const sort = seg([["title", t("sortTitle"), t("sortTitleT")], ["count", t("sortCount"), t("sortCountT")], ["first", t("sortFirst"), t("sortFirstT")]],
+    const sort = seg([["title", t("sortTitle")], ["first", t("sortFirst"), t("sortFirstT")]],
       S.sort, (v) => { S.sort = v; save(); fillList(); }, t("sortBy"));
 
     const picks = el("div", { class: "pl-picks" });
@@ -646,7 +644,6 @@
         films = films.filter((f) => P.fold(f.title).includes(needle) || P.fold(f.director).includes(needle) ||
           f.venues.some((id) => P.fold((venueById[id] || {}).name).includes(needle) || P.fold((venueById[id] || {}).short).includes(needle)));
       }
-      if (S.sort === "count") films = [...films].sort((a, b) => b.showings.length - a.showings.length);
       if (S.sort === "first") films = [...films].sort((a, b) => a.showings[0].start - b.showings[0].start);
       if (!c.films.length) return list.replaceChildren(el("p", { class: "pl-empty" }, t("noFilms")));
       if (!films.length) return list.replaceChildren(el("p", { class: "pl-empty" }, t("noMatch", S.q)));
