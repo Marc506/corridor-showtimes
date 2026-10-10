@@ -30,19 +30,19 @@
       cinemas: "影院", selectAll: "全选", clear: "清空", filters: "筛选",
       onFilm: "只看胶片", subs: "有字幕", specials: "限定放映",
       more: "更多条件", window: "每天的时间", earliest: "最早开场", latest: "最晚散场", perDay: "每天最多",
-      perDayN: (n) => `${n} 场`, noLimit: "不限", allowTight: "允许紧张换场（换场少于 15 分钟）",
-      miss: "允许错过片头 / 片尾", missN: (n) => `至多 ${n} 分钟`, missOff: "不允许",
+      perDayUnit: "场", noLimit: "不限", allowTight: "允许紧张换场（换场少于 15 分钟）",
+      miss: "允许错过片头 / 片尾", missUnit: "分钟以内", missOff: "不允许",
       scopeCount: (f, n) => `范围内 ${f} 部影片 · ${n} 场`, toFilms: "下一步：选片", back: "返回",
-      search: "搜索片名、导演或影院", sortBy: "排序", sortTitle: "片名", sortCount: "场次数", sortFirst: "最早场次",
+      search: "搜索片名、导演或影院", sortBy: "排序", sortTitle: "片名", sortCount: "场次多", sortFirst: "最早",
+      sortTitleT: "按片名排序", sortCountT: "场次多的在前", sortFirstT: "最早有场次的在前",
       picked: (k) => `已选 ${k} 部`, go: "开始排片", approxWarn: "超过 12 部将使用近似算法",
       maxPick: (n) => `最多选 ${n} 部`, clearPicked: "清空", notInScope: "范围内没有场次",
       filmLine: (n, where) => `${n} 场 · ${where}`, nVenues: (n) => `${n} 家影院`, minutes: (n) => `${n} 分钟`,
       noFilms: "这个范围里没有符合条件的放映，换个日期或影院试试。", noMatch: (q) => `没有和「${q}」匹配的影片。`,
       solving: "正在排片…", solvingOverlap: "正在找允许错过片头 / 片尾的方案…",
       planN: (i) => `方案 ${i}`,
-      obj: { relaxed: "宽松", compact: "紧凑", early: "早场", overlap: "错过片头/片尾", drop: "舍弃替代" },
-      objT: { relaxed: "换场最从容", compact: "用的天数最少", early: "每天散场最早", overlap: "相邻两场允许重叠几分钟", drop: "改为舍弃另一部" },
-      alsoObj: (l) => `（也是${l.join("、")}方案）`,
+      obj: { relaxed: "宽松", compact: "紧凑", early: "末场结束早", overlap: "错过片头/片尾", drop: "舍弃替代" },
+      objT: { relaxed: "换场最从容", compact: "用的天数最少", early: "每天最后一场结束得最早", overlap: "相邻两场允许重叠几分钟", drop: "改为舍弃另一部" },
       statFilms: (a, b) => `${a}/${b} 部`, statDays: (n) => `${n} 天`, statMinGap: (n) => `最短间隔 ${n} 分钟`,
       statTight: (n) => `${n} 处紧张`, statOverlap: (m, n) => `重叠 ${m} 分钟 · ${n} 处`, statLastEnd: (t) => `最晚 ${t} 散场`,
       badgeDrop: (n) => `舍弃 ${n} 部`, badgeOverlap: (m) => `错过 ${m} 分钟`,
@@ -77,10 +77,11 @@
       cinemas: "Cinemas", selectAll: "All", clear: "None", filters: "Filters",
       onFilm: "On film", subs: "Subtitled / captioned", specials: "Limited screenings",
       more: "More options", window: "Hours each day", earliest: "Earliest start", latest: "Latest end", perDay: "At most",
-      perDayN: (n) => `${n} a day`, noLimit: "no limit", allowTight: "Allow tight changes (under 15 minutes)",
-      miss: "Allow missing a head or tail", missN: (n) => `up to ${n} min`, missOff: "never",
+      perDayUnit: "a day", noLimit: "No limit", allowTight: "Allow tight changes (under 15 minutes)",
+      miss: "Allow missing a head or tail", missUnit: "min at most", missOff: "Never",
       scopeCount: (f, n) => `${f} film${f === 1 ? "" : "s"} · ${n} show${n === 1 ? "" : "s"} in range`, toFilms: "Next: films", back: "Back",
-      search: "Search title, director or cinema", sortBy: "Sort", sortTitle: "Title", sortCount: "Most shows", sortFirst: "Earliest",
+      search: "Search title, director or cinema", sortBy: "Sort", sortTitle: "Title", sortCount: "Shows", sortFirst: "Earliest",
+      sortTitleT: "Sort by title", sortCountT: "Most screenings first", sortFirstT: "Soonest screening first",
       picked: (k) => `${k} picked`, go: "Make plans", approxWarn: "More than 12 films: plans will be approximate",
       maxPick: (n) => `At most ${n} films`, clearPicked: "Clear", notInScope: "No screening in range",
       filmLine: (n, where) => `${n} show${n === 1 ? "" : "s"} · ${where}`, nVenues: (n) => `${n} cinemas`, minutes: (n) => `${n} min`,
@@ -88,9 +89,8 @@
       solving: "Making plans…", solvingOverlap: "Looking for a plan that misses a few minutes…",
       planN: (i) => `Plan ${i}`,
       obj: { relaxed: "Relaxed", compact: "Fewest days", early: "Early nights", overlap: "Miss a few minutes", drop: "Swap a film" },
-      objT: { relaxed: "The most comfortable changes", compact: "Uses the fewest days", early: "Ends earliest each day",
+      objT: { relaxed: "The most comfortable changes", compact: "Uses the fewest days", early: "Each day's last show ends earliest",
         overlap: "Adjacent shows may overlap by a few minutes", drop: "Gives up another film instead" },
-      alsoObj: (l) => ` (also ${l.join(", ")})`,
       statFilms: (a, b) => `${a}/${b} films`, statDays: (n) => `${n} day${n === 1 ? "" : "s"}`, statMinGap: (n) => `shortest gap ${n} min`,
       statTight: (n) => `${n} tight`, statOverlap: (m, n) => `${m} min overlap · ${n}×`, statLastEnd: (t) => `done by ${t}`,
       badgeDrop: (n) => `${n} dropped`, badgeOverlap: (m) => `miss ${m} min`,
@@ -395,6 +395,18 @@
   const btn = (label, onclick, cls = "pl-btn", extra = {}) => el("button", Object.assign({ type: "button", class: cls, onclick }, extra), label);
   const chip = (label, on, onclick, extra = {}) =>
     el("button", Object.assign({ type: "button", class: "pl-chip" + (on ? " on" : ""), "aria-pressed": String(on), onclick }, extra), label);
+  /** One choice out of a few, as joined buttons (like the page's view switch): options [[value, label, title?]]. */
+  function seg(options, value, onpick, aria) {
+    const box = el("div", { class: "pl-seg", role: "group", "aria-label": aria });
+    box.append(...options.map(([v, label, title]) => el("button", {
+      type: "button", class: v === value ? "on" : null, "aria-pressed": String(v === value), title,
+      onclick: (e) => {
+        box.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b === e.currentTarget); b.setAttribute("aria-pressed", String(b === e.currentTarget)); });
+        onpick(v);
+      },
+    }, label)));
+    return box;
+  }
 
   // ---------- the button that opens the panel ----------
   let openBtn = null;
@@ -547,8 +559,6 @@
       check(t("specials"), S.specials, (e) => { S.specials = e.target.checked; refreshCount(); }));
 
     const time = (value, onchange, aria) => el("input", { type: "time", class: "pl-time-in", value, step: 300, "aria-label": aria, onchange });
-    const sel = (opts, value, onchange, aria) => el("select", { class: "pl-select", "aria-label": aria, onchange },
-      opts.map(([v, l]) => el("option", { value: String(v), selected: String(v) === String(value) || null }, l)));
     const moreOpen = S.win.on || !!S.maxPerDay || S.forbidTight || S.maxOverlap !== P.DEFAULTS.maxOverlap;
     const more = el("details", { class: "pl-more", open: moreOpen || null },
       el("summary", {}, t("more")),
@@ -559,12 +569,14 @@
           el("span", { class: "pl-muted" }, t("latest")),
           time(S.win.latest, (e) => { S.win.latest = e.target.value || "23:59"; S.win.on = true; save(); renderRange(); }, t("latest")))),
       el("div", { class: "pl-opt" }, el("span", {}, t("perDay")),
-        sel([["", t("noLimit")], ...[1, 2, 3, 4, 5, 6].map((n) => [n, t("perDayN", n)])], S.maxPerDay || "",
-          (e) => { S.maxPerDay = +e.target.value || null; save(); }, t("perDay"))),
+        seg([[0, t("noLimit")], ...[1, 2, 3, 4, 5, 6].map((n) => [n, String(n)])], S.maxPerDay || 0,
+          (v) => { S.maxPerDay = v || null; save(); }, t("perDay")),
+        el("span", { class: "pl-muted" }, t("perDayUnit"))),
       el("div", { class: "pl-opt" }, check(t("allowTight"), !S.forbidTight, (e) => { S.forbidTight = !e.target.checked; save(); })),
       el("div", { class: "pl-opt" }, el("span", {}, t("miss")),
-        sel([[0, t("missOff")], ...[5, 10, 15, 20, 25, 30].map((n) => [n, t("missN", n)])], S.maxOverlap,
-          (e) => { S.maxOverlap = +e.target.value || 0; save(); }, t("miss"))));
+        seg([[0, t("missOff")], ...[5, 10, 15, 20, 25, 30].map((n) => [n, String(n)])], S.maxOverlap,
+          (v) => { S.maxOverlap = v; save(); }, t("miss")),
+        el("span", { class: "pl-muted" }, t("missUnit"))));
 
     ui.body.replaceChildren(el("div", { class: "pl-range" },
       el("section", { class: "pl-sec" }, el("h3", {}, t("dates")),
@@ -594,9 +606,8 @@
     const q = el("input", { type: "search", class: "pl-search", placeholder: t("search"), "aria-label": t("search"), value: S.q,
       autocomplete: "off", spellcheck: "false", enterkeyhint: "search",
       oninput: () => { clearTimeout(timer); timer = setTimeout(() => { S.q = q.value.trim(); fillList(); }, 120); } });
-    const sort = el("select", { class: "pl-select", "aria-label": t("sortBy"), onchange: (e) => { S.sort = e.target.value; save(); fillList(); } },
-      [["title", t("sortTitle")], ["count", t("sortCount")], ["first", t("sortFirst")]].map(([v, l]) =>
-        el("option", { value: v, selected: S.sort === v || null }, l)));
+    const sort = seg([["title", t("sortTitle"), t("sortTitleT")], ["count", t("sortCount"), t("sortCountT")], ["first", t("sortFirst"), t("sortFirstT")]],
+      S.sort, (v) => { S.sort = v; save(); fillList(); }, t("sortBy"));
 
     const picks = el("div", { class: "pl-picks" });
     top.append(el("div", { class: "pl-row pl-tools" }, q, sort), picks);
@@ -680,11 +691,13 @@
         if (r.plans[0]) out.push(uncoveredBox(r.plans[0], r, true));
       } else {
         const short = r.maxFilms < r.schedulable;
+        // given up = left out although it had a screening (a film with none in range wasn't a choice)
+        const dropped = (p) => p.uncovered.filter((u) => u.reason === "conflict" || u.reason === "limit").length;
         r.plans.forEach((p, i) => {
-          out.push(card(p, { n: i + 1, r, badge: short ? ["drop", t("badgeDrop", p.stats.of - p.stats.films)] : null, first: i === 0 }));
+          out.push(card(p, { n: i + 1, r, badge: short ? ["drop", t("badgeDrop", dropped(p))] : null, first: i === 0 }));
           if (i === 0 && S.alt != null && r.drop[S.alt]) {
             const d = r.drop[S.alt];
-            out.push(card(d, { r, alt: true, badge: ["drop", t("badgeDrop", d.stats.of - d.stats.films)] }));
+            out.push(card(d, { r, alt: true, badge: ["drop", t("badgeDrop", dropped(d))] }));
           }
         });
         if (short && S.overlap === undefined && S.maxOverlap > 0) {
@@ -722,8 +735,8 @@
     const key = alt ? "alt" : p.objective;          // stays open while the plan under it is recomputed
     const expanded = S.expanded.has(key);
     const head = el("div", { class: "pl-card-head" },
-      el("h3", {}, alt ? t("altTitle", p.dropped.map(titleOf).join("、")) : `${t("planN", n)} · ${objName(p.objective)}`,
-        !alt && p.also && p.also.length ? el("span", { class: "pl-also" }, t("alsoObj", p.also.map(objName))) : null),
+      el("h3", {}, alt ? t("altTitle", p.dropped.map(titleOf).join("、"))
+        : `${t("planN", n)} · ${[p.objective, ...(p.also || [])].map(objName).join(" / ")}`),
       badge ? el("span", { class: `pl-badge ${badge[0]}` }, badge[1]) : null,
       el("p", { class: "pl-stats", title: alt ? null : t("objT")[p.objective] }, statsLine(p, r)),
       el("div", { class: "pl-actions" },
