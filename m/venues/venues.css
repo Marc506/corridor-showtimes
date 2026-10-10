@@ -1,0 +1,39 @@
+/* Cinemas: a card per cinema, its name sticky under the top bar while its films scroll by. */
+.vn { padding: 4px 10px 8px; }
+.vn-region {
+  display: flex; align-items: baseline; justify-content: space-between; margin: 14px 4px 6px;
+  font-size: 13px; font-weight: 800; letter-spacing: .06em; color: var(--muted);
+}
+.vn-region span { font-size: 12px; font-weight: 500; letter-spacing: 0; }
+.vn-card {
+  margin-bottom: 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--card);
+  box-shadow: inset 4px 0 0 var(--c);
+}
+.vn-head {
+  position: sticky; top: var(--top-h); z-index: 4; display: flex; align-items: center; gap: 8px; width: 100%;
+  min-height: 48px; padding: 6px 10px 6px 16px; border: 0; border-bottom: 1px solid var(--line); border-radius: 14px 14px 0 0;
+  background: var(--card); box-shadow: inset 4px 0 0 var(--c); text-align: left;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+}
+.vn-card.closed .vn-head { border-bottom: 0; border-radius: 14px; }
+.vn-name { flex: 1 1 auto; min-width: 0; font-size: 16px; font-weight: 750; line-height: 1.2; }
+.vn-meta { flex: none; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.vn-head .m-ic { color: var(--muted); transition: transform .15s; }
+.vn-card.closed .vn-head .m-ic { transform: rotate(-90deg); }
+.vn-films { padding: 0 12px 0 16px; }
+.vn-film { padding: 9px 0 10px; border-bottom: 1px solid var(--line); }
+.vn-film.one { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.vn-film:last-child { border-bottom: 0; }
+.vn-film.hl { margin: 0 -12px 0 -16px; padding-left: 16px; padding-right: 12px; }
+.vn-title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere;
+  font-size: 15.5px; font-weight: 650; line-height: 1.25;
+}
+.vn-film.done .vn-title { color: var(--muted); }
+.vn-sub { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+.vn-tags { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 4px; }
+.vn-series {
+  max-width: 100%; padding: 0 6px; border-radius: 4px; background: var(--chip); color: var(--muted);
+  font-size: 11.5px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.vn-film .m-times { margin-top: 8px; gap: 8px 6px; }
