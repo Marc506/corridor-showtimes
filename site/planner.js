@@ -731,11 +731,13 @@
   function card(p, { n, r, badge, alt, first }) {
     const key = alt ? "alt" : p.objective;          // stays open while the plan under it is recomputed
     const expanded = S.expanded.has(key);
+    // objective names only tell plans apart: a lone plan (every objective picked it) carries none
+    const named = p.objective === "overlap" || r.plans.length > 1;
     const head = el("div", { class: "pl-card-head" },
       el("h3", {}, alt ? t("altTitle", p.dropped.map(titleOf).join("、"))
-        : `${t("planN", n)} · ${[p.objective, ...(p.also || [])].map(objName).join(" / ")}`),
+        : named ? `${t("planN", n)} · ${[p.objective, ...(p.also || [])].map(objName).join(" / ")}` : t("planN", n)),
       badge ? el("span", { class: `pl-badge ${badge[0]}` }, badge[1]) : null,
-      el("p", { class: "pl-stats", title: alt ? null : t("objT")[p.objective] }, statsLine(p, r)),
+      el("p", { class: "pl-stats", title: !alt && named ? t("objT")[p.objective] : null }, statsLine(p, r)),
       el("div", { class: "pl-actions" },
         CAL ? btn(t("importCal"), (e) => importCal(p, e.currentTarget), "pl-btn small primary") : null,
         btn(expanded ? t("collapse") : t("expand"), () => { expanded ? S.expanded.delete(key) : S.expanded.add(key); render(); }, "pl-btn small",
