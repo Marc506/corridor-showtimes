@@ -12,20 +12,26 @@ from ..registry import register
 API = "https://api.filmlinc.org/showtimes"
 NON_SCREENING = re.compile(r"\b(pass(es)?|vouchers?|memberships?|packages?)\b", re.I)
 PRESALE_SERIES = {"nyff": "New York Film Festival", "met-guild": "Met Opera Live in HD"}
+# The festival's presale tag also rides on films booked during the festival that play after it (The Devils,
+# Oct 15–22 2026): the festival is the days when many films carry it (12–21 a day), not one.
+FESTIVALS = {"nyff"}
+FESTIVAL_DAY_FILMS = 3
 # NYFF's outer-borough screenings are separate entries named "<film> <place>" ("Bucking Fastard Bronx")
 PLACES = ("Bronx", "Brooklyn", "Queens", "Staten Island", "Harlem", "Manhattan")
 
 
 def split_place(title: str, all_titles: set[str]) -> tuple[str, str | None]:
     """'Bucking Fastard Bronx' -> ('Bucking Fastard', 'Bronx'): the place is where it screens, not part of
-    the title. Stripped when the rest is another film in the same feed, or when it's a borough name."""
+    the title. Stripped when the rest is another film in the same feed, or when it's a borough name — unless
+    the name ends the title's own phrase ("Once Upon a Time in Harlem", "Escape from the Bronx")."""
     for base in sorted(all_titles, key=len, reverse=True):
         if base != title and title.startswith(base + " "):
             rest = title[len(base):].strip()
             if 1 <= len(rest.split()) <= 3:
                 return base, rest
     for place in PLACES:
-        if title.endswith(" " + place) and len(title) > len(place) + 3:
+        if title.endswith(" " + place) and len(title) > len(place) + 3 \
+                and not re.search(r"\b(?:in|of|from|at|to|over|under|across|and|the)$", title[: -len(place) - 1], re.I):
             return title[: -len(place) - 1].strip(), place
     return title, None
 
@@ -40,11 +46,23 @@ class FilmLincScraper(BaseScraper):
         for page in pages:
             films = json.loads(page.body).get("films", [])
             titles = {t for t in (clean_text(f.get("title")) for f in films) if t}
+            tagged: dict[tuple, set] = {}                    # (presale tag, day) -> films carrying it
+            for f in films:
+                for st in f.get("showtimes") or []:
+                    kind = (st.get("presaleSchedule") or {}).get("presaleType")
+                    if kind in FESTIVALS and st.get("dateTimeET"):
+                        tagged.setdefault((kind, st["dateTimeET"][:10]), set()).add(f.get("title"))
+
+            def series(st) -> str | None:
+                kind = (st.get("presaleSchedule") or {}).get("presaleType")
+                if kind in FESTIVALS and len(tagged.get((kind, (st.get("dateTimeET") or "")[:10]), ())) < FESTIVAL_DAY_FILMS:
+                    return None
+                return PRESALE_SERIES.get(kind)
+
             series_of = {}                                   # a film's festival, for its borough editions
             for f in films:
                 for st in f.get("showtimes") or []:
-                    sr = PRESALE_SERIES.get((st.get("presaleSchedule") or {}).get("presaleType"))
-                    if sr:
+                    if sr := series(st):
                         series_of.setdefault(clean_text(f.get("title")), sr)
             for film in films:
                 title = clean_text(film.get("title"))
@@ -70,8 +88,7 @@ class FilmLincScraper(BaseScraper):
                         title=title,
                         start=start_s,
                         day=start.date().isoformat(),
-                        series=PRESALE_SERIES.get((st.get("presaleSchedule") or {}).get("presaleType"))
-                        or series_of.get(title),
+                        series=series(st) or series_of.get(title),
                         screen=clean_text(st.get("venue")),
                         note="; ".join(notes) or None,
                         detail_url=f"https://www.filmlinc.org/films/{slug}/" if slug else None,

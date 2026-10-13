@@ -40,11 +40,30 @@ def test_borough_editions_lose_the_place_from_the_title():
         {"id": "1", "title": "Bucking Fastard", "slug": "bucking-fastard", "showtimes": [
             {"dateTimeET": "2026-10-03T18:00:00-04:00", "venue": "Alice Tully Hall", "presaleSchedule": {"presaleType": "nyff"}}]},
         {"id": "2", "title": "Bucking Fastard Bronx", "slug": "bucking-fastard-bronx", "showtimes": [
-            {"dateTimeET": "2026-10-04T19:00:00-04:00", "venue": "AMC Bay Plaza Cinema"}]}]}
+            {"dateTimeET": "2026-10-04T19:00:00-04:00", "venue": "AMC Bay Plaza Cinema"}]}]
+        + [{"id": str(9 + i), "title": f"Festival Film {i}", "showtimes": [          # the festival's other films that day
+            {"dateTimeET": "2026-10-03T20:00:00-04:00", "presaleSchedule": {"presaleType": "nyff"}}]} for i in range(2)]}
     rows = scraper_for("filmlinc").parse([RawPage(url="x", body=json.dumps(feed), fetched_at="2026-09-25T01:00:00Z", ext="json")])
     bronx = next(r for r in rows if r.screen == "AMC Bay Plaza Cinema")
     assert (bronx.title, bronx.note, bronx.series) == ("Bucking Fastard", "Bronx", "New York Film Festival")
     assert bronx.detail_url.endswith("/bucking-fastard-bronx/")          # still links to its own page
     assert split_place("Queens of the Stone Age", set()) == ("Queens of the Stone Age", None)
     assert split_place("A Bronx Tale", set()) == ("A Bronx Tale", None)
+    assert split_place("Once Upon a Time in Harlem", set()) == ("Once Upon a Time in Harlem", None)
+    assert split_place("Escape from the Bronx", set()) == ("Escape from the Bronx", None)
     assert split_place("Paterson Staten Island", set()) == ("Paterson", "Staten Island")
+
+
+def test_festival_tag_after_the_festival_is_not_the_festival():
+    """FLC's NYFF presale tag stays on films booked during the festival that play after it (The Devils)."""
+    import json
+    from scraper.models import RawPage
+    from tests.conftest import scraper_for
+    festival = [{"id": str(i), "title": f"F{i}", "showtimes": [
+        {"dateTimeET": "2026-10-05T18:00:00-04:00", "presaleSchedule": {"presaleType": "nyff"}}]} for i in range(3)]
+    later = {"id": "9", "title": "The Devils", "showtimes": [
+        {"dateTimeET": "2026-10-15T19:00:00-04:00", "presaleSchedule": {"presaleType": "nyff"}}]}
+    rows = scraper_for("filmlinc").parse([RawPage(url="x", body=json.dumps({"films": festival + [later]}),
+                                                  fetched_at="2026-09-25T01:00:00Z", ext="json")])
+    assert {r.title: r.series for r in rows} == {"F0": "New York Film Festival", "F1": "New York Film Festival",
+                                                 "F2": "New York Film Festival", "The Devils": None}

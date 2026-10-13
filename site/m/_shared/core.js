@@ -32,6 +32,7 @@
       onlyFilm: "只看这部", onlyVenue: (n) => `只看 ${n}`, undo: "撤销", nowOnly: (n) => `现在只看 ${n}`,
       otherTimes: "这家今天的其他场次", sameTime: "同一时间也在", address: "地址", alsoScreen: (x) => `同时在 ${x} 放映`,
       shows: (n) => `${n} 场`,
+      searchAll: (q, n) => `“${q}” · 今天起共 ${n} 场`, noMatch: (q) => `今天起所选影院没有和“${q}”匹配的场次。`,
       dateStrip: "日期", bottomBar: "换日与筛选", shown: (n, all) => `${n}/${all}`,
     },
     en: {
@@ -53,6 +54,7 @@
       onlyFilm: "Only this film", onlyVenue: (n) => `Only ${n}`, undo: "Undo", nowOnly: (n) => `Showing only ${n}`,
       otherTimes: "Other times here today", sameTime: "Same time at", address: "Address", alsoScreen: (x) => `Also on ${x}`,
       shows: (n) => `${n} show${n === 1 ? "" : "s"}`,
+      searchAll: (q, n) => `“${q}” · ${n} show${n === 1 ? "" : "s"} from today`, noMatch: (q) => `Nothing at the selected cinemas matches “${q}” from today on.`,
       dateStrip: "Dates", bottomBar: "Day and filters", shown: (n, all) => `${n}/${all}`,
     },
   };
@@ -271,6 +273,11 @@
     return m.forDay(day).filter((s) => shown(st, m, s.venue_id) && passes(s, st, now, today));
   }
 
+  /** A search runs across days (as on the main page): [[day, screenings]] from today on, days with a match only. */
+  function searchDays(m, st, now = new Date(), today = todayKey(now)) {
+    return m.days.filter((d) => d >= today).map((d) => [d, visible(m, st, d, now, today)]).filter(([, l]) => l.length);
+  }
+
   /** Screenings per day for the date strip. */
   function dayCounts(m, st, days, now = new Date(), today = todayKey(now)) {
     return Object.fromEntries(days.map((d) => [d, visible(m, st, d, now, today).length]));
@@ -312,7 +319,7 @@
     todayKey, dayDate, shiftDay, validDay, timeLabel,
     dayTitle, weekday, monthShort, monthDay, relDay, relTime, fold,
     model, twinKey, blankState, loadVenues, saveVenues, loadRegions, saveRegions, parseHash, buildHash,
-    isOnFilm, shown, needsNoEnglish, passes, visible, dayCounts, nearestDay,
+    isOnFilm, shown, needsNoEnglish, passes, visible, searchDays, dayCounts, nearestDay,
     groupFilms, groupByVenue,
   };
   root.MCore = api;

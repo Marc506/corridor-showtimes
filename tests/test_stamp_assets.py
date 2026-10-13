@@ -32,3 +32,21 @@ def test_version_follows_content():
 def test_publish_and_ci_stamp_the_staged_copy():
     assert "scripts/stamp_assets.py" in (ROOT / "scripts" / "publish.sh").read_text()
     assert "scripts/stamp_assets.py _site" in (ROOT / ".github" / "workflows" / "refresh.yml").read_text()
+
+
+def test_phone_page_scripts_are_versioned_too(tmp_path):
+    """m/venues/index.html loads ../_shared/core.js and ../../data.js: a new phone page with a cached old core.js
+    would call functions that aren't there."""
+    import shutil
+    shutil.copytree(ROOT / "site" / "m", tmp_path / "m")
+    for name in ("index.html", "app.js", "calendar.js", "styles.css", "plan.js", "planner.js", "planner.css"):
+        (tmp_path / name).write_bytes((ROOT / "site" / name).read_bytes())
+    (tmp_path / "data.js").write_text("window.CINEMA_DATA = {};\n")
+    stamp_assets.stamp_folder(tmp_path)
+    phone = (tmp_path / "m" / "venues" / "index.html").read_text()
+    core = stamp_assets.version((tmp_path / "m" / "_shared" / "core.js").read_bytes())
+    data = stamp_assets.version((tmp_path / "data.js").read_bytes())
+    assert f'src="../_shared/core.js?v={core}"' in phone and f'src="../../data.js?v={data}"' in phone
+    assert 'href="venues.css?v=' in phone and 'href="../../manifest.webmanifest"' in phone      # not versioned
+    stamp_assets.stamp_folder(tmp_path)
+    assert (tmp_path / "m" / "venues" / "index.html").read_text() == phone                       # idempotent

@@ -11,8 +11,8 @@ from bs4 import BeautifulSoup
 
 from ..base import DETAIL_TTL, BaseScraper
 from ..models import RawPage, Screening
-from ..normalize import (clean_text, iso, language_from_text, make_id, normalize_format, parse_iso, title_norm,
-                         to_local, today_local)
+from ..normalize import (clean_text, drop_director_possessive, iso, language_from_text, make_id, normalize_format,
+                         parse_iso, title_norm, to_local, today_local)
 from ..registry import register
 
 API = "https://www.bam.org/api/BAMApi/GetCalendarEventsByDayWithOnGoing"
@@ -193,6 +193,8 @@ class BamScraper(BaseScraper):
         info = self.enrich_by_url(screenings, parse_detail,
                                   fields=("director", "year", "runtime_min", "format", "series", "language"),
                                   ttl=lambda url: SOON_TTL if url in near else DETAIL_TTL)
+        for s in screenings:
+            s.title = drop_director_possessive(s.title, s.director)
         per_url: dict = {}
         for s in screenings:
             per_url[s.detail_url] = per_url.get(s.detail_url, 0) + 1

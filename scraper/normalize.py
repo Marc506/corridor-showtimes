@@ -43,6 +43,16 @@ def response_text(content: bytes, text: str) -> str:
     return text
 
 
+def drop_director_possessive(title: str, director: str | None) -> str:
+    """"Ken Russell’s The Devils" by Ken Russell -> "The Devils": cinemas put the director's name before a classic,
+    which hides it from the same film elsewhere. Only when the name is the film's director ("Schindler's List",
+    "Ferris Bueller's Day Off" stay)."""
+    m = re.match(r"^(.+?)[’']s\s+(\S.*)$", title or "")
+    if m and director and any(title_norm(m.group(1)) == title_norm(d) for d in director.split(",")):
+        return m.group(2)
+    return title
+
+
 def clean_text(s: str | None) -> str | None:
     """Unescape HTML entities, collapse whitespace; empty -> None."""
     if s is None:

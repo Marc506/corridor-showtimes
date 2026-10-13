@@ -5,6 +5,10 @@
   font-size: 13px; font-weight: 800; letter-spacing: .06em; color: var(--muted);
 }
 .vn-region span { font-size: 12px; font-weight: 500; letter-spacing: 0; }
+/* Search: every day from today on, a heading per day (the strip jumps to it, clear of the sticky top bar). */
+.vn-found { margin: 10px 4px 0; font-size: 13px; color: var(--muted); }
+.vn-day { scroll-margin-top: calc(var(--top-h) + 4px); }
+.vn-search .vn-region { letter-spacing: 0; }
 .vn-card {
   margin-bottom: 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--card);
   box-shadow: inset 4px 0 0 var(--c);

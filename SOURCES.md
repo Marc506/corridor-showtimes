@@ -34,6 +34,8 @@ GET https://www.bam.org/api/BAMApi/GetCalendarEventsByDayWithOnGoing?start=9/24/
 - `detail_url = "https://www.bam.org" + moreLink`，`ticket_url = buyLink`。
 - 导演 / 年份 / 时长不在 API 里。可选增强：GET `moreLink` 详情页，页面里有 JSON‑LD `{"graph":[{"@type":"Event","startDate","endDate","location":{"name":"BAM Rose Cinemas at BAM KBH"}}]}`，`runtime = endDate - startDate`；`<h2>RUNNING TIME</h2>` 后面是 "126min"。每部片只请求一次并按 `moreLink` 缓存。
 
+**实测补充（2026‑10‑12）**：片名可能带导演的所有格（「Ken Russell’s The Devils」），别家影院写的是「The Devils」，于是被当成另一部片（搜索、排片、跨影院比较）。详情页给出的导演和这个名字一致时去掉它（`normalize.drop_director_possessive`；「Schindler's List」这类不是导演名的不动）。
+
 **实测补充（2026‑09‑24）**：详情页纯文本里 `Directed by X\n(2026)`、`Part of\nSeries`、`RUNNING TIME\n106min`、`FORMAT\nDCP` 都能取到，已在 `enrich()` 里接入；"BAM Film 2026" 这种泛化系列名丢弃。详情页 HTML 缓存在 `data/cache/bam/`，7 天内不重复请求；三天内开场的片每天重新取一次，因为日程和嘉宾常在最后几天才补上。
 
 **实测补充（2026‑10‑07，一整天的活动）**：日历 API 里一场「12:01pm」的 Black Women's Film Conference，详情页简介里才有 `Schedule:` 日程——时间一行（`12pm`、`12:15 pm`、`1:45pm`），下面是这一段的内容，电影段和开场致辞、对谈、休息、Town Hall 交替。活动只有一场（`performances` 只有一个）、日程第一段离这场开场不超过 90 分钟、时间往后排时，拆成每个电影段一条：电影行带导演（`Heat dir. Aicha Cherif`、`dir` 也可能不带点）或年份（`Boyant (2008)`），没有这两样的段（致辞、休息、和这段片无关的对谈）不单独收。一两部片用片名（「Brick by Brick + Heat」）；三部以上（短片合集）用活动名去掉主办方（「New Negress Film Society presents」），每部片和段名（`The Works of Akosua Adoma Owusu`，同时据此填导演）写进备注。紧跟在电影段后面、提到这段片导演的对谈（或 Q&A）并入这一条：结束时间延到对谈结束，备注写「Conversation with … at 12:45pm」，看得出电影几点放完；否则到下一段开始时结束。系列是原活动名。
@@ -75,6 +77,10 @@ GET https://api.filmlinc.org/showtimes?date=2026-09-25   # 单日
 **实测补充（2026‑09‑30）**
 - 官网的影片页（如 `/nyff2026/films/<slug>/`）有导演、片长、语言，但对程序请求仍返回 Cloudflare 挑战页（403 "Just a moment…"），`/wp-json/` 也被重定向。`api.filmlinc.org` 只有 `/showtimes` 一个端点（`/films`、`/film/<id>`、`/productions/<id>` 都 404）。所以导演和片长靠 TMDB 和 screenslate 补。
 - 纽约电影节的外区加映是单独的条目，片名带地名：`"Bucking Fastard Bronx"`（AMC Bay Plaza Cinema）。片名是「另一条目的片名 + 1–3 个词」，或以纽约各区名结尾时，去掉地名放进备注，系列沿用主条目的。
+
+**实测补充（2026‑10‑12）**
+- 地名前是介词时，地名是片名的一部分，不去掉：《Once Upon a Time in Harlem》（10/16–22 共 56 场）以前被切成「Once Upon a Time in」、备注「Harlem」（「Escape from the Bronx」同理）。
+- `presaleType: nyff` 不只出现在电影节场次上：电影节期间开售、电影节之后才放的片（《The Devils》，10/15–22）也带着它。电影节那几天每天有 12–21 部片带这个标记，之后每天只有 1 部；所以只有当天至少 3 部片带标记时才记为「New York Film Festival」。Met Opera 的标记不受影响。
 
 ---
 

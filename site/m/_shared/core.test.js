@@ -176,6 +176,15 @@ test("both languages define the same keys", () => {
   assert.deepStrictEqual(Object.keys(C.I18N.zh).sort(), Object.keys(C.I18N.en).sort());
 });
 
+test("a search covers every day from today on, not only the chosen one (as on the main page)", () => {
+  const st = { ...C.blankState(m, TODAY), day: "2026-10-10", q: "samoura" };
+  const now = new Date("2026-10-08T17:00:00Z");
+  assert.deepStrictEqual(C.searchDays(m, st, now, TODAY).map(([d, l]) => [d, l.map((s) => s.id)]), [["2026-10-12", ["g"]]]);
+  st.q = "happy";
+  assert.deepStrictEqual(C.searchDays(m, st, now, TODAY).map(([d, l]) => [d, l.length]), [["2026-10-10", 4]]);
+  assert.deepStrictEqual(C.searchDays(m, st, new Date("2026-10-11T17:00:00Z"), "2026-10-11"), []);   // past days drop out
+});
+
 let failed = 0;
 for (const [name, fn] of tests) {
   try { fn(); console.log(`ok   ${name}`); } catch (e) { failed++; console.log(`FAIL ${name}\n     ${e.message.split("\n").join("\n     ")}`); }

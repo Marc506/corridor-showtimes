@@ -33,14 +33,14 @@
       one ? ctx.timePill(f.showings[0], now) : el("div", { class: "m-times" }, f.showings.map((s) => ctx.timePill(s, now))));
   }
 
-  function card(ctx, v, list) {
+  function card(ctx, v, list, foldable = true) {
     const { C, t, now } = ctx;
     const films = C.groupFilms(list)
       .sort((a, b) => next(a.showings, now) - next(b.showings, now) || Date.parse(a.showings[0].start) - Date.parse(b.showings[0].start));
-    const closed = folded.has(v.id);
+    const closed = foldable && folded.has(v.id);
     const head = el("button", {
       type: "button", class: "vn-head", "aria-expanded": String(!closed),
-      onclick: () => { closed ? folded.delete(v.id) : folded.add(v.id); save(); ctx.refresh(); },
+      onclick: () => { if (!foldable) return; closed ? folded.delete(v.id) : folded.add(v.id); save(); ctx.refresh(); },
     },
       el("span", { class: "vn-name" }, v.name),
       el("span", { class: "vn-meta" }, t("filmsShows", films.length, list.length)),
@@ -51,9 +51,25 @@
       head, closed ? null : el("div", { class: "vn-films" }, films.map((f) => filmRow(ctx, f))));
   }
 
+  /** A search lists every matching screening from today on, day by day (as on the main page), not just the
+   *  chosen day: within a day, a card per cinema. The date strip's days jump to their part of the list. */
+  function renderSearch(ctx, chips) {
+    const { C, m, t, state, now, lang } = ctx;
+    const days = C.searchDays(m, state, now, ctx.today);
+    if (!days.length) return [chips, ctx.empty(t("noMatch", state.q)), ctx.footer()];
+    const total = days.reduce((n, [, l]) => n + l.length, 0);
+    return [chips, el("div", { class: "vn vn-search" },
+      el("p", { class: "vn-found" }, t("searchAll", state.q, total)),
+      days.map(([d, l]) => el("section", { class: "vn-day", id: "sr-" + d },
+        el("h2", { class: "vn-region" }, C.dayTitle(d, lang),
+          el("span", {}, [C.relDay(d, ctx.today, t), t("shows", l.length)].filter(Boolean).join(" · "))),
+        C.groupByVenue(l).map(([vid, vl]) => card(ctx, m.venueById[vid], vl, false))))), ctx.footer()];
+  }
+
   function render(ctx) {
     const { C, m, t, list, now } = ctx;
     const chips = ctx.quickFilters();                 // the filter switches one tap away, above the cards
+    if (ctx.state.q) return renderSearch(ctx, chips);
     if (!list.length) return [chips, ctx.empty(), ctx.footer()];
     const byVenue = C.groupByVenue(list);
     const regions = m.regions.map((r) => [r, byVenue.filter(([vid]) => m.regionOf(m.venueById[vid]) === r)
@@ -68,6 +84,11 @@
   window.MChrome.start({
     render,
     after(ctx, opts) {
+      if (ctx.state.q) {                              // searching: a day picked in the strip scrolls to its results
+        const sec = (opts.dayChanged || opts.first) && document.getElementById("sr-" + ctx.state.day);
+        if (sec) sec.scrollIntoView({ block: "start" });
+        return;
+      }
       if (!opts.first || !ctx.state.hl) return;
       const hit = ctx.main.querySelector(".vn-film.hl");
       if (hit) hit.scrollIntoView({ block: "center" });

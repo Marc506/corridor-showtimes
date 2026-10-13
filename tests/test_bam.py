@@ -72,3 +72,10 @@ def test_bam_schedule_that_does_not_fit_is_ignored():
     assert parse_schedule("No running order here") is None
     other = parse_schedule("Schedule:\n12pm\nHeat dir. Aicha Cherif\n1pm\nConversation with a critic\n2pm\nBreak")
     assert split_programme(noon, other, "America/New_York")[0].end[11:16] == "13:00"   # not her talk: not joined
+
+
+def test_director_possessive_is_dropped_only_for_the_director():
+    from scraper.normalize import drop_director_possessive
+    assert drop_director_possessive("Ken Russell’s The Devils", "Ken Russell") == "The Devils"
+    assert drop_director_possessive("Schindler's List", "Steven Spielberg") == "Schindler's List"
+    assert drop_director_possessive("Ken Russell’s The Devils", None) == "Ken Russell’s The Devils"
