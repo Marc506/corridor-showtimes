@@ -16,7 +16,7 @@ from ..registry import register
 URL = "https://metrograph.com/nyc/"
 SITE = "https://metrograph.com"
 KNOWN_FORMATS = {"dcp", "4k dcp", "35mm", "16mm", "70mm", "digital", "digital video", "vhs",
-                 "blu-ray", "super 8", "8mm", "2k dcp"}
+                 "blu-ray", "super 8", "8mm", "2k dcp", "3d dcp", "3d", "4k"}     # "Martin Scorsese / 3D DCP / 2011"
 
 
 def parse_metadata(text: str | None) -> dict:

@@ -38,10 +38,11 @@ MIN_INTERVAL_S = 0.06              # TMDB allows ~50 req/s; stay far below
 NOT_A_FILM = re.compile(r"\b(program(me)?|pgm|shorts|talk|lecture|conversation|workshop|panel|party|"
                         r"reading|masterclass|members only|open house|gala|pass)\b", re.I)
 PREFIXES = re.compile(r"^(?:[A-Z]{2,4}:\s+|.{3,60}?\s+[Pp]resents:?\s+|(?:opening|closing|centerpiece)\s+night:\s+|"
-                      r"sneak preview:\s+|preview:\s+)", re.I)
+                      r"(?:members?[- ]only\s+)?(?:sneak\s+)?preview:\s+)", re.I)
 SUFFIXES = re.compile(r"\s*(?:\((?:[^)]*restoration[^)]*|\d+k|35mm|16mm|70mm|in \d+mm|director'?s cut|(?:18|19|20)\d{2})\)|"
                       r":\s*\d+(?:st|nd|rd|th)\s+anniversary\b.*|\s*[-–:]\s*(?:4k\s+)?remaster(?:ed)?\b.*|"
-                      r"\s+(?:w/|with)\s+.*|\s+in\s+(?:(?:35|16|70)\s*mm|vistavision|imax(?:\s+70\s*mm)?|3-?d|4k))\s*$", re.I)
+                      r"\s+(?:w/|with)\s+.*|\s+in\s+(?:(?:35|16|70)\s*mm|vistavision|imax(?:\s+70\s*mm)?|3-?d|4k)|"
+                      r"\s*\[[^\]]*\])\s*$", re.I)                          # "[4K DCP]", "[3D Screening]"
 # Opera/ballet broadcasts (Met Live in HD etc.) are sung in the original language with English
 # subtitles; TMDB would match them to an unrelated same-title film ("Macbeth" -> English).
 OPERA = re.compile(r"\b(opera|live in hd|met: live|bolshoi|royal ballet)\b", re.I)
@@ -59,13 +60,21 @@ def load_token() -> str | None:
     return tok or None
 
 
-def search_title(title: str) -> str | None:
-    """'EC: Strike' -> 'Strike'; 'Jollof Films Presents: Faat Kiné' -> 'Faat Kiné'; None for programmes."""
-    if " + " in title or NOT_A_FILM.search(title):
+def search_title(title: str, keep_with: bool = False) -> str | None:
+    """'EC: Strike' -> 'Strike'; 'Jollof Films Presents: Faat Kiné' -> 'Faat Kiné'; None for programmes.
+    'The Heiress with Karina Longworth' -> 'The Heiress'; keep_with=True keeps a "with …" that may be the title's
+    own ('In Bed with Victoria'), tried when the shorter search finds nothing."""
+    if " + " in title:
+        return None
+    # "Members Only Preview: All of a Sudden" is a film; "Talk: Lee Chang-dong" is not
+    if NOT_A_FILM.search(re.sub(r"^(?:members?[- ]only\s+)?(?:sneak\s+)?preview:\s+", "", title, flags=re.I)):
         return None
     t = PREFIXES.sub("", title).strip()
     # "Ken Russell’s The Devils" -> "The Devils" (only before an article: keeps "Schindler's List")
     t = re.sub(r"^(?:[A-Z][\w.\-]+\s){0,3}[A-Z][\w.\-]+[’']s\s+(?=(?:The|A|An)\s)", "", t)
+    if keep_with:                                  # the alternative only exists when there is a "with …"
+        m = re.search(r"\s+with\s+\S.*$", t, re.I)
+        return (SUFFIXES.sub("", t[: m.start()]).strip(" -–—:") + t[m.start():]).strip() if m else None
     t = SUFFIXES.sub("", t).strip(" -–—:")
     return t or None
 
@@ -73,11 +82,12 @@ def search_title(title: str) -> str | None:
 def same_person(a: str, b: str) -> bool:
     """Loose name match for directors written differently by a cinema and by TMDB:
     'Oleksandr Dovzhenko' ~ 'Alexander Dovzhenko', 'Stephen Lisberger' ~ 'Steven Lisberger',
-    'Tsai Ming-liang' ~ 'Ming-liang Tsai'. Same surname (last word) or a shared word of 4+ letters."""
+    'Tsai Ming-liang' ~ 'Ming-liang Tsai', 'Ye Lou' ~ 'Lou Ye'. Same surname (last word), the same words in another
+    order (East Asian names written surname first or last), or a shared word of 4+ letters."""
     ta, tb = title_norm(a).split(), title_norm(b).split()
     if not ta or not tb:
         return False
-    if ta == tb or ta[-1] == tb[-1]:
+    if ta == tb or ta[-1] == tb[-1] or sorted(ta) == sorted(tb):
         return True
     return any(len(w) >= 4 for w in set(ta) & set(tb))
 
@@ -157,6 +167,10 @@ class TmdbLanguage:
             return None                                 # recent miss
         if not hit or not hit.get("lang") or "sure" not in hit:   # new, expired miss, or cached before directors
             lang, tmdb_id, sure, rel_year = self._find(q, year, director)
+            if not lang and (alt := search_title(title, keep_with=True)):           # "In Bed with Victoria"
+                lang, tmdb_id, sure, rel_year = self._find(alt, year, director)
+            if not lang and director and year:                                      # "Tenebrae" is "Tenebre" there
+                lang, tmdb_id, sure, rel_year = self._by_director(q, year, director)
             hit = {"lang": lang, "id": tmdb_id, "sure": sure, "year": rel_year, "at": now.isoformat()}
             self.cache["films"][key] = hit
         if hit.get("sure") and hit.get("id") and self._facts_stale(hit):
@@ -261,6 +275,33 @@ class TmdbLanguage:
         m = pool[0]
         code = m.get("original_language")
         return (self.language_name(code) if code else None), m.get("id"), sure, yr(m)
+
+    def _by_director(self, q: str, year: int, director: str) -> tuple[str | None, int | None, bool, int | None]:
+        """When the title search misses — TMDB knows the film by another name ("Tenebre" for Metrograph's
+        "Tenebrae", "Dracula" for "Horror of Dracula", "Secrets & Lies") — the director's own films that year:
+        the only one that year, or the one of them sharing a word with the title. Sure when found."""
+        name = next((d.strip() for d in re.split(r",|&| and ", director) if d.strip()), "")
+        people = self._get("/search/person", query=name).get("results", []) if name else []
+        person = next((p for p in people if same_person(name, p.get("name") or "")), None)
+        if not person:
+            return None, None, False, None
+        crew = self._get(f"/person/{person['id']}/movie_credits").get("crew", [])
+        films = {m["id"]: m for m in crew if m.get("job") == "Director" and m.get("id")}.values()
+
+        def yr(m):
+            y = (m.get("release_date") or "")[:4]
+            return int(y) if y.isdigit() else None
+        words = {w for w in title_norm(q).split() if len(w) > 2} - {"the", "and", "of"}
+        shares = lambda m: words & set(title_norm(f"{m.get('title') or ''} {m.get('original_title') or ''}").split())  # noqa: E731
+        same = [m for m in films if yr(m) == year]
+        pick = same if len(same) == 1 else [m for m in same if shares(m)]
+        if not pick:
+            pick = [m for m in films if yr(m) and abs(yr(m) - year) <= 1 and shares(m)]
+        if len(pick) != 1:
+            return None, None, False, None
+        m = pick[0]
+        code = m.get("original_language")
+        return (self.language_name(code) if code else None), m["id"], True, yr(m)
 
     def _directed_by(self, movie_id: int, director: str) -> bool:
         try:

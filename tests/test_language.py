@@ -266,6 +266,8 @@ def test_title_prefix_candidates_need_a_director():
 def test_same_person_tolerates_spelling_and_order():
     assert L.same_person("Oleksandr Dovzhenko", "Alexander Dovzhenko")
     assert L.same_person("Stephen Lisberger", "Steven Lisberger")
+    assert L.same_person("Ye Lou", "Lou Ye")                    # Suzhou River at Metrograph: Chinese name order
+    assert not L.same_person("Ye Lou", "Lou Reed")
     assert L.same_person("Tsai Ming-liang", "Ming-liang Tsai")
     assert L.same_person("Lars Von Trier", "Lars von Trier")
     assert not L.same_person("Nick Davis", "John Albarian")
@@ -342,3 +344,37 @@ def test_day_and_date_streaming_release():
     assert not L.day_and_date(us((3, "2026-10-02")))
     assert not L.day_and_date({"results": [{"iso_3166_1": "FR", "release_dates": [{"type": 4, "release_date": "2026-10-02"}]}]})
 
+
+
+def test_titles_tmdb_knows_by_another_name_come_from_the_directors_films():
+    """Metrograph's "Tenebrae" is "Tenebre" on TMDB, "Horror of Dracula" is "Dracula": a miss with a director and a
+    year looks in that director's films — the only one that year, or the one sharing a word with the title."""
+    class Filmography(FakeTmdb):
+        def _get(self, path, **params):
+            self.calls.append(path)
+            if path == "/search/person":
+                return {"results": [{"id": 77, "name": "Terence Fisher"}, {"id": 78, "name": "Dario Argento"}]}
+            if path.startswith("/person/"):
+                if path == "/person/78/movie_credits":
+                    return {"crew": [{"id": 1, "job": "Director", "title": "Tenebre", "release_date": "1982-10-28",
+                                      "original_language": "it"}]}
+                return {"crew": [
+                    {"id": 2, "job": "Director", "title": "Dracula", "release_date": "1958-05-08", "original_language": "en"},
+                    {"id": 3, "job": "Director", "title": "The Revenge of Frankenstein", "release_date": "1958-06-01",
+                     "original_language": "en"},
+                    {"id": 2, "job": "Producer", "title": "Dracula", "release_date": "1958-05-08"}]}
+            return super()._get(path, **params)
+    t = Filmography([])
+    assert t.details("Tenebrae", 1982, "Dario Argento")["id"] == 1 and t.lookup("Tenebrae", 1982, "Dario Argento") == "Italian"
+    assert t.details("Horror of Dracula", 1958, "Terence Fisher")["id"] == 2
+    assert t.details("Something Else", 1958, "Terence Fisher") is None          # two that year, no shared word
+    assert t.details("Tenebrae", 1999, "Dario Argento") is None                 # wrong year: not guessed
+
+
+def test_search_titles_keep_what_is_a_film():
+    assert L.search_title("Members Only Preview: All of a Sudden") == "All of a Sudden"
+    assert L.search_title("Members Only Party") is None
+    assert L.search_title("Suspiria [4K DCP]") == "Suspiria"
+    assert L.search_title("In Bed with Victoria") == "In Bed"
+    assert L.search_title("In Bed with Victoria", keep_with=True) == "In Bed with Victoria"   # tried when "In Bed" misses
+    assert L.search_title("Suspiria", keep_with=True) is None

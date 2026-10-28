@@ -277,6 +277,13 @@ def tidy_title(title: str, places: str = "") -> tuple[str, str | None, str | Non
         if (m := re.search(r"\s*[\(\[]([^()\[\]]+)[\)\]]\s*$", t)) and known \
                 and set(title_norm(m.group(1)).split()) <= known and t[:m.start()].strip():
             t = t[:m.start()]                                                     # "(PFS EAST)" at PFS - East Theater 1
+        if m := re.search(r"\s*\[([^\[\]]+)\]\s*$", t):                    # "Suspiria [4K DCP]", "Hugo [3D Screening]"
+            label = m.group(1).strip()
+            f = split_format_suffix(f"x ({label})")[1] if re.fullmatch(r"(?:35|16|70|8)\s?mm", label, re.I) else None
+            fmt = fmt or f
+            if not f:
+                notes.insert(0, label)
+            t = t[:m.start()]
         if m := _ENCORE.search(t):
             notes.insert(0, "Encore")
             t = t[:m.start()]

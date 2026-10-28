@@ -222,9 +222,10 @@ for venue in enabled venues:
 1. **影院网站自己的文字**："In French and Wolof with English subtitles"、"silent"、PFS feed 的 Original Language。
 2. **歌剧 / 芭蕾直播**（按系列名或备注识别）：直接标为 `Opera (subtitled)`，不查 TMDB，免得配到同名电影。
 3. **TMDB 查询**（需 `config/tmdb_token.txt`）。影院给了 IMDb 号（`imdb_id`）时直接 `/find/{imdb_id}`，一定是这部片；否则按片名查，宁可「未知」，不要配错：
-   * 先清理片名：去掉 "EC: "、"X Presents: "、"w/ Q&A"、"(4K Restoration)"，以及冠词前的「导演名's」。
+   * 先清理片名：去掉 "EC: "、"X Presents: "、"(Members Only) Preview: "、"w/ Q&A"、"(4K Restoration)"、"[4K DCP]"，以及冠词前的「导演名's」。"with …" 先去掉（"The Heiress with Karina Longworth"）；查不到时再连同它一起查（"In Bed with Victoria"）。
    * 讲座、短片合集、连映不查。
-   * 有年份时要求 ±1 年内，同年优先；仍有多个候选时用导演核对。
+   * 有年份时要求 ±1 年内，同年优先；仍有多个候选时用导演核对。导演名按姓、名两种顺序都算同一人（Metrograph 的 "Ye Lou" = TMDB 的 "Lou Ye"）。
+   * 按片名查不到、但影院给了导演和年份时，查这位导演的作品（`/search/person` → `/person/{id}/movie_credits`）：那一年只有一部就是它，有几部时取和片名有共同词的那部；年份差一年的只在有共同词时才算。TMDB 用别的片名收录的片（"Tenebrae" 是 "Tenebre"，"Horror of Dracula" 是 "Dracula"，"Secrets and Lies" 是 "Secrets & Lies"）靠这一步找到，算「确定」。
    * 没有年份时，先借用其他影院同名片的年份和导演；再优先当年的新片；所有候选语言相同时直接采用；有一部热度是第二名 3 倍以上时取它；都不满足就放弃。
    * 结果缓存在 `data/cache/tmdb.json`：命中的永久保存，未命中的 14 天后重试。
 4. **影院默认语言**（`default_language`：Japan Society = 日语，L'Alliance = 法语）。

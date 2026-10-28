@@ -44,6 +44,8 @@ def test_run_labels_and_print_formats_leave_titles():
     assert tidy_title("WERWULF (35MM)") == ("Werwulf", "35mm", None)
     assert tidy_title("Nosferatu (New Release) (70mm)") == ("Nosferatu", "70mm", None)
     assert tidy_title("Carmen (2026 ENCORE)") == ("Carmen", None, "Encore")
+    assert tidy_title("Suspiria [4K DCP]") == ("Suspiria", None, "4K DCP")
+    assert tidy_title("Hugo [3D Screening]") == ("Hugo", None, "3D Screening")
     assert tidy_title("TERROR FIRMER (Lloyd Kaufman in person for both screenings!)") == \
         ("Terror Firmer", None, "Lloyd Kaufman in person for both screenings")
     assert tidy_title("Precipice (Filmmaker in Person!)") == ("Precipice", None, "Filmmaker in Person")
