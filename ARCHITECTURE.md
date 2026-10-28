@@ -69,7 +69,7 @@
 |---|---|
 | `id` | `sha1(venue_id|start|规范化标题)[:16]`，跨次抓取稳定；同一时间同一部片在两个影厅（`screen` 不同）时，影厅名排在后面的那场的 id 另算入影厅名，两场都保留（`base.dedupe`） |
 | `venue_id` | venues.yaml 里的 key |
-| `title` | 展示用标题；全大写来源（Film Forum、Anthology、PFS）统一转换大小写 |
+| `title` | 展示用标题；全大写来源（Film Forum、Anthology、PFS）统一转换大小写。所有来源的标题在 `BaseScraper.run` 里统一过一遍 `normalize.tidy_title`：结尾的排期标签（「(First Run)」「(Now Playing)」）去掉，影院自己的楼名（「(PFS EAST)」，括号里每个词都出现在影院或影厅名里）去掉，「(35MM)」进 `format`，活动说明（「(Lloyd Kaufman in person!)」「(Free Screening!)」「(Encore)」）进 `note`；片名本身的括号（「(aka Itim)」、年份）不动 |
 | `start` / `end` | ISO 8601，带影院所在时区的偏移；`end` 来自影院或 start + 片长，没有则为空 |
 | `day` | 影院本地日期（= `start[:10]`），前端按天索引 |
 | `director` / `year` / `runtime_min` | 可选 |

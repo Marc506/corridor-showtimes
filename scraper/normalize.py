@@ -253,6 +253,49 @@ _FORMAT_SUFFIX = re.compile(r"(?:\s*[\(\[]\s*|\s+[-–—:]\s+(?:on\s+|in\s+)?)"
                             r"(?:\s*[\)\]])?\s*$", re.I)
 
 
+# Booking labels a cinema tacks onto a title ("FJORD (First Run)" at PFS): what kind of run it is, not the film.
+_RUN_LABEL = re.compile(r"\s*[\(\[]\s*(?:(?:19|20)\d{2}\s+)?(?:first[- ]run|now playing|new release|"
+                        r"exclusive (?:run|engagement)|limited (?:run|engagement)|special engagement|held over|"
+                        r"re-?release)\s*[\)\]]\s*$", re.I)
+_ENCORE = re.compile(r"\s*[\(\[]\s*(?:(?:19|20)\d{2}\s+)?encore(?: screening)?\s*[\)\]]\s*$", re.I)   # a repeat: worth a note
+# ... and notes about the event rather than the film: "(Lloyd Kaufman in person on Wed, Oct 28!)", "(Free Screening!)"
+_EVENT_LABEL = re.compile(r"\s*\(([^()]*\b(?:in person|free screening|q\s*&\s*a|introduc\w*|sensory(?:[- ]friendly)?|"
+                          r"members?[- ]only|sold out|open captions?)\b[^()]*)\)\s*$", re.I)
+
+
+def tidy_title(title: str, places: str = "") -> tuple[str, str | None, str | None]:
+    """Every source's titles pass through here (BaseScraper.run) -> (title, format, note). What a cinema tacks onto
+    a title that isn't the film goes: a run label ('FJORD (First Run)' -> 'Fjord'), its own building ('NAZA (PFS
+    EAST)', when every word of it is in `places` — the cinema's and the screen's names), a print format ('WERWULF
+    (35MM)' -> format 35mm) and an event note ('(Lloyd Kaufman in person!)' -> note). A title left all in
+    capitals is cased then — the label's lower-case letters had kept it from being."""
+    t, fmt, notes = title, None, []
+    known = set(title_norm(places).split())
+    while True:
+        before = t
+        t = _RUN_LABEL.sub("", t)
+        if (m := re.search(r"\s*[\(\[]([^()\[\]]+)[\)\]]\s*$", t)) and known \
+                and set(title_norm(m.group(1)).split()) <= known and t[:m.start()].strip():
+            t = t[:m.start()]                                                     # "(PFS EAST)" at PFS - East Theater 1
+        if m := _ENCORE.search(t):
+            notes.insert(0, "Encore")
+            t = t[:m.start()]
+        if m := _EVENT_LABEL.search(t):
+            notes.insert(0, m.group(1).strip().rstrip("!").strip())
+            t = t[:m.start()]
+        if re.search(r"[\(\[]\s*(?:35|16|70|8)\s?mm\s*[\)\]]\s*$", t, re.I):    # "(35MM)", not "- 35MM" here
+            t, f = split_format_suffix(t)
+            fmt = fmt or f
+        if t == before:
+            break
+    t = t.strip()
+    if not t:
+        return title, None, None
+    if t != title and not any(c.islower() for c in t):
+        t = smart_title(t)
+    return t, fmt, "; ".join(notes) or None
+
+
 def split_format_suffix(title: str) -> tuple[str, str | None]:
     """'Idlewild (35mm)' / 'The Misconceived - 35MM' -> (title, '35mm'); '4K restoration' is not a print format."""
     m = _FORMAT_SUFFIX.search(title or "")

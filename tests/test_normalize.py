@@ -34,3 +34,19 @@ def test_la_is_an_article_before_a_word_and_los_angeles_otherwise():
     assert smart_title("VIVA LA VIDA") == "Viva la Vida"
     assert smart_title("TO LIVE AND DIE IN LA") == "To Live and Die in LA"
     assert smart_title("LA 92") == "LA 92"
+
+
+def test_run_labels_and_print_formats_leave_titles():
+    from scraper.normalize import tidy_title
+    pfs = "Philadelphia Film Society PFS PFS - East Theater 1"
+    assert tidy_title("FJORD (First Run)") == ("Fjord", None, None)     # PFS; the label also kept it in capitals
+    assert tidy_title("NAZA (PFS EAST)", pfs) == ("Naza", None, None)   # its own building
+    assert tidy_title("WERWULF (35MM)") == ("Werwulf", "35mm", None)
+    assert tidy_title("Nosferatu (New Release) (70mm)") == ("Nosferatu", "70mm", None)
+    assert tidy_title("Carmen (2026 ENCORE)") == ("Carmen", None, "Encore")
+    assert tidy_title("TERROR FIRMER (Lloyd Kaufman in person for both screenings!)") == \
+        ("Terror Firmer", None, "Lloyd Kaufman in person for both screenings")
+    assert tidy_title("Precipice (Filmmaker in Person!)") == ("Precipice", None, "Filmmaker in Person")
+    for kept in ("They Say the People Can Fly (A Series)", "The Devils (1971)", "The Rites of May (aka Itim)",
+                 "Roy From Space (Roy del Espacio)", "Film No. 5 (Smile)", "MASH"):
+        assert tidy_title(kept, pfs) == (kept, None, None)
