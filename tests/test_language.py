@@ -378,3 +378,11 @@ def test_search_titles_keep_what_is_a_film():
     assert L.search_title("In Bed with Victoria") == "In Bed"
     assert L.search_title("In Bed with Victoria", keep_with=True) == "In Bed with Victoria"   # tried when "In Bed" misses
     assert L.search_title("Suspiria", keep_with=True) is None
+
+
+def test_title_only_match_in_another_language_is_a_namesake_at_a_one_country_cinema():
+    rows = [_s("The Oldest Profession")]
+    tmdb = FakeTmdb([{"id": 1, "title": "The Oldest Profession", "release_date": "1967-04-21", "original_language": "fr",
+                      "popularity": 9}], credits={1: ["Jean-Luc Godard"]})
+    L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x", default_language="Japanese"), tmdb)
+    assert (rows[0].language, rows[0].director, rows[0].year) == ("Japanese", None, None)

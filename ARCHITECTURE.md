@@ -182,7 +182,7 @@ class BaseScraper:
 
 * **编码**：响应体以 UTF-16 字节序标记开头时按 UTF-16 解码（The Secret Cinema 的老式网页没有 charset 头），否则按服务器声明 / UTF-8；向导的探测同样处理。
 * **请求头与重试**：固定桌面 Chrome UA，超时 30s；遇到 5xx / 网络错误时指数退避，最多重试 3 次。
-* **429 立即停止**：该影院本次不再请求。
+* **429 立即停止**：该影院本次不再请求。**403**（`Refused`）同样不重试、不换客户端；详情页遇到第一个 403 就停止本次的详情页请求。
 * **限速**：同一域名两次请求之间按 `rate_limit_s` 间隔。
 * **原始快照**：每个响应原文写入 `data/raw/<date>/<venue>[_n].<ext>`，保留 14 天，便于回溯解析问题。
 * **详情页缓存**：原始 HTML 缓存在 `data/cache/<venue>/`，7 天有效。缓存的是原文而不是解析结果，所以解析器修复后对缓存立即生效。
@@ -228,7 +228,7 @@ for venue in enabled venues:
    * 按片名查不到、但影院给了导演和年份时，查这位导演的作品（`/search/person` → `/person/{id}/movie_credits`）：那一年只有一部就是它，有几部时取和片名有共同词的那部；年份差一年的只在有共同词时才算。TMDB 用别的片名收录的片（"Tenebrae" 是 "Tenebre"，"Horror of Dracula" 是 "Dracula"，"Secrets and Lies" 是 "Secrets & Lies"）靠这一步找到，算「确定」。
    * 没有年份时，先借用其他影院同名片的年份和导演；再优先当年的新片；所有候选语言相同时直接采用；有一部热度是第二名 3 倍以上时取它；都不满足就放弃。
    * 结果缓存在 `data/cache/tmdb.json`：命中的永久保存，未命中的 14 天后重试。
-4. **影院默认语言**（`default_language`：Japan Society = 日语，L'Alliance = 法语）。
+4. **影院默认语言**（`default_language`：Japan Society = 日语，L'Alliance = 法语）。有默认语言的影院，影院没给年份和导演、TMDB 只按片名配到的片如果是别的语言，就当作同名的另一部片，不用（「The Oldest Profession」在 Japan Society 不是 1967 年的法国片）。
 
 **导演和片长补全**（同一次 TMDB 查询）：只有匹配「确定是这部片」时才用（年份对上、导演核对过、今年唯一的新片或热度明显领先的唯一一部）；只是「所有候选语言相同」的匹配只填语言，不填导演。影院网站写了的导演从不覆盖；缺年份时顺带补上 TMDB 的年份，但不填晚于今年的上映年份。导演、片长和美国上映日期（判断流媒体同步上线，见 §6）用一次 `/movie/{id}?append_to_response=credits,release_dates` 请求取得；今年和去年的片每 7 天刷新一次，因为上映日期会陆续补上（TMDB 的片长 0 表示未知，忽略），和匹配结果一起缓存在 `data/cache/tmdb.json`；补上片长时同时算出结束时间。影院写了的片长不覆盖。
 

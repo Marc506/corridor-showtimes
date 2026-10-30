@@ -173,3 +173,21 @@ def test_exported_venues_are_grouped_by_city(tmp_path, monkeypatch):
         VenueConfig(id="paris", name="Paris", region="NYC", source=src)])
     payload = E.build_payload(Store(tmp_path / "db.sqlite"))
     assert [v["id"] for v in payload["venues"]] == ["ff", "paris", "pfs", "brattle"]
+
+
+def test_detail_pages_stop_at_the_first_403(tmp_path, monkeypatch):
+    """A 403 means the site refuses this client: no further detail pages that run (no retries, no workarounds)."""
+    from scraper import base
+    from scraper.models import Screening, VenueConfig
+    monkeypatch.setattr(base, "CACHE_DIR", tmp_path)
+    scraper = base.BaseScraper(VenueConfig(id="v", name="V", source={"adapter": "custom", "module": "x"}), client=object())
+    asked = []
+
+    def refuse(url, **kw):
+        asked.append(url)
+        raise base.Refused(f"HTTP 403: {url}")
+    monkeypatch.setattr(scraper, "get_page", refuse)
+    rows = [Screening(id=str(i), venue_id="v", title=f"T{i}", start="2026-11-01T19:00:00-04:00", day="2026-11-01",
+                      detail_url=f"https://x.org/{i}") for i in range(5)]
+    scraper.enrich_by_url(rows, lambda html: {})
+    assert asked == ["https://x.org/0"]

@@ -52,10 +52,52 @@ def parse_detail(html: str) -> dict:
         series = clean_text(m.group(1))
         if series and not re.fullmatch(r"BAM Film( \d{4})?", series):
             out["series"] = series
+    if len(films := programme_films(text)) >= 2:
+        out["films"] = films
     desc = BeautifulSoup(html, "lxml").select_one(".heroInfoLeft .description")
     if desc and (schedule := parse_schedule(desc.get_text("\n", strip=True))):
         out["schedule"] = schedule
     return out
+
+
+def programme_films(text: str) -> list[dict]:
+    """A programme page lists its films one by one — title, "(1983)", "Dir. Harun Farocki With …", "26min; Digital",
+    "In French with English subtitles" — under a name of BAM's own ("On Straub-Huillet")."""
+    lines = text.split("\n")
+    films = []
+    for i, line in enumerate(lines):
+        if not (i and i + 1 < len(lines) and (y := re.fullmatch(r"\(((?:18|19|20)\d{2})\)", line.strip()))
+                and lines[i + 1].startswith("Dir.")):
+            continue
+        after = lines[i + 1: i + 5]
+        rt = next((m for x in after if (m := re.match(r"(\d+)\s*min\b;?\s*(.*)$", x))), None)
+        lang = next((language_from_text(x) for x in after if re.match(r"In \w", x)), None)
+        films.append({"title": clean_text(lines[i - 1]), "year": int(y.group(1)),
+                      "director": clean_text(re.sub(r"(?:\s+With\s.*|,\s*\d+\s*mins?\b.*)$", "", lines[i + 1][4:])),
+                      "runtime_min": int(rt.group(1)) if rt else None, "language": lang})
+    return films
+
+
+def as_programme(s: Screening, films: list[dict]) -> None:
+    """BAM's name for a pair of films ("On Straub-Huillet") -> the films, 'A + B', and the name moves to the note.
+    Three or more (a shorts programme) keep the programme's name with the films in the note, as day programmes do.
+    A title that already names its films ("Making Do the Right Thing + Parlons grand-mère") stays. Directors (up to
+    three, then "…") and language come from the films either way."""
+    titles = [f["title"] for f in films]
+    named = all(title_norm(t) in title_norm(s.title) for t in titles)
+    directors = list(dict.fromkeys(f["director"] for f in films if f["director"]))
+    s.director = ", ".join(directors[:3]) + (", …" if len(directors) > 3 else "") if directors else s.director
+    s.year = None
+    langs = list(dict.fromkeys(f["language"] for f in films if f["language"]))
+    s.language = ", ".join(langs) if langs else s.language
+    if named:
+        return
+    if len(films) == 2:
+        s.note = "; ".join(dict.fromkeys(n for n in (s.title, s.note) if n))
+        s.title = " + ".join(titles)
+    else:
+        listed = "; ".join(f"{f['title']} ({f['year']})" for f in films)
+        s.note = "; ".join(dict.fromkeys(n for n in (listed, s.note) if n))
 
 
 def parse_schedule(text: str) -> list[dict] | None:
@@ -194,6 +236,8 @@ class BamScraper(BaseScraper):
                                   fields=("director", "year", "runtime_min", "format", "series", "language"),
                                   ttl=lambda url: SOON_TTL if url in near else DETAIL_TTL)
         for s in screenings:
+            if len(films := (info.get(s.detail_url) or {}).get("films") or []) >= 2:
+                as_programme(s, films)
             s.title = drop_director_possessive(s.title, s.director)
         per_url: dict = {}
         for s in screenings:

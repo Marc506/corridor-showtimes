@@ -79,3 +79,21 @@ def test_director_possessive_is_dropped_only_for_the_director():
     assert drop_director_possessive("Ken Russell’s The Devils", "Ken Russell") == "The Devils"
     assert drop_director_possessive("Schindler's List", "Steven Spielberg") == "Schindler's List"
     assert drop_director_possessive("Ken Russell’s The Devils", None) == "Ken Russell’s The Devils"
+
+
+def test_bam_programme_of_two_films_is_titled_by_its_films():
+    """'On Straub-Huillet' is BAM's name for two films: the films are the title, the name goes to the note."""
+    from scraper.models import Screening
+    from scraper.sources.bam import as_programme, parse_detail
+    from tests.conftest import FIXTURES
+    d = parse_detail((FIXTURES / "bam" / "detail_straub.html").read_text())
+    assert [(f["year"], f["director"], f["runtime_min"], f["language"]) for f in d["films"]] == [
+        (1983, "Harun Farocki", 26, "French"), (2001, "Pedro Costa", 104, "French")]
+    s = Screening(id="x", venue_id="bam", title="On Straub-Huillet", start="2026-11-14T13:30:00-05:00", day="2026-11-14")
+    as_programme(s, d["films"])
+    assert s.title.endswith(" + Where Does Your Hidden Smile Lie") and s.title.startswith("Jean-Marie Straub and Dani")
+    assert (s.director, s.language, s.note) == ("Harun Farocki, Pedro Costa", "French", "On Straub-Huillet")
+    films = [dict(f, title=t) for f, t in zip(d["films"] * 2, ["A", "B", "C", "D"])]
+    shorts = Screening(id="y", venue_id="bam", title="Shorts: Transmissions", start="2026-11-14T13:30:00-05:00", day="2026-11-14")
+    as_programme(shorts, films)                                          # three or more keep the programme's name
+    assert shorts.title == "Shorts: Transmissions" and shorts.note.startswith("A (1983); B (2001); C (1983)")

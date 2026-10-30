@@ -34,6 +34,8 @@ GET https://www.bam.org/api/BAMApi/GetCalendarEventsByDayWithOnGoing?start=9/24/
 - `detail_url = "https://www.bam.org" + moreLink`，`ticket_url = buyLink`。
 - 导演 / 年份 / 时长不在 API 里。可选增强：GET `moreLink` 详情页，页面里有 JSON‑LD `{"graph":[{"@type":"Event","startDate","endDate","location":{"name":"BAM Rose Cinemas at BAM KBH"}}]}`，`runtime = endDate - startDate`；`<h2>RUNNING TIME</h2>` 后面是 "126min"。每部片只请求一次并按 `moreLink` 缓存。
 
+**实测补充（2026‑10‑30，节目）**：BAM 常把几部片编成一个自己起名的节目（「On Straub-Huillet」「Self Portraits - Akerman and Godard」「Shorts: Transmissions」）。这种节目的详情页逐部列出：片名、`(1983)`、`Dir. Harun Farocki With …`、`26min; Digital`、`In French with English subtitles`（单片页写的是 `Directed by`）。列出两部以上时：两部片的标题改成「A + B」，节目名进备注；三部以上（短片集）保留节目名，片目进备注；标题本来就写着各片名的（「Making Do the Right Thing + Parlons grand-mère」）不动。导演（超过三位写前三位加「…」）和语言都取自各片。
+
 **实测补充（2026‑10‑12）**：片名可能带导演的所有格（「Ken Russell’s The Devils」），别家影院写的是「The Devils」，于是被当成另一部片（搜索、排片、跨影院比较）。详情页给出的导演和这个名字一致时去掉它（`normalize.drop_director_possessive`；「Schindler's List」这类不是导演名的不动）。
 
 **实测补充（2026‑09‑24）**：详情页纯文本里 `Directed by X\n(2026)`、`Part of\nSeries`、`RUNNING TIME\n106min`、`FORMAT\nDCP` 都能取到，已在 `enrich()` 里接入；"BAM Film 2026" 这种泛化系列名丢弃。详情页 HTML 缓存在 `data/cache/bam/`，7 天内不重复请求；三天内开场的片每天重新取一次，因为日程和嘉宾常在最后几天才补上。
@@ -112,6 +114,8 @@ GET https://japansociety.org/wp-json/events/v1/data?events_categories=9127
 - 电影本来就少，配置 `allow_empty: true`。
 
 **实测补充**：只算 Film 类（`9127,10825,9194`）时当前只有 1 条；上面说的 39 条是全部类别的活动。
+
+**实测补充（2026‑10‑30）**：活动页（`permalink`）对程序返回 403，不抓；但同一站点的 WordPress 接口 `GET /wp-json/wp/v2/events?include=<id,…>&per_page=100&_fields=id,content` 一次就给出这些活动的正文，正文里有片目行「Dir. Noboru Tanaka, 1974, 83 min, DCP, b&w and color, in Japanese with English subtitles.」，取导演、年份、片长、规格、语言。没有它时 TMDB 只能按片名猜：「The Oldest Profession」（田中登，1974）被配成 1967 年戈达尔等人的法国合集，「Love Letter」（东阳一，1981）被配成 2026 年的英语片。每次运行 2 个请求。
 
 ---
 

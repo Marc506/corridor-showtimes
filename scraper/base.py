@@ -28,6 +28,10 @@ class ScrapeError(Exception):
     """Any failure that should mark the venue as failed/stale."""
 
 
+class Refused(ScrapeError):
+    """HTTP 403: the site refuses this client. Never retried or worked around; detail pages stop for the run."""
+
+
 class RateLimited(ScrapeError):
     """HTTP 429: stop this venue immediately, never retry."""
 
@@ -98,6 +102,8 @@ class HttpClient:
                 if r.status_code == 429:
                     raise RateLimited(f"429 Too Many Requests: {url}")
                 if r.status_code < 500:
+                    if r.status_code == 403:
+                        raise Refused(f"HTTP 403: {url}")
                     if r.status_code >= 400:
                         raise ScrapeError(f"HTTP {r.status_code}: {url}")
                     return r
@@ -227,7 +233,7 @@ class BaseScraper:
         """Return parse_detail(html) for a detail page, GETting it at most once per `ttl` (default DETAIL_TTL).
 
         Raw HTML is cached under data/cache/<venue>/ (not the parsed dict), so parser fixes
-        apply to cached pages immediately. Raises RateLimited so the caller can stop enriching.
+        apply to cached pages immediately. Raises RateLimited / Refused (429 / 403) so the caller stops enriching.
         """
         import hashlib
         path = CACHE_DIR / self.venue.id / (hashlib.sha1(url.encode()).hexdigest()[:16] + ".html")
@@ -237,7 +243,7 @@ class BaseScraper:
         else:
             try:
                 html = self.get_page(url).body
-            except RateLimited:
+            except (RateLimited, Refused):
                 raise
             except ScrapeError as e:
                 log.warning("[%s] detail page failed: %s", self.venue.id, e)
@@ -263,7 +269,7 @@ class BaseScraper:
         for url in urls:
             try:
                 data = self.detail_info(url, parse_detail, ttl(url) if ttl else DETAIL_TTL)
-            except RateLimited as e:
+            except (RateLimited, Refused) as e:              # 429 / 403: no more detail pages this run
                 log.warning("[%s] %s — stop enriching", self.venue.id, e)
                 break
             if data:

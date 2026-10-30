@@ -371,6 +371,11 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                     log.warning("[%s] TMDB lookup failed for %r: %s", venue.id, s.title, e)
                     memo[k] = None
             info = memo[k]
+            # a cinema of one country's films (Japan Society: Japanese) and a match on the title alone in another
+            # language is a namesake ("The Oldest Profession" -> the 1967 French anthology): not this film
+            if info and venue.default_language and not year and not director and not s.imdb_id \
+                    and info.get("lang") and info["lang"] != venue.default_language:
+                info = None
         if info and info.get("sure"):
             if recent and "streaming" in info:
                 s.streaming = info["streaming"]
