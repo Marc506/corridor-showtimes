@@ -519,13 +519,17 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 
 ---
 
-## 16. Paris Theater（纽约）— screenslate + 官网首页的特别活动
+## 16. Paris Theater（纽约）— 官网首页，用浏览器像访客一样读
 
-2026‑10‑07 实测。Netflix 经营的单厅影院。官网（`paristheaternyc.com`，Next.js）只有影片介绍和特别活动；常规场次在售票站 `tickets.paristheaternyc.com`，对程序返回 Cloudflare 拦截页（403），**不绕过**。
+2026‑10‑07 初测：常规场次只在售票系统里，售票站 `tickets.paristheaternyc.com` 对程序返回 Cloudflare 拦截页，不访问；当时改用 screenslate（nid 43542）加首页里的特别活动。2026‑10‑16 起 screenslate 拒绝我们，这条路断了。
 
-- 常规场次读 screenslate（nid 43542），它只排到几天之后。
-- 官网首页的 RSC 数据（`self.__next_f.push([1,"…"])` 里的 JSON 字符串）带着几周后的特别活动：`{"EventName":"LA BOLA NEGRA | Sneak Preview + Q&A …","EventDate":"2026-10-15","TicketLink":"https://tickets.paristheaternyc.com/order/showtimes/2001-3093/seats","EventTime":"7:05 PM"}`。活动名是大写、不带年份；同一份数据里有影片记录 `{"FilmName":"A Place in the Sun","Slug":"a-place-in-the-sun-paris","Director":"George Stevens",…,"Year":"1951"}`，用它补片名写法、导演、年份和影片页（`/film/<slug>`）——没有年份时 TMDB 会配成 2024 年的同名丹麦片。
-- 合并：screenslate 也列出的活动（开场相差 10 分钟内、同一部片）只补备注和购票链接，其余追加。所有场次算这家影院的主源（不显示 "via screenslate"）。模块 `scraper/sources/paris.py`，每次约 30 个 screenslate 请求加 1 个首页请求。地址：4 W 58th St。
+**现状（2026‑11‑02）**：首页底部的 SCHEDULE 日期栏就是全部排片。网页自己的脚本向售票系统 Vista 取每天的场次：`GET https://digital-api.paristheaternyc.com/ocapi/v1/showtimes/by-business-date/<日期>?siteIds=2001`，带一个网页现场换来的临时令牌；直接请求返回 401。这里**不直接调用接口、不取网页里的凭证**：无界面浏览器打开首页，像访客一样一天一天点「Next Date」，只记下网页自己收到的 JSON。robots.txt 全站允许；不加载图片、字体、视频和其他网站的脚本（只放行本站和售票登录域名）；每次点击间隔 4–6 秒，最多 30 次；出现 403 / 429 就停止并暂停（`base.Pauses`）。另有不需要令牌的 `/api/showtime-dates` 列出每部片有放映的日期，用来决定点到哪天。方法由用户提供并在本机验证。
+
+- 每天的 JSON：`showtimes[] {id, schedule {startsAt, filmEndsAt}, filmId, screenId, attributeIds, isSoldOut, eventId}`，`relatedData {films {title, runtimeInMinutes, directors}, castAndCrew, attributes（"35MM"）, screens, events}`。购票链接 = `tickets.paristheaternyc.com/order/showtimes/<id>/seats`。返回里没有令牌或密码。
+- `releaseDate` 是美国发行日，老片重映时不是出品年份；年份和影片页取首页 RSC 里的影片记录（`"FilmName"…"Year"`）。
+- 首页 RSC 里的特别活动（映后谈、导读）照旧：对上同一场（10 分钟内、同一部片）就写进备注，读到的日子之外的就追加。
+- 有的日子返回 0 场（如 11/8、11/10），是售票系统本身没有排片；「Next Date」会跳到下一个有场次的日子。
+- 每次运行约 1 分钟（17 天、17 次点击）。`CINEMA_NO_BROWSER=1`（CI）时不运行。地址：4 W 58th St。
 
 ---
 

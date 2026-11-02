@@ -135,11 +135,12 @@ venues:
     color: '#c9184a'
     website: https://www.paristheaternyc.com/
     location: {address: "4 W 58th St, New York, NY 10019", geo: [40.76376, -73.9743]}
-    # 常规场次只在售票站 tickets.paristheaternyc.com，被 Cloudflare 拦截（不绕过）；改用 screenslate，再加上官网首页里的特别活动（SOURCES.md §16）
-    source: {adapter: custom, module: paris, nid: 43542}
+    # 无界面浏览器打开官网首页、逐日点「下一天」，记下网页自己收到的排片 JSON（不直接调接口、不取网页里的凭证）；
+    # 首页里的特别活动补备注。售票站（Cloudflare）不访问（SOURCES.md §16）
+    source: {adapter: custom, module: paris}
     fallback: null
-    horizon_days: 30
-    rate_limit_s: 1
+    horizon_days: 21
+    rate_limit_s: 4
 
   - id: filmadelphia
     name: Philadelphia Film Society
