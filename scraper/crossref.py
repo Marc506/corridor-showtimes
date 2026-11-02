@@ -8,8 +8,9 @@ screenslate's screening at the same venue and time (±10 min) with a similar tit
 plus runtime, a single film's year and the format, if missing — is copied over. What the cinema's own
 site says is never replaced.
 
-Requests stay small: only the days that have such screenings are fetched, only nearby programmes are
-looked up, and responses are cached for 12 hours under data/cache/screenslate/.
+Requests stay small: only the next two weeks' days that have such screenings are fetched, only nearby
+programmes are looked up, and responses are cached for 20 hours under data/cache/screenslate/ — shared with
+the screenslate adapter (MoMA's fallback, Paris), so a listing is fetched about once a day.
 """
 from __future__ import annotations
 
@@ -21,14 +22,15 @@ from datetime import timedelta
 from pathlib import Path
 
 from .models import RawPage, Screening, VenueConfig
-from .normalize import now_utc_iso, parse_iso, title_norm, end_from_runtime
+from .normalize import end_from_runtime, now_utc_iso, parse_iso, title_norm, today_local
 from .registry import build_fallback
 
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = ROOT / "data" / "cache" / "screenslate"
-CACHE_TTL_S = 12 * 3600
+CACHE_TTL_S = 20 * 3600           # once a day: the 13:00 update reuses what 01:00 fetched
+LOOKAHEAD = timedelta(days=14)        # directors for the next two weeks; later days get theirs on later runs
 TIME_SLACK = timedelta(minutes=10)
 API = "https://www.screenslate.com/api/screenings"
 BATCH = 40
@@ -67,7 +69,7 @@ def best_match(target: Screening, candidates: list[Screening]) -> Screening | No
     return best
 
 
-class _Cache:
+class Cache:
     def __init__(self, nid: int):
         self.dir = CACHE_DIR
         self.nid = nid
@@ -104,11 +106,12 @@ def fill_directors_from_screenslate(screenings: list[Screening], venue: VenueCon
     fb = venue.fallback or {}
     if fb.get("adapter") != "screenslate" or not fb.get("nid"):
         return []
-    targets = [s for s in screenings if not s.director and s.source == "primary"]
+    soon = (today_local() + LOOKAHEAD).isoformat()
+    targets = [s for s in screenings if not s.director and s.source == "primary" and s.day <= soon]
     if not targets:
         return []
     ss = build_fallback(venue, client=client)
-    cache = _Cache(int(fb["nid"]))
+    cache = Cache(int(fb["nid"]))
 
     # 1) one date listing per day that needs it
     pages: list[RawPage] = []

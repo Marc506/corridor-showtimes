@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import replace
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -43,8 +43,63 @@ class _Resp:
         self.status_code, self.text, self.url = status_code, text, url
 
 
+def site_area(url: str) -> str:
+    """'https://www.screenslate.com/api/screenings/date?…' -> 'www.screenslate.com/api': a refusal can be for one
+    part of a site (Japan Society's event pages refuse programs, its /wp-json API doesn't)."""
+    u = urlparse(url)
+    return f"{u.netloc}/{u.path.strip('/').split('/')[0]}"
+
+
+class Pauses:
+    """Site areas that answered 403 / 429, and until when they are left alone (data/host_pauses.json).
+
+    Asking again at every update is what keeps a block going: screenslate refused from 2026-10-16 and was asked
+    twice a day for 17 days. Now the first refusal pauses that area for 3 days, each further one doubles it (up to
+    14 days), and a successful request clears it. No retries, no other client — only waiting."""
+    FILE = ROOT / "data" / "host_pauses.json"
+    FIRST, LONGEST = timedelta(days=3), timedelta(days=14)
+
+    @classmethod
+    def _load(cls) -> dict:
+        import json
+        try:
+            return json.loads(cls.FILE.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+
+    @classmethod
+    def _save(cls, d: dict) -> None:
+        import json
+        cls.FILE.parent.mkdir(parents=True, exist_ok=True)
+        cls.FILE.write_text(json.dumps(d, indent=1), encoding="utf-8")
+
+    @classmethod
+    def until(cls, url: str) -> str | None:
+        p = cls._load().get(site_area(url))
+        return p["until"] if p and p["until"] > now_utc_iso() else None
+
+    @classmethod
+    def refused(cls, url: str, status: int) -> str:
+        d = cls._load()
+        area = site_area(url)
+        n = d.get(area, {}).get("count", 0) + 1
+        until = datetime.now(timezone.utc) + min(cls.FIRST * 2 ** (n - 1), cls.LONGEST)
+        d[area] = {"count": n, "status": status, "since": d.get(area, {}).get("since") or now_utc_iso(),
+                   "until": until.strftime("%Y-%m-%dT%H:%M:%SZ")}
+        cls._save(d)
+        log.warning("%s refused us (HTTP %d) — leaving it alone until %s", area, status, d[area]["until"])
+        return d[area]["until"]
+
+    @classmethod
+    def answered(cls, url: str) -> None:
+        d = cls._load()
+        if d.pop(site_area(url), None) is not None:
+            cls._save(d)
+            log.info("%s answers again — pause lifted", site_area(url))
+
+
 class HttpClient:
-    """GET with desktop UA, retries (5xx / network), per-host rate limit, and 429 = stop.
+    """GET with desktop UA, retries (5xx / network), per-host rate limit, and 429 / 403 = stop (and pause, Pauses).
 
     transport="curl" shells out to the system curl: some WAFs (screenslate's) reject Python's
     TLS handshake outright but serve curl normally. Only used where a source asks for it.
@@ -86,6 +141,8 @@ class HttpClient:
             transport: str = "httpx", headers: dict | None = None) -> _Resp:
         if params:
             url = str(httpx.URL(url, params=params))
+        if until := Pauses.until(url):
+            raise Refused(f"{site_area(url)} refused us earlier; paused until {until}: {url}")
         last_exc: Exception | None = None
         for attempt in range(self.RETRIES + 1):
             self._throttle(url, min_interval)
@@ -100,12 +157,15 @@ class HttpClient:
                 log.warning("GET %s failed (%s), attempt %d", url, e, attempt + 1)
             else:
                 if r.status_code == 429:
+                    Pauses.refused(url, 429)
                     raise RateLimited(f"429 Too Many Requests: {url}")
                 if r.status_code < 500:
                     if r.status_code == 403:
+                        Pauses.refused(url, 403)
                         raise Refused(f"HTTP 403: {url}")
                     if r.status_code >= 400:
                         raise ScrapeError(f"HTTP {r.status_code}: {url}")
+                    Pauses.answered(url)
                     return r
                 last_exc = ScrapeError(f"HTTP {r.status_code}: {url}")
                 log.warning("GET %s -> %d, attempt %d", url, r.status_code, attempt + 1)

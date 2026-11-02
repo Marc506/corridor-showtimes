@@ -402,6 +402,8 @@ GET https://www.screenslate.com/jsonapi/node/venue?fields[node--venue]=title,pat
 - 标题：优先 `field_display_title`（"New York No Story"）；否则 1 部用片名，2–3 部用 ` + ` 连接，更多用 "A + B + N more"（短片合集常有 8–17 部）。内部 `title` 字段是编辑的备注（"matrix moma"），只作最后兜底。
 - 覆盖明显不如主源：同一天 Metrograph 主源 149 场，screenslate 只有 71 场。
 
+**实测补充（2026‑11‑02）**：从 2026‑10‑16 起 screenslate 对我们的 curl 请求一律 403（浏览器照常能打开），MoMA 和 Paris 从那时起停在旧数据上。之前每次更新向它发 100–150 个请求（MoMA 兜底 45 天、Paris 约 30 天、补导演 40–60 个），被拒之后仍每天两次去问。现在：被拒后按 `base.Pauses` 暂停（首次 3 天，翻倍到 14 天），日期范围缩到 21 天、补导演只看两周、三处共用 20 小时缓存。不换客户端、不绕过。
+
 ---
 
 ## 11. Bryn Mawr Film Institute — ★★ 服务端 HTML（本周页 + 影片页）

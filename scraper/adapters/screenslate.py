@@ -21,8 +21,8 @@ from ..normalize import (now_utc_iso, clean_text, end_from_runtime, iso, make_id
 from . import register_adapter
 
 API = "https://www.screenslate.com/api/screenings"
-MAX_DAYS = 45                 # screenslate rarely lists further out
-EMPTY_STREAK_STOP = 10        # stop walking forward after this many empty days (once data was seen)
+MAX_DAYS = 21                 # screenslate rarely lists further out (was 45: ~45 requests a run for nothing)
+EMPTY_STREAK_STOP = 7         # stop walking forward after this many empty days in a row
 BATCH = 40
 MIN_INTERVAL_S = 0.7          # screenslate's own pacing, independent of the venue's rate_limit_s
 # screenslate's format vocabulary (lower-cased)
@@ -107,24 +107,35 @@ class ScreenslateScraper(BaseScraper):
         if not nid:
             raise ValueError(f"{self.venue.id} has no screenslate nid")
         pages, nids, seen_any, empty = [], [], False, 0
+        from ..crossref import Cache           # the listings and records the director lookup also uses (12 h)
+        cache = Cache(int(nid))
         start = today_local(self.tz)
         for i in range(min(self.venue.horizon_days, MAX_DAYS) + 1):
-            d = start + timedelta(days=i)
-            page = self.get_page(f"{API}/date", ext="json", params={
-                "_format": "json", "date": d.strftime("%Y%m%d"), "field_venue_target_id": nid})
-            items = _loads(page.body)
-            pages.append(page)
+            date = (start + timedelta(days=i)).strftime("%Y%m%d")
+            body = cache.day(date)
+            if body is None:
+                body = self.get_page(f"{API}/date", ext="json", params={
+                    "_format": "json", "date": date, "field_venue_target_id": nid}).body
+                cache.put_day(date, body)
+            items = _loads(body)
+            pages.append(RawPage(url=f"{API}/date?_format=json&date={date}&field_venue_target_id={nid}",
+                                 body=body, fetched_at=now_utc_iso(), ext="json"))
             nids += [str(x["nid"]) for x in items if x.get("nid")]
             if items:
                 seen_any, empty = True, 0
             else:
                 empty += 1
-                if seen_any and empty >= EMPTY_STREAK_STOP:
+                if empty >= EMPTY_STREAK_STOP:
                     break
         unique = list(dict.fromkeys(nids))
-        for i in range(0, len(unique), BATCH):
-            pages.append(self.get_page(f"{API}/id/{'+'.join(unique[i:i + BATCH])}", ext="json",
-                                       params={"_format": "json"}))
+        records = [r for r in (cache.record(n) for n in unique) if r]
+        missing = [n for n in unique if not cache.record(n)]
+        for i in range(0, len(missing), BATCH):
+            got = _loads(self.get_page(f"{API}/id/{'+'.join(missing[i:i + BATCH])}", ext="json",
+                                       params={"_format": "json"}).body)
+            cache.put_records(got)
+            records += got
+        pages.append(RawPage(url=f"{API}/id/cached", body=json.dumps(records), fetched_at=now_utc_iso(), ext="json"))
         return pages
 
     def parse(self, pages: list[RawPage]) -> list[Screening]:

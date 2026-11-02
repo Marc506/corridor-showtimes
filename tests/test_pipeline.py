@@ -1,6 +1,8 @@
 """Store + validation behaviour that every venue relies on."""
 from datetime import date
 
+import pytest
+
 from scraper.models import Screening, VenueConfig, VenueStatus
 from scraper.normalize import make_id
 from scraper.run import validate
@@ -191,3 +193,25 @@ def test_detail_pages_stop_at_the_first_403(tmp_path, monkeypatch):
                       detail_url=f"https://x.org/{i}") for i in range(5)]
     scraper.enrich_by_url(rows, lambda html: {})
     assert asked == ["https://x.org/0"]
+
+
+def test_a_refusing_site_is_left_alone_for_days(tmp_path, monkeypatch):
+    """403 / 429 pause that part of the site (3 days, doubling to 14); nothing is sent meanwhile; success clears it."""
+    from scraper import base
+    monkeypatch.setattr(base.Pauses, "FILE", tmp_path / "pauses.json")
+    client = base.HttpClient()
+    sent, answer = [], {"status": 403}
+    monkeypatch.setattr(client, "_curl", lambda url, headers=None: sent.append(url) or base._Resp(answer["status"], "[]", url))
+    monkeypatch.setattr(base.time, "sleep", lambda s: None)
+    url = "https://www.screenslate.com/api/screenings/date?date=20261102"
+    with pytest.raises(base.Refused):
+        client.get(url, transport="curl")
+    with pytest.raises(base.Refused, match="paused until"):
+        client.get(url.replace("1102", "1103"), transport="curl")              # same area: not even asked
+    assert len(sent) == 1
+    assert base.site_area("https://japansociety.org/wp-json/x") != base.site_area("https://japansociety.org/events/y")
+    d = base.Pauses._load()["www.screenslate.com/api"]
+    assert d["count"] == 1 and d["status"] == 403
+    base.Pauses._save({"www.screenslate.com/api": dict(d, until="2000-01-01T00:00:00Z")})   # the pause ran out
+    answer["status"] = 200
+    assert client.get(url, transport="curl").status_code == 200 and base.Pauses._load() == {}
