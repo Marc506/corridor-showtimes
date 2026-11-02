@@ -76,6 +76,7 @@ def main(argv: list[str] | None = None) -> int:
                 _log(fh, "recipe repair did not fix everything (see above)")
         export_rc = _step(fh, "scraper.export")
         rc = rc or export_rc
+        _step(fh, "scraper.titles")                  # titles that still look like they carry a label (review list)
         removed = prune_raw()
         if removed:
             _log(fh, f"pruned {len(removed)} old raw snapshot folder(s)")

@@ -1,0 +1,72 @@
+# Title regression table for scraper/titles.py. Every title problem found in real listings goes here, with what it
+# must become, so a rule added for one cinema is checked against all earlier ones. `keep` cases must not change.
+# Groups are one cinema's listings together (a prefix shared by three titles is a series).
+groups:
+  - venue: filmadelphia
+    rows:
+      - {title: "FJORD (First Run)", expect: {title: Fjord}}                        # 2026-10-28
+      - {title: "NAZA (PFS EAST)", screen: "PFS - East Theater 1", expect: {title: Naza}}
+      - {title: "WERWULF (35MM)", expect: {title: Werwulf, format: 35mm}}
+      - {title: "They Say the People Can Fly (A Series)", keep: true}
+  - venue: anthology
+    rows:
+      - {title: "TERROR FIRMER (Lloyd Kaufman in person for both screenings!)",
+         expect: {title: Terror Firmer, note: Lloyd Kaufman in person for both screenings}}
+      - {title: "EC: The General", expect: {title: The General, series: Essential Cinema}}   # 2026-11-02
+      - {title: "EC: Rapt", expect: {title: Rapt, series: Essential Cinema}}
+      - {title: "EC: Peter Kubelka (The Complete Works): New 35mm Prints!",
+         expect: {title: Peter Kubelka (The Complete Works), series: Essential Cinema, format: 35mm, note: New 35mm Prints}}
+      - {title: "Ciprì & Maresco PGM 1: Cinema", keep: true}
+      - {title: "Film No. 5 (Smile)", keep: true}
+  - venue: bam
+    rows:
+      - {title: "Ken Russell’s The Devils", director: Ken Russell, expect: {title: The Devils}}   # 2026-10-12
+      - {title: "Playback: City of God (Cidade de Deus)", series: "Playback: The Brooklyn Watch Party",
+         expect: {title: City of God (Cidade de Deus)}}                                  # 2026-11-02
+      - {title: "Playback Presents: Crooklyn", series: "Playback: The Brooklyn Watch Party", expect: {title: Crooklyn, note: null}}
+      - {title: "ArteEast Presents Sunshine Express", expect: {title: Sunshine Express, note: ArteEast presents}}
+      - {title: "Life & Debt: 25th Anniversary", expect: {title: Life & Debt, note: 25th Anniversary}}
+      - {title: "Suspiria [4K DCP]", expect: {title: Suspiria, note: 4K DCP}}
+      - {title: "The Rites of May (aka Itim)", keep: true}
+      - {title: "Schindler's List", director: Steven Spielberg, keep: true}
+  - venue: metrograph
+    rows:
+      - {title: "Two Seasons, Two Strangers preceded by Nagahama", expect: {title: "Two Seasons, Two Strangers", note: Preceded by Nagahama}}
+      - {title: "Members Only Preview: All of a Sudden", expect: {title: All of a Sudden, note: Members Only Preview}}
+      - {title: "ACE Presents: Ghost World", expect: {title: Ghost World, note: ACE presents}}
+      - {title: "Ghost in the Shell: 30th Anniversary Remaster", expect: {title: Ghost in the Shell, note: 30th Anniversary Remaster}}
+      - {title: "Medea (1988)", expect: {title: Medea, year: 1988}}
+      - {title: "Blade Runner: The Final Cut", keep: true}
+      - {title: "Wallace & Gromit: The Classic Shorts", keep: true}
+  - venue: coolidge-corner-theatre
+    rows:
+      - {title: "The Devils (1971)", expect: {title: The Devils, year: 1971}}
+      - {title: "Network (4K Restoration)", expect: {title: Network, note: 4K Restoration}}
+      - {title: "Relaxed Screenings: Raya and the Last Dragon", series: Relaxed Screenings, expect: {title: Raya and the Last Dragon, note: null}}
+  - venue: landmark-kendall-square-cinema
+    rows:
+      - {title: "The Metropolitan Opera: Carmen (2026 ENCORE)", expect: {title: Carmen, series: The Metropolitan Opera, note: Encore}}
+      - {title: "The Metropolitan Opera: Samson et Dalila", expect: {title: Samson et Dalila, series: The Metropolitan Opera}}
+      - {title: "The Metropolitan Opera: The Magic Flute", expect: {title: The Magic Flute, series: The Metropolitan Opera}}
+  - venue: moma
+    rows:
+      - {title: "Sergei Loznitsa: The Early Films", director: Sergei Loznitsa, series: Sergei Loznitsa, keep: true}
+  - venue: brattle-theatre
+    rows:
+      - {title: "My Undesirable Friends: Part II - Exile, Chapters 1-3 (of 6)", keep: true}
+      - {title: "My Undesirable Friends: Part II - Exile, Chapters 4-6 (of 6)", keep: true}
+      - {title: "My Undesirable Friends: Part I — Last Air in Moscow", keep: true}
+      - {title: "Kill Bill: Vol. 1", keep: true}
+      - {title: "Star Wars: Episode IV – A New Hope", keep: true}
+      - {title: "Star Wars: Episode V – The Empire Strikes Back", keep: true}
+      - {title: "Star Wars: Episode VI – Return of the Jedi", keep: true}
+  - venue: county-theater
+    rows:
+      - {title: "Bob Dylan: Dont Look Back", series: Reel Rebels, keep: true}
+      - {title: "The Grinch (Sensory)", expect: {title: The Grinch, note: Sensory}}
+  - venue: lightbox-film-center
+    rows:
+      - {title: "Caligari's Cure LIGHTBOX MEMBERS SCREENING", expect: {title: Caligari's Cure, note: Lightbox members screening}}
+      - {title: "DEVO: Restorations & Revelations (Collected Film & Video Works 1976 - 1984)", keep: true}
+      - {title: "Zoe Beloff presents Life Forgotten (screening and book launch)",
+         expect: {title: Life Forgotten, note: Zoe Beloff presents; screening and book launch}}

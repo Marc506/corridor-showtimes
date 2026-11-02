@@ -259,7 +259,7 @@ _RUN_LABEL = re.compile(r"\s*[\(\[]\s*(?:(?:19|20)\d{2}\s+)?(?:first[- ]run|now 
                         r"re-?release)\s*[\)\]]\s*$", re.I)
 _ENCORE = re.compile(r"\s*[\(\[]\s*(?:(?:19|20)\d{2}\s+)?encore(?: screening)?\s*[\)\]]\s*$", re.I)   # a repeat: worth a note
 # ... and notes about the event rather than the film: "(Lloyd Kaufman in person on Wed, Oct 28!)", "(Free Screening!)"
-_EVENT_LABEL = re.compile(r"\s*\(([^()]*\b(?:in person|free screening|q\s*&\s*a|introduc\w*|sensory(?:[- ]friendly)?|"
+_EVENT_LABEL = re.compile(r"\s*\(([^()]*\b(?:in person|free screening|q\s*&\s*a|introduc\w*|sensory(?:[- ]friendly)?|book launch|"
                           r"members?[- ]only|sold out|open captions?)\b[^()]*)\)\s*$", re.I)
 
 

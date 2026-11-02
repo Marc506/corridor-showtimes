@@ -179,3 +179,7 @@ Rules:
 - Do not run `scripts/refresh.sh`, `scripts/publish.sh` or `scraper.update --publish`, and never pass
   `--publish` to `scraper.schedule on` — those publish to the author's website.
 - Don't edit other venues' fixtures or tests when adding one.
+- A wrong title (a series name, presenter, run label or note stuck to the film's name) is fixed as a rule in
+  `scraper/titles.py`, never only for the one cinema, and the case goes into `tests/fixtures/titles.yaml`. Run
+  `python -m scraper.titles` after adding a cinema: every title it lists is either a new rule or, if it really is
+  the film's name, a line in `config/titles_reviewed.txt`.

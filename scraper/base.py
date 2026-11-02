@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import httpx
 
 from .models import RawPage, Screening, VenueConfig, VenueStatus
-from .normalize import TZ, make_id, now_utc_iso, response_text, tidy_title, today_local, zone
+from .normalize import TZ, make_id, now_utc_iso, response_text, today_local, zone
 
 log = logging.getLogger(__name__)
 
@@ -341,13 +341,7 @@ class BaseScraper:
             pages = self.fetch()
             if save_raw:
                 self.save_raw(pages)
-            screenings = self.parse(pages)
-            for s in screenings:                          # labels tacked onto titles: run, building, format, event
-                title, fmt, note = tidy_title(s.title, f"{self.venue.name} {self.venue.short or ''} {s.screen or ''}")
-                if title != s.title:
-                    s.title, s.format = title, s.format or fmt
-                    s.note = "; ".join(dict.fromkeys(n for n in (note, s.note) if n)) or None
-            screenings = dedupe(screenings)
+            screenings = dedupe(self.parse(pages))
         except ScrapeError as e:
             log.error("[%s] scrape failed: %s", self.venue.id, e)
             self.close()
@@ -362,6 +356,8 @@ class BaseScraper:
             log.exception("[%s] enrich failed (screenings kept)", self.venue.id)
         finally:
             self.close()
+        from .titles import tidy                          # labels around film names, for every source (titles.py)
+        tidy(screenings, self.venue)
         return screenings, VenueStatus(
             self.venue.id, "ok", fetched_at=now_utc_iso(), count=len(screenings),
             horizon_end=max((s.day for s in screenings), default=None), source=source,

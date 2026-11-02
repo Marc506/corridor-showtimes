@@ -132,6 +132,6 @@ def test_update_never_publishes_without_the_flag(monkeypatch, tmp_path):
     ran = []
     monkeypatch.setattr(U.subprocess, "run", lambda *a, **k: ran.append(a) or type("R", (), {"returncode": 0})())
     assert U.main([]) == 0
-    assert calls == [("scraper.run", "--no-export"), ("scraper.export",)]
+    assert calls == [("scraper.run", "--no-export"), ("scraper.export",), ("scraper.titles",)]
     assert ran == []                                                              # publish.sh not called
     assert "[update] done (exit 0)" in (tmp_path / "refresh.log").read_text()

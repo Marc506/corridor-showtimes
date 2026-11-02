@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 from ..base import DETAIL_TTL, BaseScraper
 from ..models import RawPage, Screening
-from ..normalize import (clean_text, drop_director_possessive, iso, language_from_text, make_id, normalize_format,
+from ..normalize import (clean_text, iso, language_from_text, make_id, normalize_format,
                          parse_iso, title_norm, to_local, today_local)
 from ..registry import register
 
@@ -238,7 +238,6 @@ class BamScraper(BaseScraper):
         for s in screenings:
             if len(films := (info.get(s.detail_url) or {}).get("films") or []) >= 2:
                 as_programme(s, films)
-            s.title = drop_director_possessive(s.title, s.director)
         per_url: dict = {}
         for s in screenings:
             per_url[s.detail_url] = per_url.get(s.detail_url, 0) + 1

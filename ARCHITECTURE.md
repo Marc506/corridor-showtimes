@@ -69,7 +69,7 @@
 |---|---|
 | `id` | `sha1(venue_id|start|规范化标题)[:16]`，跨次抓取稳定；同一时间同一部片在两个影厅（`screen` 不同）时，影厅名排在后面的那场的 id 另算入影厅名，两场都保留（`base.dedupe`） |
 | `venue_id` | venues.yaml 里的 key |
-| `title` | 展示用标题；全大写来源（Film Forum、Anthology、PFS）统一转换大小写。所有来源的标题在 `BaseScraper.run` 里统一过一遍 `normalize.tidy_title`：结尾的排期标签（「(First Run)」「(Now Playing)」）去掉，影院自己的楼名（「(PFS EAST)」，括号里每个词都出现在影院或影厅名里）去掉，「(35MM)」进 `format`，活动说明（「(Lloyd Kaufman in person!)」「(Free Screening!)」「(Encore)」）进 `note`；片名本身的括号（「(aka Itim)」、年份）不动 |
+| `title` | 展示用标题；全大写来源（Film Forum、Anthology、PFS）统一转换大小写。所有来源的标题在 `BaseScraper.run` 的最后（解析和详情页补全之后）统一过一遍 `scraper/titles.py`：排期标签（「(First Run)」）和影院自己的楼名（「(PFS EAST)」）去掉，「(35MM)」「: New 35mm Prints!」进 `format`，活动说明（「(… in person!)」「(Encore)」「(4K Restoration)」「Members Only Preview:」「… preceded by Nagahama」「: 30th Anniversary」、结尾的大写标签）进 `note`，系列前缀（和场次的系列同名，或同一影院三个以上片名共用：「Playback:」「EC:」「The Metropolitan Opera:」）进 `series`，主办方（「ACE Presents:」）进 `note`，「(1971)」进 `year`，和导演同名的所有格（「Ken Russell’s」）去掉。片名自己的副标题、分集（「Part II」「Vol. 1」「Episode IV」）、别名（「(aka Itim)」）不动。每条规则都来自真实的错误，全部记在 `tests/fixtures/titles.yaml` 这张回归表里（连同必须不动的例子）；`python -m scraper.titles` 列出仍像带标签的标题（每次更新写进日志），看过确认是片名本身的记在 `config/titles_reviewed.txt` |
 | `start` / `end` | ISO 8601，带影院所在时区的偏移；`end` 来自影院或 start + 片长，没有则为空 |
 | `day` | 影院本地日期（= `start[:10]`），前端按天索引 |
 | `director` / `year` / `runtime_min` | 可选 |

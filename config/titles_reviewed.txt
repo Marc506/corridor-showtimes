@@ -1,0 +1,22 @@
+# Titles `python -m scraper.titles` flagged that were checked and are the film's (or programme's) own name.
+# One "venue | title" per line. A label found instead becomes a rule in scraper/titles.py and a row in
+# tests/fixtures/titles.yaml.
+anthology | Film No. 5 (Smile)
+anthology | Millennium Film Journal No. 84 Launch Screening
+anthology | Mono No Aware XX: East Facing West
+anthology | Mono No Aware XX: Redux Program
+anthology | Peter Kubelka (The Complete Works)
+anthology | Walden (Diaries, Notes, and Sketches)
+bam | Backtrack (Director’s Cut of “Catchfire”)
+bam | Best of BAMkids Film Festival (Ages 6—8)
+bam | Best of BAMkids Film Festival (Ages 9+)
+bam | City of God (Cidade de Deus)
+brattle-theatre | My Undesirable Friends: Part II - Exile, Chapters 1-3 (of 6)
+brattle-theatre | My Undesirable Friends: Part II - Exile, Chapters 4-6 (of 6)
+bryn-mawr-film-institute | In Pursuit: Philadelphia and the Making of America Episode 8 – Revolution (1964–1968)
+filmadelphia | They Say the People Can Fly (A Series)
+hiway-theater | Horror at the Hiway - Secret Screening
+lalliance | Special film screening with Emmanuelle Béart
+lightbox-film-center | DEVO: Restorations & Revelations (Collected Film & Video Works 1976 - 1984)
+secret-cinema | Old Films About Old Films About... (2026 Edition)
+somerville-theatre | Ifé/Ifé the Sequel (together)
