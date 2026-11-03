@@ -81,7 +81,7 @@ Answers to questions the wizard may print:
    spot). The page's "Add to Calendar" button puts this address in the event, so the calendar can open
    it in Maps. Don't ask them for it unless the site doesn't show one.
 2. The first time, fetch the rest of the default cinemas too: `.venv/bin/python -m scraper.run`
-   (a few minutes; one of them, MoMA, falls back to another source — that's expected). Otherwise run
+   (a few minutes; MoMA reads a file the author drops into `inbox/moma/`, so on other computers it falls back to another source or shows no data — that's expected). Otherwise run
    `.venv/bin/python -m scraper.export` so the address reaches the page.
 3. Open the page: `open site/index.html` (macOS), `start site\index.html` (Windows),
    `xdg-open site/index.html` (Linux).

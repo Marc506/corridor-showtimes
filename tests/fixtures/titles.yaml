@@ -70,3 +70,7 @@ groups:
       - {title: "DEVO: Restorations & Revelations (Collected Film & Video Works 1976 - 1984)", keep: true}
       - {title: "Zoe Beloff presents Life Forgotten (screening and book launch)",
          expect: {title: Life Forgotten, note: Zoe Beloff presents; screening and book launch}}
+  - venue: moma
+    rows:
+      - {title: "Blockade (БЛОКАДА) + Artel (АРТЕЛЬ)", keep: true}                # 2026-11-03: Cyrillic in brackets
+      - {title: "Soudain (All of a Sudden)", keep: true}

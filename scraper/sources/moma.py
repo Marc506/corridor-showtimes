@@ -1,146 +1,99 @@
-"""MoMA — Cloudflare managed challenge; needs a real browser (SOURCES.md §8).
+"""MoMA — the film calendar as a JSON file dropped into a local folder (SOURCES.md §8).
 
-Primary path: Playwright opens /calendar/film, collects series links (/calendar/film/<id>),
-opens each and parses the '<h3>date</h3> … <li><a href="/calendar/events/<id>">' listing.
-If the challenge isn't passed within 30s the run fails and run.py falls back to screenslate
-(nid 81), which covers MoMA completely. See `primary_cooldown_h` in venues.yaml.
+    source: {adapter: custom, module: moma}
+    inbox: inbox/moma            # venue-level: folder (relative to the project) the files arrive in
 
-NOTE: the markup below was taken from SOURCES.md (Wayback 2025-12 snapshot); a live page could
-not be captured on 2026-09-24 because Cloudflare escalated the challenge. The first successful
-run saves data/raw/<date>/moma*.html — replace tests/fixtures/moma/synthetic_series.html with it.
+moma.org answers this machine's programs with Cloudflare's challenge, which is never worked around. The owner
+runs a low-rate reader of MoMA's calendar elsewhere and drops its output here (`moma_films_YYYY-MM-DD.json`):
+one record per screening —
+
+    {"event_id": 11729, "url": "https://www.moma.org/calendar/events/11729", "start": "2026-11-03T19:30:00-05:00",
+     "program_title": "The Trial (ПРОЦЕСС). 2018. Written and directed by Sergei Loznitsa",
+     "films": [{"title": "The Trial (ПРОЦЕСС)", "year": 2018, "directors": ["Sergei Loznitsa"], "runtime_min": 129}],
+     "runtime_min": 129, "end_estimate": "…", "venue": "MoMA, Floor T2 · Theater 2", "series": "Sergei Loznitsa",
+     "note": null, "kind": "Film", "ticket_url": "https://membership.moma.org/tickets/film/select?…"}
+
+Every update reads the newest file and deletes the older ones (only one is kept). A file older than STALE_DAYS
+fails the run, so the venue shows as stale (its last data stays) until a new file arrives.
 """
 from __future__ import annotations
 
-import re
-from datetime import date, datetime
-from urllib.parse import urljoin
+import json
+from datetime import datetime, timezone
+from pathlib import Path
 
-from bs4 import BeautifulSoup, Tag
-
-from ..base import BaseScraper, ref_date
+from ..base import ROOT, BaseScraper, ScrapeError
 from ..models import RawPage, Screening
-from ..normalize import clean_text, iso, make_id, to_local
+from ..normalize import clean_text, iso, make_id, parse_iso
 from ..registry import register
 
-SITE = "https://www.moma.org"
-START = SITE + "/calendar/film"
-MAX_SERIES = 25
-
-TIME_RE = re.compile(r"^(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m\.?$", re.I)
-DATE_RE = re.compile(r"^(?:[A-Z][a-z]{2,8},?\s+)?([A-Z][a-z]{2,8})\.?\s+(\d{1,2})$")
-MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug",
-                                       "sep", "oct", "nov", "dec"], 1)}
+STALE_DAYS = 10
+PATTERN = "moma_films*.json"
 
 
-def parse_time(text: str):
-    m = TIME_RE.match(text.replace("\xa0", " ").strip())
-    if not m:
-        return None
-    h, mi = int(m.group(1)) % 12, int(m.group(2) or 0)
-    return h + (12 if m.group(3).lower() == "p" else 0), mi
+def title_of(rec: dict) -> str | None:
+    """One film: its title; two: 'A + B'; more: 'A + B + N more'; none listed (a programme): MoMA's name."""
+    names = [clean_text(f.get("title")) for f in rec.get("films") or [] if clean_text(f.get("title"))]
+    if len(names) == 1:
+        return names[0]
+    if len(names) in (2, 3):
+        return " + ".join(names)
+    if names:
+        return f"{names[0]} + {names[1]} + {len(names) - 2} more"
+    return clean_text(rec.get("program_title"))
 
 
-def infer_day(month_name: str, day: int, ref: date) -> date | None:
-    """'Dec 30' has no year: pick the year that puts it nearest to (and preferably after) ref."""
-    mon = MONTHS.get(month_name[:3].lower())
-    if not mon:
-        return None
-    cands = []
-    for y in (ref.year - 1, ref.year, ref.year + 1):
-        try:
-            cands.append(date(y, mon, day))
-        except ValueError:
-            pass
-    return min(cands, key=lambda d: abs((d - ref).days + 30))   # bias toward the future
-
-
-def parse_title_line(p: Tag) -> tuple[list[str], int | None, str | None]:
-    titles = [clean_text(em.get_text(" ")) for em in p.find_all("em")]
-    rest = p.get_text(" ")
-    for em in p.find_all("em"):
-        rest = rest.replace(em.get_text(" "), "", 1)
-    rest = clean_text(rest) or ""
-    year = director = None
-    if m := re.search(r"\b((?:18|19|20)\d{2})\b", rest):
-        year = int(m.group(1))
-    if m := re.search(r"Directed by (.+?)(?:\.\s|\.?$)", rest):
-        director = clean_text(m.group(1))
-    return [t for t in titles if t], year, director
-
-
-def parse_listing(html: str, ref: date, h1_is_series: bool = True, tz=None) -> list[dict]:
-    """h1_is_series=False for the /calendar/film index, whose <h1> is just 'Film'."""
-    soup = BeautifulSoup(html, "lxml")
-    h1 = soup.find("h1")
-    series = clean_text(h1.get_text(" ")) if h1 and h1_is_series else None
-    rows, current = [], None
-    for node in soup.find_all(["h2", "h3", "a"]):
-        if node.name in ("h2", "h3"):
-            m = DATE_RE.match(clean_text(node.get_text(" ")) or "")
-            if m:
-                current = infer_day(m.group(1), int(m.group(2)), ref)
-            continue
-        href = node.get("href") or ""
-        if not current or not re.match(r"^(https://www\.moma\.org)?/calendar/events/\d+", href):
-            continue
-        titles, year, director, tm, notes, screen = [], None, None, None, [], None
-        for p in node.find_all("p"):
-            text = clean_text(p.get_text(" ")) or ""
-            if p.find("em") and not tm:
-                t, y, d = parse_title_line(p)
-                titles += t
-                year, director = year or y, director or d
-            elif (hm := parse_time(text)) and not tm:
-                tm = hm
-            elif re.search(r"\bMoMA\b|Floor|Theater", text):
-                screen = text
-            elif text:
-                notes.append(text)
-        if not titles or not tm:
-            continue
-        rows.append({
-            "title": " + ".join(titles), "year": year if len(titles) == 1 else None,
-            "director": director, "start": to_local(datetime(current.year, current.month, current.day, *tm), tz),
-            "note": "; ".join(notes) or None, "screen": screen, "series": series,
-            "detail_url": urljoin(SITE, href),
-        })
-    return rows
-
-
-def series_links(html: str) -> list[str]:
-    soup = BeautifulSoup(html, "lxml")
-    links = [urljoin(SITE, a["href"].split("?")[0]) for a in soup.select('a[href*="/calendar/film/"]')
-             if re.search(r"/calendar/film/\d+", a["href"])]
-    return list(dict.fromkeys(links))[:MAX_SERIES]
+def newest(inbox: Path) -> Path | None:
+    """The newest file in the inbox; the older ones are deleted so they don't pile up."""
+    files = sorted(inbox.glob(PATTERN), key=lambda p: (p.stat().st_mtime, p.name))
+    for old in files[:-1]:
+        old.unlink(missing_ok=True)
+    return files[-1] if files else None
 
 
 @register("moma")
 class MomaScraper(BaseScraper):
-    needs_browser = True
+    def inbox(self) -> Path:
+        return ROOT / (self.venue.extra.get("inbox") or "inbox/moma")
 
     def fetch(self) -> list[RawPage]:
-        first = self.browser_page(START)
-        pages = [first]
-        for url in series_links(first.body):
-            pages.append(self.browser_page(url))
-        return pages
+        inbox = self.inbox()
+        inbox.mkdir(parents=True, exist_ok=True)
+        f = newest(inbox)
+        if f is None:
+            raise ScrapeError(f"no MoMA file in {inbox.relative_to(ROOT)}/ yet")
+        stamp = datetime.fromtimestamp(f.stat().st_mtime, timezone.utc)
+        age = (datetime.now(timezone.utc) - stamp).days
+        if age > STALE_DAYS:
+            raise ScrapeError(f"newest MoMA file {f.name} is {age} days old (a new one is due)")
+        return [RawPage(url=f"file://{f}", body=f.read_text(encoding="utf-8"), ext="json",
+                        fetched_at=stamp.strftime("%Y-%m-%dT%H:%M:%SZ"))]
 
     def parse(self, pages: list[RawPage]) -> list[Screening]:
         out = []
         for page in pages:
-            is_index = page.url.rstrip("/").endswith("/calendar/film")
-            for r in parse_listing(page.body, ref_date(page, self.tz), h1_is_series=not is_index, tz=self.tz):
-                start_s = iso(r["start"], self.tz)
+            for rec in json.loads(page.body):
+                title = title_of(rec)
+                if not title or not rec.get("start"):
+                    continue
+                start = parse_iso(rec["start"], self.tz)
+                films = rec.get("films") or []
+                directors = list(dict.fromkeys(d for f in films for d in f.get("directors") or [] if d))
+                end = parse_iso(rec["end_estimate"], self.tz) if rec.get("end_estimate") else None
+                venue = clean_text(rec.get("venue")) or ""
+                kind = clean_text(rec.get("kind")) or ""
+                notes = [clean_text(rec.get("note"))]
+                if kind.lower().startswith("film, "):                 # "Film, for kids"
+                    notes.append(kind[6:].strip().capitalize())
+                start_s = iso(start, self.tz)
                 out.append(Screening(
-                    id=make_id(self.venue.id, start_s, r["title"]),
-                    venue_id=self.venue.id, title=r["title"], start=start_s,
-                    day=r["start"].date().isoformat(), director=r["director"], year=r["year"],
-                    series=r["series"], screen=r["screen"], note=r["note"],
-                    detail_url=r["detail_url"], scraped_at=page.fetched_at,
-                ))
-        # the index repeats a few rows that series pages also list; prefer the series version
-        best: dict[str, Screening] = {}
-        for s in out:
-            if s.id not in best or (s.series and not best[s.id].series):
-                best[s.id] = s
-        return list(best.values())
+                    id=make_id(self.venue.id, start_s, title), venue_id=self.venue.id, title=title,
+                    start=start_s, day=start.date().isoformat(), end=iso(end, self.tz) if end and end > start else None,
+                    director=(", ".join(directors[:3]) + (", …" if len(directors) > 3 else "")) or None,
+                    year=films[0].get("year") if len(films) == 1 else None,
+                    runtime_min=rec.get("runtime_min") or None, series=clean_text(rec.get("series")),
+                    screen=venue.split("·")[-1].strip() or None,
+                    note="; ".join(n for n in notes if n) or None,
+                    detail_url=rec.get("url"), ticket_url=rec.get("ticket_url"), scraped_at=page.fetched_at))
+        return out
+

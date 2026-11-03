@@ -13,7 +13,7 @@
 | Film Forum | 网页（本周 7 天，+ 详情页） |
 | Metrograph | 网页（每次只请求一次，站点按 IP 限速） |
 | L'Alliance New York | 网页（列表 + 每场详情页） |
-| MoMA | 浏览器（Cloudflare），通常回退到 screenslate |
+| MoMA | 读 `inbox/moma/` 里最新的 JSON 文件（别处低频读取 MoMA 日历后导出；本机被 Cloudflare 挡住，不绕过）；旧文件自动删除，超过 10 天没有新文件就标为旧数据；兜底 screenslate |
 | Paris Theater | 无界面浏览器打开官网首页、逐日点「下一天」，记下网页自己收到的排片（不直接调接口、不取网页里的凭证；售票站不访问）+ 首页里的特别活动（映后谈、导读） |
 | Philadelphia Film Society | 售票系统 Agile Ticketing 的公开 feed；费城电影节不在 feed 里，从电影节的场刊排片表（PDF）导入（`scripts/import_pff_grid.py`） |
 | Landmark Ritz Five（费城）、Landmark Kendall Square（波士顿 Cambridge） | 网站自己的公开排片接口（Webedia 平台，全美连锁按影院编号各取一家；向导自动识别） |

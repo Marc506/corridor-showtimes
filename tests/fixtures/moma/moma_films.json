@@ -1,0 +1,230 @@
+[
+ {
+  "event_id": 11729,
+  "url": "https://www.moma.org/calendar/events/11729",
+  "start": "2026-11-03T16:30:00-05:00",
+  "program_title": "Sergei Loznitsa’s Short Films: Program 1",
+  "films": [],
+  "runtime_min": 103,
+  "end_estimate": "2026-11-03T18:13:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "Sergei Loznitsa",
+  "series_url": "https://www.moma.org/calendar/film/5937",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ab572463fd5a62ef2865155&event_id=11729&occ_id=33017"
+ },
+ {
+  "event_id": 11838,
+  "url": "https://www.moma.org/calendar/events/11838",
+  "start": "2026-11-03T19:00:00-05:00",
+  "program_title": "Tender Loving Care. 2026. Written and directed by Mike Leigh",
+  "films": [
+   {
+    "title": "Tender Loving Care",
+    "year": 2026,
+    "directors": [
+     "Mike Leigh"
+    ],
+    "country": "UK",
+    "runtime_min": 107
+   }
+  ],
+  "runtime_min": 107,
+  "end_estimate": "2026-11-03T20:47:00-05:00",
+  "venue": "MoMA, Floor T1 · Theater 1",
+  "series": "The Contenders 2026",
+  "series_url": "https://www.moma.org/calendar/film/5953",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ad0f01513e5a134f0e7146b&event_id=11838&occ_id=33184"
+ },
+ {
+  "event_id": 11731,
+  "url": "https://www.moma.org/calendar/events/11731",
+  "start": "2026-11-03T19:30:00-05:00",
+  "program_title": "The Trial (ПРОЦЕСС). 2018. Written and directed by Sergei Loznitsa",
+  "films": [
+   {
+    "title": "The Trial (ПРОЦЕСС)",
+    "year": 2018,
+    "directors": [
+     "Sergei Loznitsa"
+    ],
+    "country": "Netherlands",
+    "runtime_min": 129
+   }
+  ],
+  "runtime_min": 129,
+  "end_estimate": "2026-11-03T21:39:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "Sergei Loznitsa",
+  "series_url": "https://www.moma.org/calendar/film/5937",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6adfe2de7c3759501d1fae1e&event_id=11731&occ_id=33022"
+ },
+ {
+  "event_id": 11819,
+  "url": "https://www.moma.org/calendar/events/11819",
+  "start": "2026-11-04T13:00:00-05:00",
+  "program_title": "It's Alive! Candy Kugel and Vincent Cafarelli",
+  "films": [],
+  "runtime_min": 110,
+  "end_estimate": "2026-11-04T14:50:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "It’s Alive! Animation Archive Matinees",
+  "series_url": "https://www.moma.org/calendar/film/5939",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ac66b1895bc83dffd9aeb83&event_id=11819&occ_id=33154"
+ },
+ {
+  "event_id": 11713,
+  "url": "https://www.moma.org/calendar/events/11713",
+  "start": "2026-11-04T16:00:00-05:00",
+  "program_title": "Factory (ФАБРИКА). 2004. Written and directed by Sergei Loznitsa Landscape (ЛАНДШАФТ). 2003. Written and directed by Sergei Loznitsa",
+  "films": [
+   {
+    "title": "Factory (ФАБРИКА)",
+    "year": 2004,
+    "directors": [
+     "Sergei Loznitsa"
+    ],
+    "country": "Russia",
+    "runtime_min": 30
+   },
+   {
+    "title": "Landscape (ЛАНДШАФТ)",
+    "year": 2003,
+    "directors": [
+     "Sergei Loznitsa"
+    ],
+    "country": "Germany",
+    "runtime_min": 60
+   }
+  ],
+  "runtime_min": 90,
+  "end_estimate": "2026-11-04T17:30:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "Sergei Loznitsa",
+  "series_url": "https://www.moma.org/calendar/film/5937",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ab56c0a3fd5a62ef2864f96&event_id=11713&occ_id=32987"
+ },
+ {
+  "event_id": 11722,
+  "url": "https://www.moma.org/calendar/events/11722",
+  "start": "2026-11-04T18:30:00-05:00",
+  "program_title": "In the Fog (В ТУМАНЕ). 2012. Written and directed by Sergei Loznitsa",
+  "films": [
+   {
+    "title": "In the Fog (В ТУМАНЕ)",
+    "year": 2012,
+    "directors": [
+     "Sergei Loznitsa"
+    ],
+    "country": "Germany/Russia/Latvia/Netherlands/Belarus",
+    "runtime_min": 127
+   }
+  ],
+  "runtime_min": 127,
+  "end_estimate": "2026-11-04T20:37:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "Sergei Loznitsa",
+  "series_url": "https://www.moma.org/calendar/film/5937",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ab57390d78f4f14848b8f8b&event_id=11722&occ_id=33003"
+ },
+ {
+  "event_id": 11796,
+  "url": "https://www.moma.org/calendar/events/11796",
+  "start": "2026-11-04T19:00:00-05:00",
+  "program_title": "La Gradiva. 2026. Directed by Marine Atlan",
+  "films": [
+   {
+    "title": "La Gradiva",
+    "year": 2026,
+    "directors": [
+     "Marine Atlan"
+    ],
+    "country": "France",
+    "runtime_min": 145
+   }
+  ],
+  "runtime_min": 145,
+  "end_estimate": "2026-11-04T21:25:00-05:00",
+  "venue": "MoMA, Floor T1 · Theater 1",
+  "series": "The Contenders 2026",
+  "series_url": "https://www.moma.org/calendar/film/5953",
+  "note": "Followed by a conversation with Marine Atlan",
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ace4bb3f886c12ece8a605a&event_id=11796&occ_id=33129"
+ },
+ {
+  "event_id": 11820,
+  "url": "https://www.moma.org/calendar/events/11820",
+  "start": "2026-11-05T13:00:00-05:00",
+  "program_title": "It's Alive! John Canemaker (Part One)",
+  "films": [],
+  "runtime_min": 110,
+  "end_estimate": "2026-11-05T14:50:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "It’s Alive! Animation Archive Matinees",
+  "series_url": "https://www.moma.org/calendar/film/5939",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ac66de551b8144bef06db69&event_id=11820&occ_id=33156"
+ },
+ {
+  "event_id": 11713,
+  "url": "https://www.moma.org/calendar/events/11713",
+  "start": "2026-11-04T16:00:00-05:00",
+  "program_title": "Factory (ФАБРИКА). 2004. Written and directed by Sergei Loznitsa Landscape (ЛАНДШАФТ). 2003. Written and directed by Sergei Loznitsa",
+  "films": [
+   {
+    "title": "Factory (ФАБРИКА)",
+    "year": 2004,
+    "directors": [
+     "Sergei Loznitsa"
+    ],
+    "country": "Russia",
+    "runtime_min": 30
+   },
+   {
+    "title": "Landscape (ЛАНДШАФТ)",
+    "year": 2003,
+    "directors": [
+     "Sergei Loznitsa"
+    ],
+    "country": "Germany",
+    "runtime_min": 60
+   }
+  ],
+  "runtime_min": 90,
+  "end_estimate": "2026-11-04T17:30:00-05:00",
+  "venue": "MoMA, Floor T2 · Theater 2",
+  "series": "Sergei Loznitsa",
+  "series_url": "https://www.moma.org/calendar/film/5937",
+  "note": null,
+  "kind": "Film",
+  "ticket_url": "https://membership.moma.org/tickets/film/select?id=6ab56c0a3fd5a62ef2864f96&event_id=11713&occ_id=32987"
+ },
+ {
+  "event_id": 11790,
+  "url": "https://www.moma.org/calendar/events/11790",
+  "start": "2026-11-14T14:00:00-05:00",
+  "program_title": "Family Films: Let’s Pretend",
+  "films": [],
+  "runtime_min": 24,
+  "end_estimate": "2026-11-14T14:24:00-05:00",
+  "venue": "MoMA, Mezzanine · Theater 3",
+  "series": null,
+  "series_url": null,
+  "note": null,
+  "kind": "Film, for kids",
+  "ticket_url": null
+ }
+]

@@ -138,7 +138,7 @@ venues:
 | Film Forum | custom：服务端 HTML，7 天 + 详情页补全（时间无上午 / 下午，配方表达不了） |
 | Metrograph | custom：服务端 HTML，单页（每次运行只请求一次） |
 | L'Alliance New York | custom：列表卡片 + 每场详情页（配方表达不了） |
-| MoMA | custom：Playwright 浏览器；通常回退到 screenslate |
+| MoMA | custom `moma`：读 `inbox/moma/` 里最新的 JSON（别处低频读取 MoMA 日历后导出；本机被 Cloudflare 挡）；旧文件自动删除，超过 10 天没有新文件标为旧数据；兜底 screenslate |
 | Paris Theater | custom `paris`：无界面浏览器打开官网首页、逐日点「下一天」，记下网页自己从售票系统收到的排片 JSON（不直接调接口、不取凭证）+ 首页 RSC 里的特别活动 |
 | Philadelphia Film Society | custom `filmadelphia`：`agile` 适配器的薄壳，固定 PFS 的 GUID 与集群；`schedules:` 列出的场刊导入文件（费城电影节）补 feed 里没有的场次 |
 | Landmark Ritz Five、Landmark Kendall Square | `boxofficeapi`：Webedia 平台的公开排片接口（各自的影院编号 X081D / X019B） |

@@ -316,6 +316,13 @@ GET https://lallianceny.org/events/?_event_categories=film
 - `moma.py` 的解析是按本节上面的 Wayback 结构写的，测试用的是**合成** fixture（`tests/fixtures/moma/synthetic_series.html`）。浏览器路径第一次真正成功时，`data/raw/<date>/moma*.html` 会存下真页面，届时用它替换 fixture 并核对解析。
 - Playwright 版本锁在 1.62.0，对应本机已装的 `ms-playwright/chromium-1234`，不需要再下载浏览器。
 
+
+**现状（2026‑11‑03）**：浏览器路径从未通过，screenslate 也从 10‑16 起拒绝。用户在别处用低频脚本读 MoMA 日历（列表页 `/calendar/?happening_filter=Films&…&page=N` + 每个活动页的 `ScreeningEvent` JSON‑LD，8–12 秒一个请求、遵守 robots.txt、遇到 403 / 验证页就停），导出 `moma_films_YYYY-MM-DD.json` 放进项目里的 `inbox/moma/`（不入库）。本机直接用同样的方式请求，2026‑11‑02 得到的是 Cloudflare 验证页，所以不在本机抓。
+
+- 模块 `moma` 每次更新读文件夹里最新的一份，删掉更旧的；最新一份超过 10 天就算失败（影院标为旧数据，保留上次的场次），等新文件。
+- 每条：`start`、`films[] {title, year, directors, runtime_min}`、`runtime_min`、`end_estimate`、`venue`（"MoMA, Floor T2 · Theater 2" → 影厅 "Theater 2"）、`series`、`note`、`kind`（"Film, for kids" → 备注 "For kids"）、`ticket_url`、`url`。片名：一部片用片名，两三部 "A + B"，更多 "A + B + N more"，没列片目的（专题、短片集）用 MoMA 的节目名。
+- screenslate（nid 81）仍是兜底，暂停结束后若恢复就在没有文件时顶上。
+
 ---
 
 ## 9. Filmadelphia（Philadelphia Film Society）— ★★★★ 被 WAF 拦截

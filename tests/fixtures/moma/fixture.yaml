@@ -1,4 +1,4 @@
-fetched_at: "2026-09-25T01:00:00Z"
+fetched_at: '2026-11-03T21:37:00Z'
 pages:
-  - file: synthetic_series.html
-    url: https://www.moma.org/calendar/film/5790
+  - file: moma_films.json
+    url: file://inbox/moma/moma_films_2026-11-03.json

@@ -118,14 +118,13 @@ venues:
     color: "#f4a261"
     website: https://www.moma.org/calendar/film
     location: {address: "11 W 53rd St, New York, NY 10019", geo: [40.76161, -73.9775]}
+    # moma.org 对本机的程序一律给 Cloudflare 验证页（不绕过）。排片由别处低频读取 MoMA 日历后导出成 JSON，
+    # 放进 inbox/moma/；每次更新读最新的一份、删掉旧的；超过 10 天没有新文件就标为旧数据（SOURCES.md §8）
     source: {adapter: custom, module: moma}
+    inbox: inbox/moma
     fallback: {adapter: screenslate, nid: 81}
     horizon_days: 45
     rate_limit_s: 3
-    browser:
-      headless: false          # headless 过不了 Cloudflare；有窗口的 Chromium 会短暂弹出
-      challenge_timeout_s: 30
-    primary_cooldown_h: 20     # 浏览器路径失败后 20 小时内直接用兜底（大约每天只试一次浏览器）
 
   - id: paris-theater
     name: Paris Theater

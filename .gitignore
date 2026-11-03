@@ -14,3 +14,6 @@ site/data.js
 config/tmdb_token.txt
 config/anthropic_key.txt
 handoff/
+
+# data files dropped in by hand or by another program (MoMA)
+inbox/

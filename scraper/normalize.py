@@ -275,7 +275,8 @@ def tidy_title(title: str, places: str = "") -> tuple[str, str | None, str | Non
         before = t
         t = _RUN_LABEL.sub("", t)
         if (m := re.search(r"\s*[\(\[]([^()\[\]]+)[\)\]]\s*$", t)) and known \
-                and set(title_norm(m.group(1)).split()) <= known and t[:m.start()].strip():
+                and (words := set(title_norm(m.group(1)).split())) and words <= known and t[:m.start()].strip():
+            # (words: a Cyrillic or CJK name in brackets has no Latin words, and an empty set "fits" anything)
             t = t[:m.start()]                                                     # "(PFS EAST)" at PFS - East Theater 1
         if m := re.search(r"\s*\[([^\[\]]+)\]\s*$", t):                    # "Suspiria [4K DCP]", "Hugo [3D Screening]"
             label = m.group(1).strip()
