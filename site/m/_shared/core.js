@@ -263,7 +263,8 @@
     if (st.specials && s.run) return false;        // "Limited screenings": hides new films that opened widely
     if (st.q) {
       const q = fold(st.q);
-      if (!fold(s.title).includes(q) && !fold(s.director).includes(q) && !fold(s.series).includes(q)) return false;
+      if (!fold(s.title).includes(q) && !fold(s.original_title).includes(q) && !fold(s.director).includes(q)
+          && !fold(s.series).includes(q)) return false;
     }
     return true;
   }

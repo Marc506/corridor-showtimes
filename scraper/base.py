@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
@@ -41,6 +42,11 @@ class _Resp:
 
     def __init__(self, status_code: int, text: str, url: str):
         self.status_code, self.text, self.url = status_code, text, url
+
+
+# A challenge page served with 200 instead of the data (Somerville's feed, 2026-11-03: SiteGround's captcha)
+CHALLENGE = re.compile(r"/\.well-known/sgcaptcha/|<title>Just a moment\.\.\.</title>|cf-chl-|_Incapsula_Resource|"
+                       r"sucuri_cloudproxy|Attention Required! \| Cloudflare", re.I)
 
 
 def site_area(url: str) -> str:
@@ -165,6 +171,9 @@ class HttpClient:
                         raise Refused(f"HTTP 403: {url}")
                     if r.status_code >= 400:
                         raise ScrapeError(f"HTTP {r.status_code}: {url}")
+                    if CHALLENGE.search(r.text[:4000]):          # a verification page: refused, however it's dressed
+                        Pauses.refused(url, r.status_code)
+                        raise Refused(f"challenge page instead of data (HTTP {r.status_code}): {url}")
                     Pauses.answered(url)
                     return r
                 last_exc = ScrapeError(f"HTTP {r.status_code}: {url}")

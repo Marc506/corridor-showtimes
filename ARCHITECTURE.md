@@ -72,6 +72,7 @@
 | `title` | 展示用标题；全大写来源（Film Forum、Anthology、PFS）统一转换大小写。所有来源的标题在 `BaseScraper.run` 的最后（解析和详情页补全之后）统一过一遍 `scraper/titles.py`：排期标签（「(First Run)」）和影院自己的楼名（「(PFS EAST)」）去掉，「(35MM)」「: New 35mm Prints!」进 `format`，活动说明（「(… in person!)」「(Encore)」「(4K Restoration)」「Members Only Preview:」「… preceded by Nagahama」「: 30th Anniversary」、结尾的大写标签）进 `note`，系列前缀（和场次的系列同名，或同一影院三个以上片名共用：「Playback:」「EC:」「The Metropolitan Opera:」）进 `series`，主办方（「ACE Presents:」）进 `note`，「(1971)」进 `year`，和导演同名的所有格（「Ken Russell’s」）去掉。片名自己的副标题、分集（「Part II」「Vol. 1」「Episode IV」）、别名（「(aka Itim)」）不动。每条规则都来自真实的错误，全部记在 `tests/fixtures/titles.yaml` 这张回归表里（连同必须不动的例子）；`python -m scraper.titles` 列出仍像带标签的标题（每次更新写进日志），看过确认是片名本身的记在 `config/titles_reviewed.txt` |
 | `start` / `end` | ISO 8601，带影院所在时区的偏移；`end` 来自影院或 start + 片长，没有则为空 |
 | `day` | 影院本地日期（= `start[:10]`），前端按天索引 |
+| `original_title` | 片名统一用英文；影院写了原名（"The Trial (ПРОЦЕСС)"、"Soudain (All of a Sudden)"）或只写原名时，原名放这里，网页只在详情弹窗里显示，搜索也能搜到。另一种文字的一侧是原名（`titles.py`）；两边都是拉丁字母时按 TMDB 确定匹配的英文名和原名分（`language.english_title`） |
 | `director` / `year` / `runtime_min` | 可选 |
 | `format` | `35mm` / `16mm` / `70mm` / `DCP` / `Film`（胶片但规格未知）等 |
 | `language` | `"Japanese"`、`"French, Wolof"`、`"Silent"`、`"Opera (subtitled)"`；空 = 未知 |
@@ -230,6 +231,8 @@ for venue in enabled venues:
    * 没有年份时，先借用其他影院同名片的年份和导演；再优先当年的新片；所有候选语言相同时直接采用；有一部热度是第二名 3 倍以上时取它；都不满足就放弃。
    * 结果缓存在 `data/cache/tmdb.json`：命中的永久保存，未命中的 14 天后重试。
 4. **影院默认语言**（`default_language`：Japan Society = 日语，L'Alliance = 法语）。有默认语言的影院，影院没给年份和导演、TMDB 只按片名配到的片如果是别的语言，就当作同名的另一部片，不用（「The Oldest Profession」在 Japan Society 不是 1967 年的法国片）。
+
+**英文片名**：确定的匹配同时带回 TMDB 的英文名和原名（`/movie/{id}` 的 `title`、`original_title`）。影院写的两个名字（「原名 (英文名)」或反过来）里和 TMDB 英文名一致的那个作片名，另一个放 `original_title`；影院只写了原名而 TMDB 有不同的英文名时换成英文名。TMDB 不认识的名字不动。
 
 **导演和片长补全**（同一次 TMDB 查询）：只有匹配「确定是这部片」时才用（年份对上、导演核对过、今年唯一的新片或热度明显领先的唯一一部）；只是「所有候选语言相同」的匹配只填语言，不填导演。影院网站写了的导演从不覆盖；缺年份时顺带补上 TMDB 的年份，但不填晚于今年的上映年份。导演、片长和美国上映日期（判断流媒体同步上线，见 §6）用一次 `/movie/{id}?append_to_response=credits,release_dates` 请求取得；今年和去年的片每 7 天刷新一次，因为上映日期会陆续补上（TMDB 的片长 0 表示未知，忽略），和匹配结果一起缓存在 `data/cache/tmdb.json`；补上片长时同时算出结束时间。影院写了的片长不覆盖。
 

@@ -316,6 +316,7 @@ body[data-view="list"] main { max-width: 1100px; }
 .pop-venue { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
 .pop-time { font-variant-numeric: tabular-nums; font-weight: 600; }
 .pop-meta { color: var(--muted); margin: 2px 0 4px; }
+.pop-orig { color: var(--muted); font-style: italic; margin: -2px 0 4px; overflow-wrap: anywhere; }
 .pop-note { color: var(--accent); margin: 4px 0; }
 /* long series names wrap instead of widening the row (list) or spilling out (popover) */
 .film .info, .film .times { min-width: 0; }

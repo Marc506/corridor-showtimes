@@ -328,7 +328,8 @@
     if (state.specials && s.run) return false;        // "Limited screenings": hides new films that opened widely (scraper/export.py)
     if (state.q) {
       const q = fold(state.q);
-      if (!fold(s.title).includes(q) && !fold(s.director).includes(q) && !fold(s.series).includes(q)) return false;
+      if (!fold(s.title).includes(q) && !fold(s.original_title).includes(q) && !fold(s.director).includes(q)
+          && !fold(s.series).includes(q)) return false;
     }
     return true;
   }
@@ -642,7 +643,7 @@
         const lanePos = vertical ? `left:${lane * laneH}px;width:${laneH - 4}px;` : `top:${lane * laneH + 3}px;height:${laneH - 5}px;`;
         return el("button", {
           class: cls, style: `--c:${v.color};${pos(from, to)}${lanePos}`,
-          title: `${timeLabel(s.start, tzOf(s))} ${s.title}${filmMeta(s)}`,
+          title: `${timeLabel(s.start, tzOf(s))} ${s.title}${s.original_title ? ` (${s.original_title})` : ""}${filmMeta(s)}`,
           onclick: (e) => { e.stopPropagation(); showPopover(s, e.currentTarget); },
         },
           el("span", { class: "tl-time" }, timeLabel(s.start, tzOf(s)), s.format && FILM_FORMATS.has(s.format) ? ` · ${s.format}` : ""),
@@ -928,6 +929,7 @@
       el("button", { class: "pop-close", "aria-label": t("close"), onclick: hidePopover }, "×"),
       el("div", { class: "pop-venue", style: `--c:${v.color}` }, el("span", { class: "sw" }), v.name, hasTwin(s) && s.screen ? ` · ${s.screen}` : ""),
       el("h4", {}, s.title),
+      s.original_title ? el("div", { class: "pop-orig", lang: "" }, s.original_title) : null,
       el("div", { class: "pop-time" }, `${timeLabel(s.start, tz)}${endLabel}${zone}`, s.runtime_min || s.end ? "" : el("span", { class: "muted" }, t("runtimeUnknown"))),
       meta ? el("div", { class: "pop-meta" }, meta) : null,
       s.series ? el("div", {}, el("span", { class: "tag series" }, s.series)) : null,

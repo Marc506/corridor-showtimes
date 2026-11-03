@@ -199,7 +199,7 @@ class TmdbLanguage:
     @staticmethod
     def _facts_stale(hit: dict) -> bool:
         """Never fetched; or a recent film (this year or last) without release dates, or with dates a week old."""
-        if "directors" not in hit or "runtime" not in hit:
+        if "directors" not in hit or "runtime" not in hit or "en_title" not in hit:
             return True
         if (hit.get("year") or 0) < today_local().year - 1:
             return False
@@ -218,6 +218,7 @@ class TmdbLanguage:
         directors = list(dict.fromkeys(c["name"] for c in crew if c.get("job") == "Director" and c.get("name")))
         runtime = d.get("runtime") or None                 # TMDB uses 0 for "unknown"
         return {"directors": directors, "runtime": runtime if runtime and 1 <= runtime <= 900 else None,
+                "en_title": d.get("title"), "original_title": d.get("original_title"),
                 "streaming": day_and_date(d.get("release_dates")), "facts_at": datetime.now(timezone.utc).isoformat()}
 
     def _find(self, q: str, year: int | None, director: str | None) -> tuple[str | None, int | None, bool, int | None]:
@@ -312,6 +313,25 @@ class TmdbLanguage:
         return any(same_person(d, n) for d in re.split(r",|&| and ", director) if d.strip() for n in names)
 
 
+def english_title(s: Screening, en: str | None, original: str | None, lang: str | None = None) -> None:
+    """A film TMDB is sure of: show its English title, keep the original apart (`original_title`).
+    'Soudain (All of a Sudden)' -> 'All of a Sudden' + 'Soudain'; 'Roy del Espacio' (TMDB 'Roy From Space') -> swapped;
+    'The Devils' stays. Only when one name the cinema wrote is TMDB's English title or its original title, and the
+    film isn't in English ("GIANT - The Play", a stage recording TMDB calls "Giant", keeps its name)."""
+    if not en or not original or title_norm(en) == title_norm(original) or " + " in s.title \
+            or (lang or "").split(",")[0].strip().lower() == "english":
+        return
+    from .titles import TRANSLATED
+    if m := TRANSLATED.match(s.title):
+        a, b = m.group("a").strip(), m.group("b").strip()
+        if title_norm(b) == title_norm(en) or (title_norm(a) == title_norm(original) and title_norm(b) != title_norm(original)):
+            s.title, s.original_title = b, s.original_title or a
+        elif title_norm(a) == title_norm(en) or title_norm(b) == title_norm(original):
+            s.title, s.original_title = a, s.original_title or b
+    elif title_norm(s.title) == title_norm(original):
+        s.title, s.original_title = en, s.original_title or s.title
+
+
 def title_hints(rows) -> dict[str, tuple[int | None, str | None]]:
     """search-title -> (year, director) from any venue's screenings, so a title listed without a
     year at one venue (FLC) can borrow it from another (BAM: 'Fatherland', 2026, Pawlikowski)."""
@@ -384,6 +404,7 @@ def fill_languages(screenings: list[Screening], venue: VenueConfig, tmdb: TmdbLa
                 stats["director"] = stats.get("director", 0) + 1
             if not s.year and info.get("year") and info["year"] <= today_local().year:
                 s.year = info["year"]                   # a future TMDB release date isn't the film's year
+            english_title(s, info.get("en_title"), info.get("original_title"), info.get("lang"))
             if not s.runtime_min and info.get("runtime"):
                 s.runtime_min = info["runtime"]
                 stats["runtime"] = stats.get("runtime", 0) + 1

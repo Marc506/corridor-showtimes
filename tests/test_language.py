@@ -386,3 +386,20 @@ def test_title_only_match_in_another_language_is_a_namesake_at_a_one_country_cin
                       "popularity": 9}], credits={1: ["Jean-Luc Godard"]})
     L.fill_languages(rows, VenueConfig(id="v", name="V", scraper="x", default_language="Japanese"), tmdb)
     assert (rows[0].language, rows[0].director, rows[0].year) == ("Japanese", None, None)
+
+
+def test_english_title_from_tmdb_original_kept_apart():
+    from scraper.models import Screening
+    def run(title, en, orig):
+        s = Screening(id="x", venue_id="v", title=title, start="2026-11-03T19:00:00-05:00", day="2026-11-03")
+        L.english_title(s, en, orig)
+        return s.title, s.original_title
+    assert run("Soudain (All of a Sudden)", "All of a Sudden", "Soudain") == ("All of a Sudden", "Soudain")
+    assert run("Roy From Space (Roy del Espacio)", "Roy From Space", "Roy del Espacio") == ("Roy From Space", "Roy del Espacio")
+    assert run("Soudain", "All of a Sudden", "Soudain") == ("All of a Sudden", "Soudain")    # the cinema wrote only the original
+    assert run("The Devils", "The Devils", "The Devils") == ("The Devils", None)
+    assert run("Film No. 5 (Smile)", "Film No. 5 (Smile)", "Film No. 5 (Smile)") == ("Film No. 5 (Smile)", None)
+    assert run("Something Else", "All of a Sudden", "Soudain") == ("Something Else", None)   # names TMDB doesn't know: kept
+    s = Screening(id="x", venue_id="v", title="GIANT - The Play", start="2026-11-03T19:00:00-05:00", day="2026-11-03")
+    L.english_title(s, "Giant", "GIANT - The Play", "English")                              # an English film: no translation
+    assert (s.title, s.original_title) == ("GIANT - The Play", None)

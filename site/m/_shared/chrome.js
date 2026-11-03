@@ -493,6 +493,7 @@
     openSheet([
       el("div", { class: "m-d-venue" }, dot(v), el("span", {}, [v.name, s.screen && s.screen !== v.name ? s.screen : null].filter(Boolean).join(" · ")), venueBadge(v)),
       el("h2", { class: "m-d-title" }, s.title),
+      s.original_title ? el("div", { class: "m-d-orig", lang: "" }, s.original_title) : null,
       el("div", { class: "m-d-time" + (started ? " past" : "") },
         el("span", { class: "tm" }, C.timeLabel(s.start, tz), s.end ? ` – ${C.timeLabel(s.end, tz)}` : ""),
         el("span", { class: "m-d-day" }, ` · ${C.dayTitle(s.day, lang)}${rel ? " · " + rel : ""}`)),

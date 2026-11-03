@@ -215,3 +215,14 @@ def test_a_refusing_site_is_left_alone_for_days(tmp_path, monkeypatch):
     base.Pauses._save({"www.screenslate.com/api": dict(d, until="2000-01-01T00:00:00Z")})   # the pause ran out
     answer["status"] = 200
     assert client.get(url, transport="curl").status_code == 200 and base.Pauses._load() == {}
+
+
+def test_a_challenge_page_with_200_counts_as_a_refusal(tmp_path, monkeypatch):
+    from scraper import base
+    monkeypatch.setattr(base.Pauses, "FILE", tmp_path / "pauses.json")
+    client = base.HttpClient()
+    page = '<html><head><meta http-equiv="refresh" content="0;/.well-known/sgcaptcha/?r=%2Fwp-admin"></head></html>'
+    monkeypatch.setattr(client, "_curl", lambda url, headers=None: base._Resp(200, page, url))
+    with pytest.raises(base.Refused, match="challenge page"):
+        client.get("https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed", transport="curl")
+    assert "www.somervilletheatre.com/wp-admin" in base.Pauses._load()

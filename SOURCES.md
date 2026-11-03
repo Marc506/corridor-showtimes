@@ -524,6 +524,8 @@ GET https://www.somervilletheatre.com/wp-admin/admin-ajax.php?action=tapos_feed 
 - **`Directors` 不可信**：混进了别的片的人（"The Blues Brothers: Derek Drymon|John Landis"、1925 年 "The Phantom of the Opera: Johannes Roberts|Norman Jewison"），所以不用。改用 `IMDBCode`：`Screening.imdb_id` → TMDB `/find/{imdb_id}`，一部片一个确定的匹配，导演、年份、片长、语言都从那里来（`language.by_imdb`，缓存键 `imdb:<id>`）。没有 IMDb 号的片照常按片名查。
 - `/calendar`（重映日历）和 `/events`（音乐会、现场活动）不读：前者的场次都在 feed 里，后者不是电影。地址：55 Davis Square, Somerville。
 
+**实测补充（2026‑11‑03）**：feed 地址开始返回 SiteGround 的验证页（HTTP 200，`/.well-known/sgcaptcha/`），不是 XML。验证页一律当作拒绝：`base.CHALLENGE` 识别 Cloudflare / SiteGround / Incapsula / Sucuri 的验证页，不论状态码，按 `base.Pauses` 暂停，不绕过；Somerville 保留上次的场次（旧数据）。
+
 ---
 
 ## 16. Paris Theater（纽约）— 官网首页，用浏览器像访客一样读

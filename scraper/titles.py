@@ -17,6 +17,8 @@ tests/fixtures/titles.yaml keeps every one of them, and the things that must sta
     anniversary     "Ghost in the Shell: 30th Anniversary Remaster"      -> title, note
     year            "The Devils (1971)" (Coolidge)                       -> "The Devils", year 1971
     director's      "Ken Russell’s The Devils" by Ken Russell (BAM)      -> "The Devils"
+    translation     "The Trial (ПРОЦЕСС)", "День Победы (Victory Day)" (MoMA) -> "The Trial", original_title "ПРОЦЕСС";
+                    two Latin names ("Soudain (All of a Sudden)") are settled by TMDB's English title (language.py)
 
 What stays: a film's own subtitle ("Blade Runner: The Final Cut", "Bob Dylan: Dont Look Back"), parts
 ("My Undesirable Friends: Part II", "Kill Bill: Vol. 1"), a franchise ("Star Wars: Episode IV …"), alternative
@@ -50,6 +52,7 @@ RESTORATION = re.compile(r"\s*\((?P<what>(?:new\s+)?(?:\d+k\s+)?restor(?:ation|e
 # a trailing run of capitals in a title that isn't capitals: "Caligari's Cure LIGHTBOX MEMBERS SCREENING"
 CAPS_LABEL = re.compile(r"\s+(?P<what>(?:[A-Z][A-Z'&-]+\s+)*(?:SCREENING|MEMBERS?|PREVIEW|PREMIERE|Q&A)(?:\s+[A-Z][A-Z'&-]+)*)\s*$")
 PRINTS = re.compile(r"\s*[:–—-]\s*(?P<what>(?:new|rare|original)?\s*(?P<mm>35|16|70)\s?mm\s+prints?)!?\s*$", re.I)
+TRANSLATED = re.compile(r"^(?P<a>[^()]+?)\s*\((?P<b>[^()]+)\)\s*$")     # "The Trial (ПРОЦЕСС)", "Soudain (All of a Sudden)"
 REPEATED = 3            # a prefix on this many different titles at one cinema is a series ("EC:", "The Metropolitan Opera:")
 
 
@@ -63,6 +66,25 @@ def _prefix(title: str) -> tuple[str, str] | None:
     if not m or PART.match(m.group("rest")) or re.search(r"\b(?:pgm|program(?:me)?|part|vol)\.?\s*\d*$", m.group("pre"), re.I):
         return None                                  # "Ciprì & Maresco PGM 1: Cinema" names a programme of a series
     return m.group("pre").strip(), m.group("rest").strip()
+
+
+def latin(text: str) -> bool | None:
+    """True when every letter is Latin (accents included), False when some aren't, None without letters."""
+    letters = [c for c in text if c.isalpha()]
+    return all(ord(c) < 0x250 for c in letters) if letters else None
+
+
+def english_and_original(part: str) -> tuple[str, str | None]:
+    """'The Trial (ПРОЦЕСС)' -> ('The Trial', 'ПРОЦЕСС'); 'День Победы (Victory Day)' -> ('Victory Day', 'День
+    Победы'). Two Latin names ("Soudain (All of a Sudden)") are left for TMDB to tell apart (language.py)."""
+    m = TRANSLATED.match(part)
+    if m:
+        a, b = m.group("a").strip(), m.group("b").strip()
+        if latin(a) and latin(b) is False:
+            return a, b
+        if latin(b) and latin(a) is False:
+            return b, a
+    return part, None
 
 
 def series_prefixes(screenings: list[Screening]) -> set[str]:
@@ -125,6 +147,12 @@ def tidy_one(s: Screening, venue: VenueConfig, shared: set[str] = frozenset()) -
 
     if (m := YEAR.search(s.title)) and (not s.year or s.year == int(m.group(1))):
         s.title, s.year = s.title[: m.start()].strip(), int(m.group(1))
+
+    if not s.original_title:                                     # English title shown, the original kept apart
+        pairs = [english_and_original(p) for p in s.title.split(" + ")]
+        if any(o for _, o in pairs):
+            s.title = " + ".join(e for e, _ in pairs)
+            s.original_title = " + ".join(o or e for e, o in pairs)
 
     s.title = drop_director_possessive(s.title, s.director)
     s.title = clean_text(s.title) or original

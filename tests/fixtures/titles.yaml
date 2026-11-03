@@ -72,5 +72,8 @@ groups:
          expect: {title: Life Forgotten, note: Zoe Beloff presents; screening and book launch}}
   - venue: moma
     rows:
-      - {title: "Blockade (БЛОКАДА) + Artel (АРТЕЛЬ)", keep: true}                # 2026-11-03: Cyrillic in brackets
-      - {title: "Soudain (All of a Sudden)", keep: true}
+      - {title: "Blockade (БЛОКАДА) + Artel (АРТЕЛЬ)",                            # 2026-11-03: English shown, original kept
+         expect: {title: Blockade + Artel, original_title: БЛОКАДА + АРТЕЛЬ}}
+      - {title: "The Trial (ПРОЦЕСС)", expect: {title: The Trial, original_title: ПРОЦЕСС}}
+      - {title: "День Победы (Victory Day)", expect: {title: Victory Day, original_title: День Победы}}
+      - {title: "Soudain (All of a Sudden)", keep: true}                          # two Latin names: TMDB decides (language.py)

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS screenings (
   start TEXT NOT NULL, "end" TEXT, day TEXT NOT NULL,
   director TEXT, year INTEGER, runtime_min INTEGER, format TEXT, language TEXT,
   series TEXT, screen TEXT, note TEXT, detail_url TEXT, ticket_url TEXT, imdb_id TEXT, streaming INTEGER,
-  source TEXT NOT NULL, scraped_at TEXT NOT NULL,
+  original_title TEXT, source TEXT NOT NULL, scraped_at TEXT NOT NULL,
   first_seen TEXT NOT NULL, last_seen TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS ix_screenings_day ON screenings(day);
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS venue_status (
 
 SCREENING_COLS = ["id", "venue_id", "title", "start", "end", "day", "director", "year",
                   "runtime_min", "format", "language", "series", "screen", "note", "detail_url",
-                  "ticket_url", "imdb_id", "streaming", "source", "scraped_at"]
+                  "ticket_url", "imdb_id", "streaming", "original_title", "source", "scraped_at"]
 
 
 class Store:
@@ -40,7 +40,7 @@ class Store:
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
         have = {r[1] for r in self.conn.execute("PRAGMA table_info(screenings)")}
-        for col, kind in (("language", "TEXT"), ("imdb_id", "TEXT"), ("streaming", "INTEGER")):
+        for col, kind in (("language", "TEXT"), ("imdb_id", "TEXT"), ("streaming", "INTEGER"), ("original_title", "TEXT")):
             if col not in have:                      # migrate databases created before these columns existed
                 self.conn.execute(f"ALTER TABLE screenings ADD COLUMN {col} {kind}")
         cols = {r[1] for r in self.conn.execute("PRAGMA table_info(venue_status)")}

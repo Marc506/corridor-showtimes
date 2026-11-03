@@ -26,6 +26,7 @@ class Screening:
     ticket_url: str | None = None
     imdb_id: str | None = None      # "tt0090605" when the cinema publishes it: an exact TMDB match
     streaming: bool | None = None   # a new film that reaches streaming within two weeks of opening (TMDB release dates)
+    original_title: str | None = None   # the title in the film's own language when `title` is the English one
     source: str = "primary"         # "primary" | the fallback adapter's name ("screenslate")
     scraped_at: str = ""            # ISO UTC
 
