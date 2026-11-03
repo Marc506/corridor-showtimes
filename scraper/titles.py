@@ -143,8 +143,9 @@ SUSPECT = {
     "presenter": re.compile(r"\bpresents?\b", re.I),
     "support short": re.compile(r"\b(?:preceded|followed) by\b", re.I),
     "event words": re.compile(r"\b(?:q\s*&\s*a|in person|introduc\w+|book launch|screening)\b", re.I),
-    # an original title in another script ("The Trial (ПРОЦЕСС)") is the film's name: only Latin brackets
-    "brackets": re.compile(r"\[|\((?!aka\b)[\x00-\u024f]*\)\s*$", re.I),
+    # square brackets, or a trailing bracket that isn't written like a title: "(together)", "(of 5)", "(35MM)",
+    # "(2026 Edition)". A translation ("Nuestra tierra (Our Land)", "The Trial (ПРОЦЕСС)") is the film's name.
+    "brackets": re.compile(r"\[|\((?!aka\b)(?:[a-z][^)]*|[^)a-z]*[A-Z]{2}[^)a-z]*|[^)]*\d[^)]*)\)\s*$"),
     "all capitals": re.compile(r"^[^a-z]*[A-Z]{4,}[^a-z]*$"),
     "w/": re.compile(r"\bw/", re.I),
 }
