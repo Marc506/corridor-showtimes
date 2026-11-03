@@ -143,7 +143,8 @@ SUSPECT = {
     "presenter": re.compile(r"\bpresents?\b", re.I),
     "support short": re.compile(r"\b(?:preceded|followed) by\b", re.I),
     "event words": re.compile(r"\b(?:q\s*&\s*a|in person|introduc\w+|book launch|screening)\b", re.I),
-    "brackets": re.compile(r"\[|\((?!aka\b)[^)]*\)\s*$", re.I),
+    # an original title in another script ("The Trial (ПРОЦЕСС)") is the film's name: only Latin brackets
+    "brackets": re.compile(r"\[|\((?!aka\b)[\x00-\u024f]*\)\s*$", re.I),
     "all capitals": re.compile(r"^[^a-z]*[A-Z]{4,}[^a-z]*$"),
     "w/": re.compile(r"\bw/", re.I),
 }
